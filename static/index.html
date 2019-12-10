@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scouter Alpha</title>
+        <!-- JS for displaying and running events on the default page -->
+        <script src="js/frontpage.js"></script>
+        <!-- Network stuff: sending and reciving packets across WebSocket -->
+        <script src="js/network/stream.js"></script>
+        <script src="js/network/decode.js"></script>
+        <script src="js/network/encode.js"></script>
+        <!-- Webpage creation tools -->
+        <script src="js/page.js"></script>
+        <!-- SCOUTING APP PAGES -->
+        <script src="js/scouter/main.js"></script>
+        <!-- 2019 game -->
+        <script src="js/scouter/2019/init.js"></script>
+        <script src="js/scouter/2019/sandstorm.js"></script>
+        <script src="js/scouter/2019/teleop.js"></script>
+        <!-- 2020 game -->
+        <script src="js/scouter/2020/init.js"></script>
+        <!-- CSS files -->
+        <link href="main.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body id="content">
+        <!-- Default page content -->
+        <h1>
+            FRC Scouter 🔍🏃‍♀️
+        </h1>
+        <br />
+        <button onclick="check_server_connection();">Check Server Connection ❓</button><br />
+        <field id="serverconnection"></field>
+        <br />
+        <button onclick="start_scouter();">Connect as Scouter 🔌</button><br /><br />
+        <button>View Collected Data 📊</button>
+        <br /><br />
+        <button>View Robot Logger 🤖</button>
+    </body>
+</html>
