@@ -1,5 +1,7 @@
-// page.js contains functions used by content.js to quickly
-// create and distribute basic elements around the screen.
+/**
+ * page.js contains functions used by content.js to quickly
+ * create and distribute basic elements around the screen.
+ */
 
 /**
  * Creates a button that calls a function when pressed.
@@ -16,7 +18,7 @@ function create_button(text, callback) {
 }
 
 /**
- * Creates a button without a event on click and darker styling.
+ * Creates a button without a event on click and grayed out styling.
  * @param {String} text - Text inside of the button
  */
 function create_button_invalid(text) {
@@ -29,18 +31,7 @@ function create_button_invalid(text) {
 }
 
 /**
- * Creates a button without a event on click and darker styling.
- * @param {String} text - Text inside of the button
- */
-function create_button_invalid(text) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("button");
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    node.classList.add("invalid-btn");
-    ctx.appendChild(node);
-}/**
- * Creates a button without a event on click and darker styling.
+ * Creates a button that is invisible to be used as padding
  * @param {String} text - Text inside of the button
  */
 function create_button_spacer(text) {
@@ -65,7 +56,7 @@ function create_text(text) {
 }
 
 /**
- * 
+ * Creates a generic text node, in a larger size
  * @param {String} text - Text to be used
  */
 function create_text_big(text) {
@@ -77,7 +68,7 @@ function create_text_big(text) {
 }
 
 /**
- * 
+ * Creates a generic text node, in a massive size
  * @param {String} text - Text to be used
  */
 function create_text_massive(text) {
@@ -101,7 +92,7 @@ function create_meter(amnt) {
 }
 
 /**
- * Creates a newline.
+ * Creates a newline/break.
  */
 function create_break() {
     var ctx = document.getElementById("content");

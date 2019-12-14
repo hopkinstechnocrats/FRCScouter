@@ -13,6 +13,7 @@ function display_2019_sandstorm() {
     create_button("Right", "_2019_starting_position(5);");
 }
 
+// TODO: send what packets are needed to backend
 function _2019_starting_position(position) {
     switch (position) {
         case 1: // left 1
@@ -34,6 +35,8 @@ function _2019_starting_position(position) {
 
 function display_2019_auto_line() {
     clear_page();
+    create_button("Crossed Autonomus Line");
+    create_break();
     create_button("🔙 Back to Starting Position");
     create_button("End Sandstorm ⏩");
 }

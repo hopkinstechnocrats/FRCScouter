@@ -1,4 +1,9 @@
 /**
+ * frontpage.js provides functions and tools used by the inital
+ * content declared in `index.html`
+ */
+
+/**
  * Creates a socket connection to make sure everything is working
  */
 function check_server_connection() {
