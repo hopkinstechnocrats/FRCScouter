@@ -1,5 +1,6 @@
 mod packet;
 mod stream;
+pub mod data;
 
 use ws::listen;
 
@@ -7,20 +8,25 @@ use packet::Packet;
 
 use crate::server::stream::roboconnect::*;
 
-#[derive(Clone, Eq, PartialEq, Copy)]
+#[derive(Clone, Eq, PartialEq, Debug)]
 struct ServerData {
-    usid: usize
+    usid: usize,
+    unchecked_data: Vec<data::Chunk>
 }
 
 impl ServerData {
     pub fn new() -> ServerData {
         ServerData {
             usid: 0,
+            unchecked_data: vec![]
         }
     }
     pub fn get_next_usid(&mut self) -> usize {
         self.usid += 1;
         return self.usid;
+    }
+    pub fn add_data(&mut self, chunk: data::Chunk) {
+        self.unchecked_data.push(chunk);
     }
 }
 
@@ -35,7 +41,7 @@ pub fn launch_websocket() {
             ServerData::new()
         )
     );
-    if let Err(error) = listen("127.0.0.1:4001", |out| {
+    if let Err(error) = listen("127.0.0.1:81", |out| {
         println!("A connection was established with the WS server.");
         // The handler needs to take ownership of out, so we use move
         let server = Arc::clone(&server);
@@ -51,7 +57,10 @@ pub fn launch_websocket() {
                     Packet::PingUSID() => {
                         let mut server = server.lock().unwrap();
                         payload.push(Packet::PongUSID(server.get_next_usid()));
-                    }
+                    },
+                    Packet::PingServer(usid) => {
+                        payload.push(Packet::PongServer(usid));
+                    },
                     _ => {
                         panic!("An unhandled packet was recived!");
                     }

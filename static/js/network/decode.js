@@ -15,7 +15,33 @@ function packets_from_raw(raw) {
                 ret.push({
                     packet_type: 1,
                     usid: parseInt(data_chunks[position], 10)
-                })
+                });
+                break;
+            case "2": // PingServer (usid num)
+                position++;
+                ret.push({
+                    packet_type: 2,
+                    usid: parseInt(data_chunks[position], 10)
+                });
+                break;
+            case "3": // PongServer (usid num)
+                postion++;
+                ret.push({
+                    packet_type: 3,
+                    usid: parseInt(data_chunks[position], 10)
+                });
+                break;
+            case "4": // PingClient (no data)
+                ret.push({
+                    packet_type: 4
+                });
+                break;
+            case "5": // PongClient (usid num)
+                position++;
+                ret.push({
+                    packet_type: 5,
+                    usid: parseInt(data_chunks[position], 10)
+                });
                 break;
             default:
                 console.error("An unkown data chunk was found while scanning for packets: " + data_chunks[position]);

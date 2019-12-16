@@ -8,11 +8,21 @@ function raw_from_packets(packets) {
                 break;
             case 1: // PongUSID (usid num)
                 ret += "1;";
-                ret += thisp.usid
+                ret += thisp.usid;
+                ret += ";";
+                break;
+            case 2: // PingServer (usid num)
+                ret += "2;";
+                ret += thisp.usid;
+                ret += ";";
+                break;
+            case 3: // PongServer (usid num)
+                ret += "3;";
+                ret += thisp.usid;
                 ret += ";";
                 break;
             default:
-                console.error("Unkown packet id whilst compressing: " + thisp.packet_type);
+                console.error("Unkown packet id while compressing: " + thisp.packet_type);
                 break;
         }
     }

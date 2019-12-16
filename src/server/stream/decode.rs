@@ -20,6 +20,44 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                     )
                 );
             },
+            "2" => {
+                fin.packets.push(
+                    Packet::PingServer(
+                        data_chunks.next().unwrap_or_else(|| {
+                            panic!("A recived packet PingServer could not be decoded because there was not sufficent data.");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            panic!("A recived packet PingServer could not be decoded because its first data is not parsable as a usize");
+                        })
+                    )
+                )
+            },
+            "3" => {
+                fin.packets.push(
+                    Packet::PongServer(
+                        data_chunks.next().unwrap_or_else(|| {
+                            panic!("A recived packet PongServer could not be decoded because there was not sufficent data.");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            panic!("A recived packet PongServer could not be decoded because its first data is not parsable as a usize");
+                        })
+                    )
+                )
+            },
+            "4" => {
+                fin.packets.push(
+                    Packet::PingClient()
+                )
+            },
+            "5" => {
+                fin.packets.push(
+                    Packet::PongClient(
+                        data_chunks.next().unwrap_or_else(|| {
+                            panic!("A recived packet PongClient could not be decoded because there was not sufficent data.");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            panic!("A recived packet PongClient could not be decoded because its first data is not parsable as a usize");
+                        })
+                    )
+                )
+            },
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);
             }

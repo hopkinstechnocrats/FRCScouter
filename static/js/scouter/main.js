@@ -9,7 +9,7 @@ function load_scouter_base() {
 }
 
 /**
- * Finds and displays the avalable games.
+ * Displays the avalable games. Does not clear the page.
  */
 function check_games() {
     display_2019_game();

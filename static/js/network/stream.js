@@ -1,6 +1,12 @@
+/**
+ * stream.js is the main file for network operations on the client
+ * side. stream.js contains the basic sending and reciving
+ * instructions, and tools to start and end connections.
+ */
+
 // globals
 let IP = "localhost";
-let PORT = "4001";
+let PORT = "81";
 let ACTIVE_CONNECTION = false;
 let CONNECTION;
 let PACKET_BUFFER = [];
