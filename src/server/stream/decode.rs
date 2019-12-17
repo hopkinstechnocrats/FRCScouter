@@ -1,6 +1,8 @@
 use super::Stream;
 use crate::server::packet::Packet;
 
+/// Translates a string into a stream of packets to be
+/// used for local processing and handling
 pub fn stream_from_raw(raw: &str) -> Stream {
     let mut fin = Stream::new();
     let mut data_chunks = raw.split(';');

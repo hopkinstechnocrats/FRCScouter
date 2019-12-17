@@ -1,6 +1,8 @@
 use super::Stream;
 use crate::server::packet::Packet;
 
+/// Translates a Stream into a string ready to be sent over
+/// the network.
 pub fn stream_to_raw(stream: Stream) -> String {
     let mut fin = String::new();
     for i in stream.packets {

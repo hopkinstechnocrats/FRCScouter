@@ -18,3 +18,12 @@ Building from Source
 - Put the `static` folder in the same location as the generated executable (`target/release/frcscouter.exe`)
 - Also put `Rocket.toml` alongside these
 - Enjoy!
+
+Project Structure
+---
+```
+src         ; Backend Rust server
+static      ; Frontend HTML/JS/CSS
+Cargo.toml  ; Rust project config
+Rocket.toml ; Rust server IP/Port
+```
