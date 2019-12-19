@@ -2,6 +2,7 @@ use crate::server::stream::{
     decode::*,
     core::*
 };
+use crate::server::data::*;
 
 use std::fmt::Debug;
 
@@ -13,14 +14,20 @@ pub enum Packet {
     PingUSID(),
     /// Responds for request of usid with one | packet id `1` | (usid)
     PongUSID(usize),
-    /// Pings the server | packet id `2`, (usid)
+    /// Pings the server | packet id `2` | (usid)
     PingServer(usize),
-    /// Server Pongs back | packet id `3`, (usid)
+    /// Server pongs back | packet id `3` | (usid)
     PongServer(usize),
-    /// Pings a client | packet id `4`
+    /// Pings a client | packet id `4` | ()
     PingClient(),
-    /// Client Pongs back | packet id `5`, (usid)
+    /// Client pongs back | packet id `5` | (usid)
     PongClient(usize),
+    /// Client sends the robot it is watching | packet id `6` | (usid, robot number)
+    F2019RobotSelected(usize, usize),
+    /// Client sends robot starting position | packet id `7` | (usid, position)
+    F2019StartingPos(usize, F2019StartingPosition),
+    /// Client sends robot line crossing status | packet id `8` | (usid, crossed line)
+    F2019CrossAutoLine(usize, bool),
 }
 
 impl Packet {
@@ -31,5 +38,32 @@ impl Packet {
     /// Translates a stream into packets.
     pub fn get_packets_from_stream(stream: Stream) -> Vec<Packet> {
         return stream.packets.clone();
+    }
+    /// Returns the usid inside the packet, if any
+    pub fn get_usid(self) -> Option<usize> {
+        match self {
+            Packet::F2019CrossAutoLine(a, _) => return Some(a),
+            Packet::F2019RobotSelected(a, _) => return Some(a),
+            Packet::F2019StartingPos(a, _) => return Some(a),
+            Packet::PingServer(a) => return Some(a),
+            Packet::PongClient(a) => return Some(a),
+            Packet::PongServer(a) => return Some(a),
+            Packet::PongUSID(a) => return Some(a),
+            Packet::PingUSID() | Packet::PingClient() => return None
+        }
+    }
+    /// Turns the packet into a Block, if possible
+    pub fn to_block(self) -> Option<Block> {
+        match self {
+            Packet::F2019StartingPos(_, b) => {
+                return Some(Block::F2019StartingPosition(b));
+            },
+            Packet::F2019RobotSelected(_, b) => {
+                return Some(Block::F2019RobotDeclaration(b));
+            },
+            _ => {
+                return None;
+            }
+        }
     }
 }

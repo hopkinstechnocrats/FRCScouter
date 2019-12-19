@@ -8,13 +8,13 @@ pub fn stream_to_raw(stream: Stream) -> String {
     for i in stream.packets {
         match i {
             Packet::PingUSID() => {
-                panic!("Cannot construct the packet PingUSID, we are not a client!");
+                fin += "0;";
             },
             Packet::PongUSID(usid) => {
                 fin += &format!("1;{};", usid);
             },
-            Packet::PingServer(_) => {
-                panic!("Cannot construct the packet PingServer, we are not a client!");
+            Packet::PingServer(usid) => {
+                fin += &format!("2;{};", usid);
             },
             Packet::PongServer(usid) => {
                 fin += &format!("3;{};", usid);
@@ -22,8 +22,17 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::PingClient() => {
                 fin += "4;";
             },
-            Packet::PongClient(_) => {
-                panic!("Cannot construct the packet PongClient, we are not a client!");
+            Packet::PongClient(usid) => {
+                fin += &format!("5;{};", usid);
+            },
+            Packet::F2019RobotSelected(usid, robot) => {
+                fin += &format!("6;{};{};", usid, robot);
+            },
+            Packet::F2019StartingPos(usid, position) => {
+                fin += &format!("7;{};{};", usid, position.to_usize());
+            },
+            Packet::F2019CrossAutoLine(usid, did_cross) => {
+                fin += &format!("8;{};{};", usid, did_cross);
             }
         }
     }

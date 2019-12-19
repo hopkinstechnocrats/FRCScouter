@@ -61,6 +61,15 @@ pub fn launch_websocket() {
 
             // For each packet we have, handle it properly
             for packet in packets {
+                // If this packet can be stored then we should do that
+                let maybe_chunk = data::Chunk::new(packet.clone());
+                if maybe_chunk.is_some() {
+                    let mut server = server.lock().unwrap();
+                    server.add_data(maybe_chunk.unwrap());
+                    // Make sure we drop this handle to not block threads
+                    drop(server);
+                }
+                // If we need to do any immediate proccessing or response, that's here
                 match packet {
                     Packet::PingUSID() => {
                         let mut server = server.lock().unwrap();
@@ -69,9 +78,7 @@ pub fn launch_websocket() {
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },
-                    _ => {
-                        panic!("An unhandled packet was recived!");
-                    }
+                    _ => {}
                 }
             }
             // Use the out channel to send messages back
