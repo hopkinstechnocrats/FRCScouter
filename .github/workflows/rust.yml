@@ -10,6 +10,12 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-latest]
     steps:
     - uses: actions/checkout@v1
+    - uses: actions/checkout@master
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
     - name: Build
       uses: actions-rs/cargo@v1
       with:
