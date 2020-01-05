@@ -16,6 +16,7 @@ Building from Source
 - If wanted, change `Rocket.toml` to a diffrent address/port
 - `cargo build --release`
 - Put the `static` folder in the same location as the generated executable (`target/release/frcscouter.exe`)
+- Set `static/js/network/stream`'s IP variable to be the ip of your server
 - Also put `Rocket.toml` alongside these
 - Enjoy!
 

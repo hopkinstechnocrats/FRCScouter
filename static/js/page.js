@@ -3,6 +3,16 @@
  * create and distribute basic elements around the screen.
  */
 
+ /**
+ * Removes everything inside of the body tags of the page
+ */
+function clear_page() {
+    let doc = document.getElementById("content");
+    while (doc.firstChild) {
+        doc.removeChild(doc.firstChild);
+    }
+}
+
 /**
  * Creates a button that calls a function when pressed.
  * @param {String} text - Text inside of the button

@@ -5,6 +5,9 @@
  */
 
 // globals
+// This is the IP and port of the remote server's websocket address. This is not the
+// port specified in Rocket.toml. The port usually should stay the same. IP will most
+// likely need to be configured.
 let IP = "localhost";
 let PORT = "81";
 let ACTIVE_CONNECTION = false;
@@ -12,14 +15,18 @@ let CONNECTION;
 let PACKET_BUFFER = [];
 
 /**
- * Starts a new connection if there is not one running.
+ * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
  */
 function start_connection() {
     if (ACTIVE_CONNECTION) {
+        // This isn't technically possible with current project config, but by the time that anything
+        // might cause this to fail I'll have forgotten about it so here's a reminder.
         console.log("Warning: a connection was already active when start_connection was called.");
     }
     else {
         CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
+        // Maybe we should just suck it up and put all client network logic here?
+        // Meh, I'll do that tomorrow
         CONNECTION.onmessage = function(event) {
             let data = event.data;
             let packets = packets_from_raw(data);
@@ -27,9 +34,11 @@ function start_connection() {
                 PACKET_BUFFER.push(packets[i]);
             }
         }
+        // When we start the connection
         CONNECTION.onopen = async function(event) {
             ACTIVE_CONNECTION = true;
-            // ping for USID
+            // ping for USID, this isn't really currently used by either end but is
+            // still nice to the server when you do it
             CONNECTION.send(
                 raw_from_packets(
                     [
@@ -39,55 +48,9 @@ function start_connection() {
                     ]
                 )
             );
-            await block_for_packet();
-            if (!is_packet_avalable()) {
-                console.error("PACKET NOT AVALABLE AFTER BLOCKING FOR PACKET!!");
-            }
-            let packet = get_packet();
-            console.log(packet);
         }
         CONNECTION.onclose = function(event) {
             ACTIVE_CONNECTION = false;
         }
     }
-}
-
-function is_packet_avalable() {
-    if (PACKET_BUFFER.length > 0) {
-        return true;
-    }
-    return false;
-}
-
-function get_packet() {
-    return PACKET_BUFFER.pop();
-}
-
-async function block_for_packet() {
-    console.log("blocking for packet");
-    let promise = new Promise(function(resolve, reject) {
-        console.log("promise fn");
-        setTimeout(
-            async function() {
-                if (is_packet_avalable) {
-                    console.log("packet aval");
-                    resolve("done")
-                }
-                else {
-                    console.log("no packet, looping.");
-                    await promise.then(
-                        result => resolve("done"),
-                        error => resolve("done")
-                    )
-                }
-            },
-            10
-        );
-    });
-    let a;
-    await promise.then(
-        result => a,
-        error => a
-    );
-    console.log("packet received, stoping block");
 }

@@ -4,8 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FRC Scouter</title>
-        <!-- JS for displaying and running events on the default page -->
-        <script src="js/frontpage.js"></script>
         <!-- Network stuff: sending and reciving packets across WebSocket -->
         <script src="js/network/stream.js"></script>
         <script src="js/network/decode.js"></script>
@@ -35,7 +33,7 @@
         <field id="serverconnection"></field>
         <br />
         -->
-        <button onclick="start_scouter();">Connect as Scouter 🔌</button><br /><br />
+        <button onclick="load_scouter_base();">Connect as Scouter 🔌</button><br /><br />
         <button>View Collected Data 📊</button>
         <br /><br />
         <button>View Robot Debuger 🤖</button>
