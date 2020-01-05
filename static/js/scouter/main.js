@@ -4,7 +4,6 @@
 function load_scouter_base() {
     clear_page();
     start_connection();
-    console.log("This should be false: " + is_packet_avalable());
     create_text_massive("Select a game: ");
     check_games();
 }

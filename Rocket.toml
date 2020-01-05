@@ -1,7 +1,9 @@
 [development]
-address = "127.0.0.1"
+address = "0.0.0.0"
 port = 80
+log = "off"
 
 [production]
-address = "127.0.0.1"
+address = "0.0.0.0"
 port = 80
+log = "off"
