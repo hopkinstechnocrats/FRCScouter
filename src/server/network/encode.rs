@@ -19,11 +19,11 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::PongServer(usid) => {
                 fin += &format!("3;{};", usid);
             },
-            Packet::PingClient() => {
-                fin += "4;";
+            Packet::PingClient(serverid) => {
+                fin += &format!("4;{};", serverid);
             },
-            Packet::PongClient(usid) => {
-                fin += &format!("5;{};", usid);
+            Packet::PongClient(usid, serverid) => {
+                fin += &format!("5;{};{};", usid, serverid);
             },
             Packet::F2019RobotSelected(usid, robot) => {
                 fin += &format!("6;{};{};", usid, robot);

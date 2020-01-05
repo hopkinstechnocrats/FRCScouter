@@ -9,9 +9,6 @@ use ws::listen;
 
 use network::packet::Packet;
 
-use crate::server::network::roboconnect::*;
-use crate::server::network::{Stream, encode::stream_to_raw};
-
 use std::sync::{Arc, Mutex};
 use std::thread;
 
@@ -32,7 +29,7 @@ pub fn launch_websocket() {
         println!("Spawned thread for pings (1/5)");
         ping::start_ping_threads(tmp_handle);
     });
-    
+
     // Listen on an address and call the closure for each connection
     if let Err(error) = listen("127.0.0.1:81", |out| {
         println!("A connection was established with the WS server.");
@@ -83,9 +80,4 @@ pub fn launch_websocket() {
         // Inform the user of failure
         println!("Failed to create WebSocket due to {:?}", error);
     }
-}
-
-pub fn launch_robot() {
-    println!("robot connection launched");
-    let result = attempt_connection();
 }

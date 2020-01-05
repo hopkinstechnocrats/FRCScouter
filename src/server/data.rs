@@ -36,15 +36,23 @@ impl ServerData {
     pub fn new_connection(&mut self, connection: ws::Sender) {
         self.connected_ips.push(connection);
     }
-    /// Removes a connection from the list of active connections
-    pub fn remove_connection(&mut self, connection: ws::Sender) {
-        for i in 0..self.connected_ips.len() {
-            if self.connected_ips[i] == connection {
-                self.connected_ips.remove(i);
-                return;
+    /// Gives amount of connections in the list of active connections
+    pub fn amount_connected(self) -> usize {
+        return self.connected_ips.len();
+    }
+    /// Removes a connection from the list of active connections by index
+    pub fn remove_connection(&mut self, index: usize) {
+        self.connected_ips.remove(index);
+    }
+    /// Returns all Chunks aquired after a certain time.
+    pub fn get_chunks_after(self, after: std::time::SystemTime) -> Vec<Chunk> {
+        let mut qualifying_packets = vec![];
+        for i in self.unchecked_data {
+            if i.time > after {
+                qualifying_packets.push(i.clone());
             }
         }
-        println!("Warning: Unable to remove the connection {:?}", connection);
+        return qualifying_packets;
     }
     /// Gets a clone of all connections
     pub fn get_connections(self) -> Vec<ws::Sender> {
@@ -92,7 +100,9 @@ pub enum Block {
     /// Client declares the robot they are tracking
     F2019RobotDeclaration(usize),
     /// Client claims a starting position for the robot they are tracking
-    F2019StartingPosition(F2019StartingPosition)
+    F2019StartingPosition(F2019StartingPosition),
+    /// The client connected to this packet is doing some ping buisness
+    ClientPingRelated(usize, usize),
 }
 
 #[derive(Clone, Eq, PartialEq, Copy, Debug)]

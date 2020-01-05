@@ -26,10 +26,7 @@ fn main() {
         server::launch_websocket();
     });
 
-    // Launch `roboconnect` in main thread
-    server::launch_robot();
-
-    // In the event that `server::launch_robot()` somehow exits,
+    // In the event that `server::launch_websocket()` somehow exits,
     // we block until user force quits (this area *should* be unreachable)
     match website.join() {
         Ok(_) => {

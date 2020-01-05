@@ -18,10 +18,10 @@ pub enum Packet {
     PingServer(usize),
     /// Server pongs back | packet id `3` | (usid)
     PongServer(usize),
-    /// Pings a client | packet id `4` | ()
-    PingClient(),
-    /// Client pongs back | packet id `5` | (usid)
-    PongClient(usize),
+    /// Pings a client | packet id `4` | (server accociated location)
+    PingClient(usize),
+    /// Client pongs back | packet id `5` | (usid, server accociated location)
+    PongClient(usize, usize),
     /// Client sends the robot it is watching | packet id `6` | (usid, robot number)
     F2019RobotSelected(usize, usize),
     /// Client sends robot starting position | packet id `7` | (usid, position)
@@ -46,10 +46,10 @@ impl Packet {
             Packet::F2019RobotSelected(a, _) => return Some(a),
             Packet::F2019StartingPos(a, _) => return Some(a),
             Packet::PingServer(a) => return Some(a),
-            Packet::PongClient(a) => return Some(a),
+            Packet::PongClient(a, _) => return Some(a),
             Packet::PongServer(a) => return Some(a),
             Packet::PongUSID(a) => return Some(a),
-            Packet::PingUSID() | Packet::PingClient() => return None
+            Packet::PingUSID() | Packet::PingClient(_) => return None
         }
     }
     /// Turns the packet into a Block, if possible
@@ -60,6 +60,9 @@ impl Packet {
             },
             Packet::F2019RobotSelected(_, b) => {
                 return Some(Block::F2019RobotDeclaration(b));
+            },
+            Packet::PongClient(a, b) => {
+                return Some(Block::ClientPingRelated(a, b));
             },
             _ => {
                 return None;
