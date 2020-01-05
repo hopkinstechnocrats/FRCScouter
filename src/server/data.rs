@@ -1,7 +1,56 @@
 // data.rs provides structs and enums to represent data
 // recived from clients as we store it before usage.
 
-use crate::server::packet;
+use crate::server::network::packet;
+
+#[derive(Clone, Eq, PartialEq, Debug)]
+/// The WebSocket server's state and storage
+pub struct ServerData {
+    usid: usize,
+    unchecked_data: Vec<Chunk>,
+    data: Stats,
+    connected_ips: Vec<ws::Sender>
+}
+
+impl ServerData {
+    /// Creates a new ServerData
+    pub fn new() -> ServerData {
+        ServerData {
+            usid: 0,
+            unchecked_data: vec![],
+            data: Stats::new(),
+            connected_ips: vec![],
+        }
+    }
+    /// Gets a unique USID (User Session IDentification) and increments
+    /// the interal USID counter
+    pub fn get_next_usid(&mut self) -> usize {
+        self.usid += 1;
+        return self.usid;
+    }
+    /// Adds unchecked data to the local state
+    pub fn add_data(&mut self, chunk: Chunk) {
+        self.unchecked_data.push(chunk);
+    }
+    /// Adds a new connection to the list of active connections
+    pub fn new_connection(&mut self, connection: ws::Sender) {
+        self.connected_ips.push(connection);
+    }
+    /// Removes a connection from the list of active connections
+    pub fn remove_connection(&mut self, connection: ws::Sender) {
+        for i in 0..self.connected_ips.len() {
+            if self.connected_ips[i] == connection {
+                self.connected_ips.remove(i);
+                return;
+            }
+        }
+        println!("Warning: Unable to remove the connection {:?}", connection);
+    }
+    /// Gets a clone of all connections
+    pub fn get_connections(self) -> Vec<ws::Sender> {
+        return self.connected_ips.clone();
+    }
+}
 
 #[derive(Clone, Eq, PartialEq, Copy, Debug)]
 /// A Chunk represents any data from a client. It has the
@@ -79,5 +128,25 @@ impl F2019StartingPosition {
             5 => return Ok(F2019StartingPosition::BackRight),
             _ => return Err(())
         }
+    }
+}
+
+/// Stats represents processed data on the server. It is
+/// what should be pulled by dataviewer on client side.
+#[derive(Clone, Eq, PartialEq, Debug)]
+pub struct Stats {
+    /// Number of active scouters
+    pub num_scouting: usize,
+    /// List of all bot numbers being scouted
+    pub registered_bots: Vec<usize>,
+}
+
+impl Stats {
+    /// Creates a new default Stats
+    pub fn new() -> Stats {
+        return Stats {
+            num_scouting: 0,
+            registered_bots: vec![]
+        };
     }
 }

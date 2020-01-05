@@ -1,4 +1,4 @@
-use crate::server::packet::Packet;
+use super::packet::Packet;
 
 /// Represents a group of packets accociated with one
 /// connection or interaction.

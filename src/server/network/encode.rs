@@ -1,5 +1,5 @@
 use super::Stream;
-use crate::server::packet::Packet;
+use super::packet::Packet;
 
 /// Translates a Stream into a string ready to be sent over
 /// the network.

@@ -1,5 +1,5 @@
 use super::Stream;
-use crate::server::packet::Packet;
+use super::packet::Packet;
 
 /// Translates a string into a stream of packets to be
 /// used for local processing and handling

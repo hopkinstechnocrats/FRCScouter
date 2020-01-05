@@ -1,56 +1,49 @@
-mod packet;
-mod stream;
+mod ping;
+mod listen;
+mod process;
+mod respond;
 pub mod data;
+mod network;
 
 use ws::listen;
 
-use packet::Packet;
+use network::packet::Packet;
 
-use crate::server::stream::roboconnect::*;
-
-#[derive(Clone, Eq, PartialEq, Debug)]
-/// The WebSocket server's state is stored as a ServerData
-struct ServerData {
-    usid: usize,
-    unchecked_data: Vec<data::Chunk>
-}
-
-impl ServerData {
-    /// Creates a new ServerData
-    pub fn new() -> ServerData {
-        ServerData {
-            usid: 0,
-            unchecked_data: vec![]
-        }
-    }
-    /// Gets a unique USID (User Session IDentification) and increments
-    /// the interal USID counter
-    pub fn get_next_usid(&mut self) -> usize {
-        self.usid += 1;
-        return self.usid;
-    }
-    /// Adds unchecked data to the local state
-    pub fn add_data(&mut self, chunk: data::Chunk) {
-        self.unchecked_data.push(chunk);
-    }
-}
+use crate::server::network::roboconnect::*;
+use crate::server::network::{Stream, encode::stream_to_raw};
 
 use std::sync::{Arc, Mutex};
+use std::thread;
 
-/// Launches the WebSocket server
+/// Launches the WebSocket server. This communicates with clients and processes their data.
+/// Pretty much the core of this project.
 pub fn launch_websocket() {
-    println!("WebSocket server launching");
+    println!("WebSocket server launching threads");
     // Server's local state inside of a bunch of stack and shared mut wrappers
     let server = Arc::new(
         Mutex::new(
-            ServerData::new()
+            data::ServerData::new()
         )
     );
+
+    // ping pong thread
+    let tmp_handle = Arc::clone(&server);
+    thread::spawn(move || {
+        println!("Spawned thread for pings (1/5)");
+        ping::start_ping_threads(tmp_handle);
+    });
+    
     // Listen on an address and call the closure for each connection
     if let Err(error) = listen("127.0.0.1:81", |out| {
         println!("A connection was established with the WS server.");
         // The handler needs to take ownership of out, so we use move
         let server = Arc::clone(&server);
+        {
+            println!("took temporatry ownership to establish ip");
+            let mut server = server.lock().unwrap();
+            server.new_connection(out.clone());
+            drop(server);
+        }
         move |msg: ws::Message| {
 
             // Handle messages received on this connection
@@ -82,7 +75,7 @@ pub fn launch_websocket() {
                 }
             }
             // Use the out channel to send messages back
-            let finaloutput = stream::encode::stream_to_raw(stream::Stream::new_with_packets(payload));
+            let finaloutput = network::encode::stream_to_raw(network::Stream::new_with_packets(payload));
             println!("SERVER OUTPUT `{}`", finaloutput);
             out.send(finaloutput)
         }

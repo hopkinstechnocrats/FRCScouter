@@ -8,7 +8,7 @@ Setting it up
 - Unzip the file
 - Run the executable
 - If you'd like to use this website externaly, forward the ports 80 and 81.
-- [Visit the site!](localhost)
+- [Visit the site!](http://127.0.0.1/) (link works locally only)
 
 Building from Source
 ---
