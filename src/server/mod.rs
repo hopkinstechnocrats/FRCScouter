@@ -1,5 +1,4 @@
 mod ping;
-mod listen;
 mod process;
 mod respond;
 pub mod data;
@@ -26,25 +25,25 @@ pub fn launch_websocket() {
     // ping pong thread
     let tmp_handle = Arc::clone(&server);
     thread::spawn(move || {
-        println!("Spawned thread for pings (1/5)");
+        println!("Spawned thread for pings");
         ping::start_ping_threads(tmp_handle);
     });
 
     // Listen on an address and call the closure for each connection
-    if let Err(error) = listen("127.0.0.1:81", |out| {
-        println!("A connection was established with the WS server.");
+    if let Err(error) = listen("0.0.0.0:81", |out| {
         // The handler needs to take ownership of out, so we use move
         let server = Arc::clone(&server);
         {
-            println!("took temporatry ownership to establish ip");
             let mut server = server.lock().unwrap();
             server.new_connection(out.clone());
+            println!("Connecting new client to server.");
+            println!("{} client(s) now connected", server.clone().amount_connected());
             drop(server);
         }
         move |msg: ws::Message| {
 
             // Handle messages received on this connection
-            println!("WebSocket server recived data: `{}`", msg);
+            // println!("WebSocket server recived data: `{}`", msg);
             let packets = Packet::get_packets_from_raw(&msg.clone().into_text().unwrap_or_else(|_| {panic!("WS SERVER UNABLE TO UNWRAP MESSAGE")}));
             
             let mut payload: Vec<Packet> = vec![];
@@ -73,7 +72,7 @@ pub fn launch_websocket() {
             }
             // Use the out channel to send messages back
             let finaloutput = network::encode::stream_to_raw(network::Stream::new_with_packets(payload));
-            println!("SERVER OUTPUT `{}`", finaloutput);
+            // println!("server response: `{}`", finaloutput);
             out.send(finaloutput)
         }
     }) {

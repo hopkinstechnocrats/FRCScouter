@@ -8,11 +8,11 @@
 // This is the IP and port of the remote server's websocket address. This is not the
 // port specified in Rocket.toml. The port usually should stay the same. IP will most
 // likely need to be configured.
-let IP = "localhost";
+let IP = "68.46.79.147";
 let PORT = "81";
 let ACTIVE_CONNECTION = false;
 let CONNECTION;
-let PACKET_BUFFER = [];
+let USID = -1;
 
 /**
  * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
@@ -31,11 +31,39 @@ function start_connection() {
             let data = event.data;
             let packets = packets_from_raw(data);
             for (let i = 0; i < packets.length; i++) {
-                PACKET_BUFFER.push(packets[i]);
+                let pack = packets[i];
+                switch (pack.packet_type) {
+                    case 1:
+                        if (USID == -1) {
+                            USID = pack.usid;
+                            console.log("USID set! (" + USID + ")");
+                        }
+                        else {
+                            console.log("Warning: recived the USID assignment `" + pack.usid + "` while already using `" + USID + "`");
+                        }
+                        break;
+                    case 4:
+                        if (USID == -1) {
+                            console.log("Warning: no USID avalable when needed (packet responder 4)");
+                        }
+                        pack.packet_type = 5;
+                        pack.usid = USID;
+                        CONNECTION.send(
+                            raw_from_packets(
+                                [
+                                    pack
+                                ]
+                            )
+                        );
+                        break;
+                    default:
+                        console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");
+                        break;
+                }
             }
         }
         // When we start the connection
-        CONNECTION.onopen = async function(event) {
+        CONNECTION.onopen = function(_) {
             ACTIVE_CONNECTION = true;
             // ping for USID, this isn't really currently used by either end but is
             // still nice to the server when you do it
@@ -49,8 +77,9 @@ function start_connection() {
                 )
             );
         }
-        CONNECTION.onclose = function(event) {
+        CONNECTION.onclose = function(_) {
             ACTIVE_CONNECTION = false;
+            console.log("Warning: connection was closed unexpectedly");
         }
     }
 }

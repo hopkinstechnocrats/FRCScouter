@@ -31,16 +31,19 @@ function packets_from_raw(raw) {
                     usid: parseInt(data_chunks[position], 10)
                 });
                 break;
-            case "4": // PingClient (no data)
-                ret.push({
-                    packet_type: 4
-                });
-                break;
-            case "5": // PongClient (usid num)
+            case "4": // PingClient (server accociated location)
                 position++;
                 ret.push({
+                    packet_type: 4,
+                    server_loc: parseInt(data_chunks[position], 10)
+                });
+                break;
+            case "5": // PongClient (usid num, server accociate location)
+                position += 2;
+                ret.push({
                     packet_type: 5,
-                    usid: parseInt(data_chunks[position], 10)
+                    usid: parseInt(data_chunks[position - 1], 10),
+                    server_loc: parseInt(data_chunks[position], 10)
                 });
                 break;
             default:

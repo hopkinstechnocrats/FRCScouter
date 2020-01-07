@@ -21,6 +21,18 @@ function raw_from_packets(packets) {
                 ret += thisp.usid;
                 ret += ";";
                 break;
+            case 4: // PingClient (server accociated location)
+                ret += "4;";
+                ret += thisp.server_loc;
+                ret += ";";
+                break;
+            case 5: // PongClient (usid, server accociated location)
+                ret += "5;";
+                ret += thisp.usid;
+                ret += ";";
+                ret += thisp.server_loc;
+                ret += ";";
+                break;
             default:
                 console.error("Unkown packet id while compressing: " + thisp.packet_type);
                 break;
