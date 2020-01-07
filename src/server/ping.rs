@@ -42,7 +42,7 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
         // Rest thread before next iteration to not use 100% of thread
         // additionally, don't ping the client infinite times per second,
         // clogging up the client's inbound packets.
-        std::thread::sleep(std::time::Duration::from_millis(1000));
+        std::thread::sleep(std::time::Duration::from_millis(250));
     }
 }
 
@@ -75,9 +75,8 @@ fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
                 // if we remove a connection we have to immediately break and pause
                 // for 5 seconds because this changes indexes invalidating packets
                 // for a short while
-                println!("Disconnecting a client at index `{}` due to inactivity.", i);
+                println!("Disconnecting a client due to inactivity.");
                 data.remove_connection(i);
-                println!("{} client(s) still connected.", data.clone().amount_connected());
                 break;
             }
         }

@@ -3,6 +3,7 @@ mod process;
 mod respond;
 pub mod data;
 mod network;
+mod console;
 
 use ws::listen;
 
@@ -29,6 +30,13 @@ pub fn launch_websocket() {
         ping::start_ping_threads(tmp_handle);
     });
 
+    // UI / console thread
+    let tmp_handle = Arc::clone(&server);
+    thread::spawn(move || {
+        println!("Spawned thread for console");
+        console::main(tmp_handle);
+    });
+
     // Listen on an address and call the closure for each connection
     if let Err(error) = listen("0.0.0.0:81", |out| {
         // The handler needs to take ownership of out, so we use move
@@ -37,7 +45,6 @@ pub fn launch_websocket() {
             let mut server = server.lock().unwrap();
             server.new_connection(out.clone());
             println!("Connecting new client to server.");
-            println!("{} client(s) now connected", server.clone().amount_connected());
             drop(server);
         }
         move |msg: ws::Message| {
