@@ -1,6 +1,4 @@
 mod ping;
-mod process;
-mod respond;
 pub mod data;
 mod network;
 mod console;

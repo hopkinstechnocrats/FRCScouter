@@ -15,9 +15,9 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                 fin.packets.push(
                     Packet::PongUSID(
                         data_chunks.next().unwrap_or_else(|| {
-                            panic!("A recived packet PongUSID could not be decoded because there was not sufficent data.");
+                            no_sufficent_data("PongUSID");
                         }).parse::<usize>().unwrap_or_else(|_| {
-                            panic!("A recived packet PongUSID could not be decoded because its first data is not parsable as a usize");
+                            not_parsable("PongUSID", "usize");
                         })
                     )
                 );
@@ -26,9 +26,9 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                 fin.packets.push(
                     Packet::PingServer(
                         data_chunks.next().unwrap_or_else(|| {
-                            panic!("A recived packet PingServer could not be decoded because there was not sufficent data.");
+                            no_sufficent_data("PingServer");
                         }).parse::<usize>().unwrap_or_else(|_| {
-                            panic!("A recived packet PingServer could not be decoded because its first data is not parsable as a usize");
+                            not_parsable("PingServer", "usize");
                         })
                     )
                 )
@@ -37,9 +37,9 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                 fin.packets.push(
                     Packet::PongServer(
                         data_chunks.next().unwrap_or_else(|| {
-                            panic!("A recived packet PongServer could not be decoded because there was not sufficent data.");
+                            no_sufficent_data("PongServer");
                         }).parse::<usize>().unwrap_or_else(|_| {
-                            panic!("A recived packet PongServer could not be decoded because its first data is not parsable as a usize");
+                            not_parsable("PongServer", "usize");
                         })
                     )
                 )
@@ -48,9 +48,9 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                 fin.packets.push(
                     Packet::PingClient(
                         data_chunks.next().unwrap_or_else(|| {
-                            panic!("A recived packet PingClient could not be decoded because there was not sufficent data.");
+                            no_sufficent_data("PingClient");
                         }).parse::<usize>().unwrap_or_else(|_| {
-                            panic!("A recived packet PingClient could not be decoded because its first data is not parsable as a usize");
+                            not_parsable("PingClient", "usize");
                         })
                     )
                 )
@@ -59,14 +59,14 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                 fin.packets.push(
                     Packet::PongClient(
                         data_chunks.next().unwrap_or_else(|| {
-                            panic!("A recived packet PongClient could not be decoded because there was not sufficent data.");
+                            no_sufficent_data("PongClient");
                         }).parse::<usize>().unwrap_or_else(|_| {
-                            panic!("A recived packet PongClient could not be decoded because its first data is not parsable as a usize");
+                            not_parsable("PongClient", "usize");
                         }),
                         data_chunks.next().unwrap_or_else(|| {
-                            panic!("A recived packet PongClient could not be decoded because there was not sufficent data.");
+                            no_sufficent_data("PongClient");
                         }).parse::<usize>().unwrap_or_else(|_| {
-                            panic!("A recived packet PongClient could not be decoded because its first data is not parsable as a usize");
+                            not_parsable("PongClient", "usize");
                         })
                     )
                 )
@@ -77,4 +77,19 @@ pub fn stream_from_raw(raw: &str) -> Stream {
         }
     }
     return fin;
+}
+
+fn no_sufficent_data(packet_name: &str) -> ! {
+    panic!(
+        "A recived packet {} could not be decoded because there was not sufficent data in the buffer.",
+        packet_name
+    );
+}
+
+fn not_parsable(packet_name: &str, parsable_as: &str) -> ! {
+    panic!(
+        "A recived packet {} could not be decoded because some data was not able to be parsed as {}.",
+        packet_name,
+        parsable_as
+    )
 }

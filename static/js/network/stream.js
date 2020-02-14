@@ -13,6 +13,37 @@ let PORT = "81";
 let ACTIVE_CONNECTION = false;
 let CONNECTION;
 let USID = -1;
+let PINGSTATE = 0;
+let FIRST_BUFFER = true;
+let FIRST_PAGE = true;
+
+setInterval(() => {
+    if (ACTIVE_CONNECTION) {
+        if (FIRST_PAGE) {
+            // update indicator on main page
+            let el = document.getElementById("serv");
+            el.innerHTML = "Connected to server! ✅"
+        }
+        PINGSTATE -= 20;
+        if (PINGSTATE < 0) {
+            if (FIRST_BUFFER) {
+                PINGSTATE = 0;
+                FIRST_BUFFER = false;
+            }
+            else {
+                console.log("Packet loss! CRITICAL, CHECK CONNECTION");
+            }
+        }
+    }
+    else {
+        if (FIRST_PAGE) {
+            // update indicator on main page
+            let el = document.getElementById("serv");
+            el.innerHTML = "Waiting on connection to server... ❌"
+            start_connection();
+        }
+    }
+}, 5000);
 
 /**
  * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
@@ -55,6 +86,7 @@ function start_connection() {
                                 ]
                             )
                         );
+                        PINGSTATE += 1;
                         break;
                     default:
                         console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");
