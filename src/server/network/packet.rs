@@ -24,8 +24,6 @@ pub enum Packet {
     PongClient(usize, usize),
     /// Client sends the robot it is watching | packet id `6` | (usid, robot number)
     F2019RobotSelected(usize, usize),
-    /// Client sends robot starting position | packet id `7` | (usid, position)
-    F2019StartingPos(usize, F2019StartingPosition),
     /// Client sends robot line crossing status | packet id `8` | (usid, crossed line)
     F2019CrossAutoLine(usize, bool),
 }
@@ -44,7 +42,6 @@ impl Packet {
         match self {
             Packet::F2019CrossAutoLine(a, _) => return Some(a),
             Packet::F2019RobotSelected(a, _) => return Some(a),
-            Packet::F2019StartingPos(a, _) => return Some(a),
             Packet::PingServer(a) => return Some(a),
             Packet::PongClient(a, _) => return Some(a),
             Packet::PongServer(a) => return Some(a),
@@ -55,9 +52,6 @@ impl Packet {
     /// Turns the packet into a Block, if possible
     pub fn to_block(self) -> Option<Block> {
         match self {
-            Packet::F2019StartingPos(_, b) => {
-                return Some(Block::F2019StartingPosition(b));
-            },
             Packet::F2019RobotSelected(_, b) => {
                 return Some(Block::F2019RobotDeclaration(b));
             },

@@ -39,9 +39,8 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
             });
             loc += 1;
         }
-        // Rest thread before next iteration to not use 100% of thread
-        // additionally, don't ping the client infinite times per second,
-        // clogging up the client's inbound packets.
+        // Rest thread before next iteration to not use 100% of thread additionally, don't ping the
+        // client infinite times per second, clogging up the client's inbound packets.
         std::thread::sleep(std::time::Duration::from_millis(250));
     }
 }
@@ -49,12 +48,11 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
 /// Ping thread B checks incoming packets and disconnects idle or unresponsive clients. (no pong)
 fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
     loop {
-        // Grab the server data. Keep the handled data because we need to change it.
-        // Other threads resume when data is dropped, either at the end of the loop
-        // or earlier if possible.
+        // Grab the server data. Keep the handled data because we need to change it. Other threads
+        // resume when data is dropped, either at the end of the loop or earlier if possible.
         let mut data = handle.lock().unwrap();
-        // for every unprocessed packet in the last two seconds, grab and store the usid
-        // and server id if it's related to ping/pong processes.
+        // for every unprocessed packet in the last two seconds, grab and store the usid and server
+        // id if it's related to ping/pong processes.
         let mut clientpairs: Vec<(usize, usize)> = vec![];
         for i in data.clone().get_chunks_after(std::time::SystemTime::now() - std::time::Duration::from_secs(2)) {
             match i.data {
@@ -72,18 +70,15 @@ fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
                 }
             }
             if !passed {
-                // if we remove a connection we have to immediately break and pause
-                // for 5 seconds because this changes indexes invalidating packets
-                // for a short while
+                // if we remove a connection we have to immediately break and pause for 5 seconds 
+                // because this changes indexes invalidating packets for a short while
                 println!("Disconnecting a client due to inactivity.");
                 data.remove_connection(i);
                 break;
             }
         }
-        // Rest thread before next iteration to not use 100% of thread
-        // additionally, don't ping the client infinite times per second,
-        // clogging up the client's inbound packets. Drop data beforehand
-        // so that other threads can use it.
+        // Rest thread before next iteration to not use 100% of thread. Drop data beforehand so that
+        // other threads can use it.
         drop(data);
         std::thread::sleep(std::time::Duration::from_millis(5000));
     }

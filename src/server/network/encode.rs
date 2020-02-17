@@ -1,8 +1,7 @@
 use super::Stream;
 use super::packet::Packet;
 
-/// Translates a Stream into a string ready to be sent over
-/// the network.
+/// Translates a Stream into a string ready to be sent over the network.
 pub fn stream_to_raw(stream: Stream) -> String {
     let mut fin = String::new();
     for i in stream.packets {
@@ -28,9 +27,9 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::F2019RobotSelected(usid, robot) => {
                 fin += &format!("6;{};{};", usid, robot);
             },
-            Packet::F2019StartingPos(usid, position) => {
-                fin += &format!("7;{};{};", usid, position.to_usize());
-            },
+            //Packet::F2019StartingPos(usid, position) => {
+            //    fin += &format!("7;{};{};", usid, position.to_usize());
+            //},
             Packet::F2019CrossAutoLine(usid, did_cross) => {
                 fin += &format!("8;{};{};", usid, did_cross);
             }
