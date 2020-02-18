@@ -9,7 +9,8 @@ pub struct ServerData {
     usid: usize,
     unchecked_data: Vec<Chunk>,
     data: Stats,
-    connected_ips: Vec<ws::Sender>
+    connected_ips: Vec<ws::Sender>,
+    pub robots_scouted: Vec<(usize, usize)> // usid, robot
 }
 
 impl ServerData {
@@ -20,6 +21,7 @@ impl ServerData {
             unchecked_data: vec![],
             data: Stats::new(),
             connected_ips: vec![],
+            robots_scouted: vec![],
         }
     }
     /// Gets a unique USID (User Session IDentification) and increments the interal USID counter
@@ -96,7 +98,7 @@ impl Chunk {
 /// constructing Chunks
 pub enum Block {
     /// Client declares the robot they are tracking
-    F2019RobotDeclaration(usize),
+    G2020RobotDeclaration(usize),
     /// The client connected to this packet is doing some ping buisness
     ClientPingRelated(usize, usize),
 }

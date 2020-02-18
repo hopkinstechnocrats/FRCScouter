@@ -69,6 +69,10 @@ pub fn launch_websocket() {
                         let mut server = server.lock().unwrap();
                         payload.push(Packet::PongUSID(server.get_next_usid()));
                     },
+                    Packet::G2020RobotSelected(usid, robot) => {
+                        let mut server = server.lock().unwrap();
+                        server.robots_scouted.push((usid, robot));
+                    }
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },

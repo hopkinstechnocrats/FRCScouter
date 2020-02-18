@@ -70,6 +70,22 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                     )
                 )
             },
+            "6" => {
+                fin.packets.push(
+                    Packet::G2020RobotSelected(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020RobotSelected");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020RobotSelected", "usize");
+                        }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020RobotSelected");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020RobotSelected", "usize");
+                        })
+                    )
+                )
+            }
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);
             }

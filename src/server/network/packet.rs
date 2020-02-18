@@ -23,9 +23,11 @@ pub enum Packet {
     /// Client pongs back | packet id `5` | (usid, server accociated location)
     PongClient(usize, usize),
     /// Client sends the robot it is watching | packet id `6` | (usid, robot number)
-    F2019RobotSelected(usize, usize),
-    /// Client sends robot line crossing status | packet id `8` | (usid, crossed line)
-    F2019CrossAutoLine(usize, bool),
+    G2020RobotSelected(usize, usize),
+    /// Server sends client scouter information | packet id `7` | ([length], Vec<team number> where len = [length])
+    G2020ScoutersWaiting(usize, Vec<usize>),
+    /// Server tells scouters to begin scouting | packet id `8` | ()
+    G2020InitateScouting(),
 }
 
 impl Packet {
@@ -40,20 +42,20 @@ impl Packet {
     /// Returns the usid inside the packet, if any
     pub fn get_usid(self) -> Option<usize> {
         match self {
-            Packet::F2019CrossAutoLine(a, _) => return Some(a),
-            Packet::F2019RobotSelected(a, _) => return Some(a),
+            Packet::G2020RobotSelected(a, _) => return Some(a),
             Packet::PingServer(a) => return Some(a),
             Packet::PongClient(a, _) => return Some(a),
             Packet::PongServer(a) => return Some(a),
             Packet::PongUSID(a) => return Some(a),
-            Packet::PingUSID() | Packet::PingClient(_) => return None
+            Packet::PingUSID() | Packet::PingClient(_) | Packet::G2020ScoutersWaiting(_, _) |
+            Packet::G2020InitateScouting() => return None
         }
     }
     /// Turns the packet into a Block, if possible
     pub fn to_block(self) -> Option<Block> {
         match self {
-            Packet::F2019RobotSelected(_, b) => {
-                return Some(Block::F2019RobotDeclaration(b));
+            Packet::G2020RobotSelected(_, b) => {
+                return Some(Block::G2020RobotDeclaration(b));
             },
             Packet::PongClient(a, b) => {
                 return Some(Block::ClientPingRelated(a, b));

@@ -45,7 +45,9 @@ function g_2020_waiting_phase() {
         raw_from_packets(
             [
                 {
-                    packet_type: 190364502981978
+                    packet_type: 6,
+                    usid: USID,
+                    team_number: BOTNUM
                 }
             ]
         )
