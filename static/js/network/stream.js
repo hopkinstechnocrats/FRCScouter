@@ -19,11 +19,6 @@ let FIRST_PAGE = true;
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
-        if (FIRST_PAGE) {
-            // update indicator on main page
-            let el = document.getElementById("serv");
-            el.innerHTML = "Connected to server! ✅"
-        }
         PINGSTATE -= 20;
         if (PINGSTATE < 0) {
             if (FIRST_BUFFER) {
@@ -31,8 +26,18 @@ setInterval(() => {
                 FIRST_BUFFER = false;
             }
             else {
-                console.log("Packet loss! CRITICAL, CHECK CONNECTION");
+                console.log("Packet loss! CRITICAL, CHECK CONNECTION (severity: " + PINGSTATE + ")");
+                PINGSTATE = 0;
             }
+        }
+    }
+}, 5000);
+
+setInterval(() => {
+    if (ACTIVE_CONNECTION) {
+        if (FIRST_PAGE) {
+            // update indicator on main page and create
+            load_page();
         }
     }
     else {
@@ -42,8 +47,15 @@ setInterval(() => {
             el.innerHTML = "Waiting on connection to server... ❌"
             start_connection();
         }
+        else {
+            console.log("Not connected?? CRITICAL");
+            clear_page();
+            create_text_massive("Disconnected From Server! Please refresh the page. If you get this\
+            page during a competition there may be a critical server error. In this case, DO NOT\
+            REFRESH! The page will automagically resume shortly.");
+        }
     }
-}, 5000);
+}, 200)
 
 /**
  * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.

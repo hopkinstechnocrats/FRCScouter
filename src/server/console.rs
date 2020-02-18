@@ -35,8 +35,8 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("Shutting down...");
                 std::process::exit(0);
             },
-            a => {
-                println!("Unknown command `{}`. Try `help` for a list of commands.", a);
+            _ => {
+                println!("Unknown command. Try `help` for a list of commands.");
             }
         }
         std::thread::sleep(std::time::Duration::from_millis(10));
