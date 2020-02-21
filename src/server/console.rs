@@ -18,6 +18,7 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("help - this list");
                 println!("connected - lists the number of clients connected");
                 println!("dump - displays the server's state");
+                println!("start - prematurly set the start flag: this starts scouting immediately");
                 println!("stop - shuts down the server");
             },
             "connected" => {
@@ -35,6 +36,12 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("Shutting down...");
                 std::process::exit(0);
             },
+            "start" => {
+                let mut server = handle.lock().unwrap();
+                server.start_game_flag = true;
+                drop(server);
+                println!("Start flag set.");
+            }
             _ => {
                 println!("Unknown command. Try `help` for a list of commands.");
             }

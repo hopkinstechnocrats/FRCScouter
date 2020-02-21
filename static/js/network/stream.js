@@ -20,6 +20,8 @@ let CONNECTION_QUEUED = false;
 let NETCODE = "rev.3";
 let EVER_CONNECTED = false;
 let USID_WATING = false;
+let SCOUTERS_READY = false;
+let SCOUTERS_INFO = [];
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
@@ -119,6 +121,12 @@ function start_connection() {
                             );
                             PINGSTATE += 1;
                         }
+                        break;
+                    case 7:
+                        SCOUTERS_INFO = pack.scouters;
+                        break;
+                    case 8:
+                        SCOUTERS_READY = true;
                         break;
                     default:
                         console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");

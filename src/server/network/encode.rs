@@ -30,7 +30,7 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::G2020ScoutersWaiting(len, list) => {
                 let mut tmp = String::new();
                 for i in list {
-                    tmp = format!("{}{};", tmp, i);
+                    tmp = format!("{}{};{};", tmp, i.0, i.1);
                 }
                 fin += &format!("7;{};{}", len, tmp)
             },

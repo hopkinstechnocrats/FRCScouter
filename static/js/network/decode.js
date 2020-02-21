@@ -46,6 +46,25 @@ function packets_from_raw(raw) {
                     server_loc: parseInt(data_chunks[position], 10)
                 });
                 break;
+            case "7": // G2020ScoutersWaiting ([length], Vec<team number, amount> where len = [length])
+                position++;
+                let len = parseInt(data_chunks[position], 10);
+                let fin = [];
+                for (let i = 0; i < len; i++) {
+                    position += 2;
+                    fin.push({team: data_chunks[position - 1], amount: data_chunks[position]});
+                }
+                ret.push({
+                    packet_type: 7,
+                    scouters: fin
+                });
+                break;
+            case "8":
+                position++;
+                ret.push({
+                    packet_type: 8
+                });
+                break;
             default:
                 console.error("An unkown data chunk was found while scanning for packets: " + data_chunks[position]);
                 console.error("all of data_chunks:\n" + data_chunks);

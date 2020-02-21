@@ -72,6 +72,24 @@ pub fn launch_websocket() {
                     Packet::G2020RobotSelected(usid, robot) => {
                         let mut server = server.lock().unwrap();
                         server.robots_scouted.push((usid, robot));
+                        let mut fin: Vec<(usize, usize)> = vec![];
+                        for i in server.robots_scouted.clone() {
+                            let mut matched = false;
+                            for j in 0..fin.len() {
+                                if i.1 == fin[j].0 {
+                                    fin[j].1 += 1;
+                                    matched = true;
+                                }
+                            }
+                            if !matched {
+                                fin.push((i.1, 1));
+                            }
+                        }
+                        if fin.len() == 6 {
+                            server.start_game_flag = true;
+                        }
+                        payload.push(Packet::G2020ScoutersWaiting(server.robots_scouted.len(), fin));
+                        drop(server);
                     }
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));

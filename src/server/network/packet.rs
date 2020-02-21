@@ -24,8 +24,8 @@ pub enum Packet {
     PongClient(usize, usize),
     /// Client sends the robot it is watching | packet id `6` | (usid, robot number)
     G2020RobotSelected(usize, usize),
-    /// Server sends client scouter information | packet id `7` | ([length], Vec<team number> where len = [length])
-    G2020ScoutersWaiting(usize, Vec<usize>),
+    /// Server sends client scouter information | packet id `7` | ([length], Vec<team number, amount> where len = [length])
+    G2020ScoutersWaiting(usize, Vec<(usize, usize)>),
     /// Server tells scouters to begin scouting | packet id `8` | ()
     G2020InitateScouting(),
 }

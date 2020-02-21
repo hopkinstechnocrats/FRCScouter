@@ -27,7 +27,10 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
         let data = tmp_data.clone();
         drop(tmp_data);
         let mut loc = 0;
-        for ip in data.get_connections() {
+        for ip in data.clone().get_connections() {
+            if data.start_game_flag {
+                ip.send(stream_to_raw(Stream::new_with_packets(vec![Packet::G2020InitateScouting()])));
+            }
             ip.send(
                 stream_to_raw(
                     Stream::new_with_packets(vec![
@@ -38,6 +41,11 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("WARN: unable to ping client: `{}`", e);
             });
             loc += 1;
+        }
+        if data.start_game_flag {
+            let mut server = handle.lock().unwrap();
+            server.start_game_flag = false;
+            drop(server);
         }
         // Rest thread before next iteration to not use 100% of thread additionally, don't ping the
         // client infinite times per second, clogging up the client's inbound packets.

@@ -10,6 +10,7 @@ pub struct ServerData {
     unchecked_data: Vec<Chunk>,
     data: Stats,
     connected_ips: Vec<ws::Sender>,
+    pub start_game_flag: bool,
     pub robots_scouted: Vec<(usize, usize)>, // usid, robot
     pub usid_association: Vec<(usize, usize)>, // usid, internal
 }
@@ -22,6 +23,7 @@ impl ServerData {
             unchecked_data: vec![],
             data: Stats::new(),
             connected_ips: vec![],
+            start_game_flag: false,
             robots_scouted: vec![],
             usid_association: vec![]
         }

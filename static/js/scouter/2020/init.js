@@ -32,15 +32,13 @@ function g_2020_custom_team_number() {
     create_button("3", "BOTNUM+=\"3\";g_2020_custom_team_number();");
     create_break();
     create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);g_2020_custom_team_number();");
-    create_button("✅", "g_2020_waiting_phase();");
+    create_button("✅", "g_2020_submit_team_num();");
     create_break();
     create_break();
     create_button("Back to game selection ⏪", "load_scouter_base();");
 }
 
-function g_2020_waiting_phase() {
-    clear_page();
-    create_text_massive("Waiting for Scouters...");
+function g_2020_submit_team_num() {
     CONNECTION.send(
         raw_from_packets(
             [
@@ -52,5 +50,21 @@ function g_2020_waiting_phase() {
             ]
         )
     );
-    
+    g_2020_waiting_phase();
+}
+
+function g_2020_waiting_phase() {
+    if (SCOUTERS_READY) {
+        g_2020_autonomous_base();
+    }
+    else {
+        clear_page();
+        create_text_massive("Waiting for Scouters...");
+        create_break();
+        for (let i = 0; i < SCOUTERS_INFO.length; i++) {
+            create_break();
+            create_text("Team " + SCOUTERS_INFO[i].team + " [" + SCOUTERS_INFO[i].amount + " people]");
+        }
+        setTimeout(g_2020_waiting_phase, 500);
+    }
 }

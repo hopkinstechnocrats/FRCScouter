@@ -22,13 +22,17 @@ function bar_test() {
         },
         [
             {
-                label: "label",
+                label: "2239",
                 value: 230
             },
             {
-                label: "very long label",
+                label: "1524",
                 value: 15
             },
+            {
+                label: "666",
+                value: 14
+            }
         ]
     );
     create_break();
