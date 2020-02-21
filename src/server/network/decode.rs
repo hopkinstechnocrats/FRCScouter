@@ -64,7 +64,7 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         }),
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("PongClient");
-                        }).parse::<usize>().unwrap_or_else(|_| {
+                        }).parse::<usize>().unwrap_or_else(|a| {
                             not_parsable("PongClient", "usize");
                         })
                     )

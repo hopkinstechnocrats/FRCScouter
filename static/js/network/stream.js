@@ -16,6 +16,10 @@ let USID = -1;
 let PINGSTATE = 0;
 let FIRST_BUFFER = true;
 let FIRST_PAGE = true;
+let CONNECTION_QUEUED = false;
+let NETCODE = "rev.3";
+let EVER_CONNECTED = false;
+let USID_WATING = false;
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
@@ -36,16 +40,29 @@ setInterval(() => {
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
         if (FIRST_PAGE) {
-            // update indicator on main page and create
-            load_page();
+            if (USID == -1) {
+                // update indicatior on main page
+                if (!USID_WATING) {
+                    USID_WATING = true;
+                    let el = document.getElementById("serv");
+                    el.innerHTML += "\nWaiting for USID... ❗";
+                }
+            }
+            else {
+                // update indicator on main page and create
+                load_page();
+            }
         }
     }
     else {
         if (FIRST_PAGE) {
-            // update indicator on main page
-            let el = document.getElementById("serv");
-            el.innerHTML = "Waiting on connection to server... ❌"
-            start_connection();
+            if (!CONNECTION_QUEUED) {
+                // update indicator on main page
+                let el = document.getElementById("serv");
+                el.innerHTML += "\nWaiting on connection to server... ❌";
+                el.innerHTML += "\nNETCODE | " + NETCODE;
+                start_connection();
+            }
         }
         else {
             console.log("Not connected?? CRITICAL");
@@ -55,7 +72,7 @@ setInterval(() => {
             REFRESH! The page will automagically resume shortly.");
         }
     }
-}, 200)
+}, 600);
 
 /**
  * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
@@ -66,7 +83,8 @@ function start_connection() {
         // might cause this to fail I'll have forgotten about it so here's a reminder.
         console.log("Warning: a connection was already active when start_connection was called.");
     }
-    else {
+    else if (!EVER_CONNECTED) {
+        CONNECTION_QUEUED = true;
         CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
         // Maybe we should just suck it up and put all client network logic here?
         // Meh, I'll do that tomorrow
@@ -89,16 +107,18 @@ function start_connection() {
                         if (USID == -1) {
                             console.log("Warning: no USID avalable when needed (packet responder 4)");
                         }
-                        pack.packet_type = 5;
-                        pack.usid = USID;
-                        CONNECTION.send(
-                            raw_from_packets(
-                                [
-                                    pack
-                                ]
-                            )
-                        );
-                        PINGSTATE += 1;
+                            else {
+                            pack.packet_type = 5;
+                            pack.usid = USID;
+                            CONNECTION.send(
+                                raw_from_packets(
+                                    [
+                                        pack
+                                    ]
+                                )
+                            );
+                            PINGSTATE += 1;
+                        }
                         break;
                     default:
                         console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");
@@ -108,9 +128,10 @@ function start_connection() {
         }
         // When we start the connection
         CONNECTION.onopen = function(_) {
+            // mark that the connection is valid
             ACTIVE_CONNECTION = true;
-            // ping for USID, this isn't really currently used by either end but is
-            // still nice to the server when you do it
+            EVER_CONNECTED = true;
+            // grab a usid
             CONNECTION.send(
                 raw_from_packets(
                     [
@@ -125,5 +146,8 @@ function start_connection() {
             ACTIVE_CONNECTION = false;
             console.log("Warning: connection was closed unexpectedly");
         }
+    }
+    else {
+        console.log("attempted to reconnect when already connected. yeet. not doing that.");
     }
 }

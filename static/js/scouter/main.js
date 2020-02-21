@@ -10,6 +10,7 @@ function load_page() {
     create_break();
     create_text("Connected to server ✅");
     create_text("USID | " + USID);
+    create_text("Network | " + NETCODE);
 }
 
 /**

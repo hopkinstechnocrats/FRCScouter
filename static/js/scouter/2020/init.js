@@ -52,4 +52,5 @@ function g_2020_waiting_phase() {
             ]
         )
     );
+    
 }

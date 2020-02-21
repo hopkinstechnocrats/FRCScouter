@@ -10,7 +10,8 @@ pub struct ServerData {
     unchecked_data: Vec<Chunk>,
     data: Stats,
     connected_ips: Vec<ws::Sender>,
-    pub robots_scouted: Vec<(usize, usize)> // usid, robot
+    pub robots_scouted: Vec<(usize, usize)>, // usid, robot
+    pub usid_association: Vec<(usize, usize)>, // usid, internal
 }
 
 impl ServerData {
@@ -22,6 +23,7 @@ impl ServerData {
             data: Stats::new(),
             connected_ips: vec![],
             robots_scouted: vec![],
+            usid_association: vec![]
         }
     }
     /// Gets a unique USID (User Session IDentification) and increments the interal USID counter
