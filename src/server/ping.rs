@@ -29,7 +29,7 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
         let mut loc = 0;
         for ip in data.clone().get_connections() {
             if data.start_game_flag {
-                ip.send(stream_to_raw(Stream::new_with_packets(vec![Packet::G2020InitateScouting()])));
+                ip.send(stream_to_raw(Stream::new_with_packets(vec![Packet::G2020InitateScouting()]))).unwrap_or_else(|_| println!("unable to send flag: CRITICAL"));
             }
             ip.send(
                 stream_to_raw(
@@ -43,8 +43,10 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
             loc += 1;
         }
         if data.start_game_flag {
+            println!("A game has started (6 teams being scouted)");
             let mut server = handle.lock().unwrap();
             server.start_game_flag = false;
+            server.robots_scouted = vec![];
             drop(server);
         }
         // Rest thread before next iteration to not use 100% of thread additionally, don't ping the

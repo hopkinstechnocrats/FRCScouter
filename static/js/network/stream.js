@@ -74,7 +74,7 @@ setInterval(() => {
             REFRESH! The page will automagically resume shortly.");
         }
     }
-}, 600);
+}, 20);
 
 /**
  * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
