@@ -3,10 +3,15 @@
  * For values with option, set to a value, just nil out
  * @param {String} width 
  * @param {String} height 
- * @param {*} options - Option<{y_lable: Option<String>, x_label: Option<String>, y_freq: Option<Number>}>
  * @param {*} dataset - [{label: Option<String>, value: Number},{..}]
  */
-function create_bar_graph(width, height, options, dataset) {
+function create_bar_graph(width, height, dataset) {
+    let good0 = 0;
+    let good1 = 100;
+    let good2 = 255;
+    let bad0 = 255;
+    let bad1 = 80;
+    let bad2 = 80;
     // REMINDER: CANVAS BUILDS TOP LEFT TO DOWN RIGHT
     // create a fake canvas and configure
     var ctm = document.getElementById("content");
@@ -34,32 +39,42 @@ function create_bar_graph(width, height, options, dataset) {
     space_per_w -= 60;
     // for each
     space_per_w /= dataset.length;
+    let max_value = 0;
+    for (let i = 0; i < dataset.length; i++) {
+        if (dataset[i].value > max_value) {
+            max_value = dataset[i].value;
+        }
+    }
+    let space_per_h = height / max_value;
     for (let i = 0; i < dataset.length; i++) {
         ctx.fillStyle = "rgb(255, 80, 80)";
+        let percent = dataset[i].value / max_value;
+        let oposite = 1 - percent;
+        let rvalue = Math.round(good0 * percent + bad0 * oposite);
+        let gvalue = Math.round(good1 * percent + bad1 * oposite);
+        let bvalue = Math.round(good2 * percent + bad2 * oposite);
+        //console.log("rgbvalue" + rvalue + "|" + gvalue + "|" + bvalue);
+        ctx.fillStyle = "rgb(" + rvalue + "," + gvalue + "," + bvalue + ")";
         ctx.fillRect( // x, y are from top left
             (space_per_w * i) + (20 * (i + 1)), // x
             height, // y, we set to bottom
             space_per_w, // w
-            -dataset[i].value // h, we make negative to make rect grow up
+            (-dataset[i].value)*space_per_h // h, we make negative to make rect grow up
         );
         ctx.fillStyle = "rgb(200, 200, 200)";
         ctx.font = "bold 32px serif";
-        if ((height - dataset[i].value + 32) < height - 32) {
-            ctx.fillText(
-                dataset[i].value + " '" + dataset[i].label + "'", // text
-                (space_per_w * i) + (20 * (i + 1)), // x
-                height - dataset[i].value + 32, // y
-                space_per_w // max_width
-            );
-        }
-        else {
-            ctx.fillText(
-                dataset[i].value + " '" + dataset[i].label + "'", // text
-                (space_per_w * i) + (20 * (i + 1)), // x
-                height - 32, // y
-                space_per_w // max_width
-            );
-        }
+        ctx.fillText(
+            dataset[i].value, // text
+            (space_per_w * i) + (20 * (i + 1)), // x
+            (height - 32), // y
+            space_per_w // max_width
+        );
+        ctx.fillText(
+            "'" + dataset[i].label + "'", // text
+            (space_per_w * i) + (20 * (i + 1)), // x
+            (height - 3), // y
+            space_per_w // max_width
+        );
     }
     // we're done so discard this
     el.setAttribute("id", "expired_handle");
