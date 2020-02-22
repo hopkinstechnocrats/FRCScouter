@@ -28,6 +28,7 @@ function g_2020_custom_team_number() {
     create_button("3", "BOTNUM+=\"3\";g_2020_custom_team_number();");
     create_break();
     create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);g_2020_custom_team_number();");
+    create_button("0", "BOTNUM+=\"0\";g_2020_custom_team_number();")
     create_button("✅", "g_2020_submit_team_num();");
     create_break();
     create_break();
@@ -51,16 +52,34 @@ function g_2020_submit_team_num() {
 
 function g_2020_waiting_phase() {
     if (SCOUTERS_READY) {
-        g_2020_autonomous_base();
+        g_2020_preloaded_cells();
     }
     else {
         clear_page();
         create_text_massive("Waiting for Scouters...");
+        create_text_big("Currently scouting: Team " + BOTNUM);
+        create_text_big("Waiting for match number [FINISH THIS]");
         create_break();
         for (let i = 0; i < SCOUTERS_INFO.length; i++) {
             create_break();
             create_text("Team " + SCOUTERS_INFO[i].team + " [" + SCOUTERS_INFO[i].amount + " people]");
         }
+        create_break();
+        create_break();
+        create_button("Join game in progress ☠️", "SCOUTERS_READY = true;");
         setTimeout(g_2020_waiting_phase, 500);
     }
+}
+
+function g_2020_preloaded_cells() {
+    clear_page();
+    create_text_massive("Amount of preloaded Power Cells ⚽");
+    create_break();
+    create_button("3!", "g_2020_autonomous_base();");
+    create_break();
+    create_button("2", "g_2020_autonomous_base();");
+    create_break();
+    create_button("1", "g_2020_autonomous_base();");
+    create_break();
+    create_button("0...", "g_2020_autonomous_base();");
 }

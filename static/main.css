@@ -59,3 +59,13 @@ p, h3 {
     right: 0;
     border: 1px solid black;
 }
+
+input[type='checkbox'] {
+    width: 30px;
+    height: 30px;
+}
+
+input[type='range'] {
+    width: 200px;
+    height: 20px;
+}

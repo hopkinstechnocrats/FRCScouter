@@ -28,6 +28,28 @@ function create_button(text, callback) {
 }
 
 /**
+ * Creates a checkbox that calls a callback when stat is changed
+ * @param {Function} callback - Function called on a click
+ */
+function create_checkbox(callback) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("input");
+    node.setAttribute("type", "checkbox");
+    node.setAttribute("onclick", callback);
+    ctx.appendChild(node);
+}
+
+function create_slider(callback) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("input");
+    node.setAttribute("oninput", callback);
+    node.setAttribute("type", "range");
+    node.setAttribute("min", "1");
+    node.setAttribute("max", "10");
+    ctx.appendChild(node);
+}
+
+/**
  * Creates a button without a event on click and grayed out styling.
  * @param {String} text - Text inside of the button
  */
