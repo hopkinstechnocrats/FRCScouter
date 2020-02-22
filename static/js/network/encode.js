@@ -40,6 +40,9 @@ function raw_from_packets(packets) {
                 ret += thisp.team_number;
                 ret += ";";
                 break;
+            case 9: // G2020RequestWaiting ()
+                ret += "9;";
+                break;
             default:
                 console.error("Unkown packet id while compressing: " + thisp.packet_type);
                 break;

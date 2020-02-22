@@ -85,6 +85,9 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         })
                     )
                 )
+            },
+            "9" => {
+                fin.packets.push(Packet::G2020RequestWaiting())
             }
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);

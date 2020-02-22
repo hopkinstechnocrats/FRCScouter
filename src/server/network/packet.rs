@@ -28,6 +28,8 @@ pub enum Packet {
     G2020ScoutersWaiting(usize, Vec<(usize, usize)>),
     /// Server tells scouters to begin scouting | packet id `8` | ()
     G2020InitateScouting(),
+    /// Client sends server request for the scouters that are waiting | packet id `9` | ()
+    G2020RequestWaiting()
 }
 
 impl Packet {
@@ -48,7 +50,7 @@ impl Packet {
             Packet::PongServer(a) => return Some(a),
             Packet::PongUSID(a) => return Some(a),
             Packet::PingUSID() | Packet::PingClient(_) | Packet::G2020ScoutersWaiting(_, _) |
-            Packet::G2020InitateScouting() => return None
+            Packet::G2020InitateScouting() | Packet::G2020RequestWaiting() => return None
         }
     }
     /// Turns the packet into a Block, if possible

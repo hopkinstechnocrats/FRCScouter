@@ -67,6 +67,15 @@ function g_2020_waiting_phase() {
         create_break();
         create_break();
         create_button("Join game in progress ☠️", "SCOUTERS_READY = true;");
+        CONNECTION.send(
+            raw_from_packets(
+                [
+                    {
+                        packet_type: 9
+                    }
+                ]
+            )
+        );
         setTimeout(g_2020_waiting_phase, 500);
     }
 }
