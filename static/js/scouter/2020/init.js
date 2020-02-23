@@ -63,7 +63,12 @@ function g_2020_waiting_phase() {
         clear_page();
         create_text_massive("Waiting for Scouters...");
         create_text_big("Currently scouting: Team " + BOTNUM);
-        create_text_big("Waiting for match number [FINISH THIS]");
+        if (RUNNING_GAME == -1) {
+            create_text_big("Waiting for match number ?");
+        }
+        else {
+            create_text_big("Waiting for match number " + (RUNNING_GAME + 1));
+        }
         create_break();
         for (let i = 0; i < SCOUTERS_INFO.length; i++) {
             create_break();
@@ -75,12 +80,17 @@ function g_2020_waiting_phase() {
         CONNECTION.send(
             raw_from_packets(
                 [
-                    {
-                        packet_type: 9
-                    }
+                    { packet_type: 9 }
                 ]
             )
         );
+        CONNECTION.send(
+            raw_from_packets(
+                [
+                    { packet_type: 10 }
+                ]
+            )
+        )
         setTimeout(g_2020_waiting_phase, 500);
     }
 }

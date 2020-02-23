@@ -22,6 +22,7 @@ let EVER_CONNECTED = false;
 let USID_WATING = false;
 let SCOUTERS_READY = false;
 let SCOUTERS_INFO = [];
+let RUNNING_GAME = -1;
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
@@ -127,6 +128,9 @@ function start_connection() {
                         break;
                     case 8:
                         SCOUTERS_READY = true;
+                        break;
+                    case 11:
+                        RUNNING_GAME = pack.game_id;
                         break;
                     default:
                         console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");

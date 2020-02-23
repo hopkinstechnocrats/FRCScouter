@@ -29,7 +29,13 @@ pub enum Packet {
     /// Server tells scouters to begin scouting | packet id `8` | ()
     G2020InitateScouting(),
     /// Client sends server request for the scouters that are waiting | packet id `9` | ()
-    G2020RequestWaiting()
+    G2020RequestWaiting(),
+    /// Client sends server request for current running match id | packet id `a` | ()
+    G2020RequestRunningGameID(),
+    /// Server responds with the current running match id | packet id `b` | (id)
+    G2020RunningGameID(usize),
+    /// Client sends server request to leave queue | packet id `c` | (usid)
+    G2020LeaveQueue(usize),
 }
 
 impl Packet {
@@ -49,8 +55,13 @@ impl Packet {
             Packet::PongClient(a, _) => return Some(a),
             Packet::PongServer(a) => return Some(a),
             Packet::PongUSID(a) => return Some(a),
+            Packet::G2020LeaveQueue(a) => return Some(a),
+            // I am well aware that all these conditions can be covered with one match arm like
+            // `_ => {return None;}` but I'm doing it this way so it errors and reminds me when I
+            // add new packets to check that they can't be added here.
             Packet::PingUSID() | Packet::PingClient(_) | Packet::G2020ScoutersWaiting(_, _) |
-            Packet::G2020InitateScouting() | Packet::G2020RequestWaiting() => return None
+            Packet::G2020InitateScouting() | Packet::G2020RequestWaiting() |
+            Packet::G2020RequestRunningGameID() | Packet::G2020RunningGameID(_) => return None
         }
     }
 }

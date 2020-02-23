@@ -8,6 +8,8 @@ use crate::server::network::packet;
 pub struct ServerData {
     /// represents the highest unique ID handed out by the server.
     usid: usize,
+    /// represents the current game's ID number
+    pub game: usize,
     /// represents all the received data and packets to the server.
     pub packets: PacketList,
     /// represents all the client connections
@@ -25,6 +27,7 @@ impl ServerData {
     pub fn new() -> ServerData {
         ServerData {
             usid: 0,
+            game: 0,
             packets: PacketList::new(),
             connected_ips: vec![],
             start_game_flag: false,
@@ -85,7 +88,8 @@ impl PacketList {
 pub struct WrappedPacket {
     pub packet: packet::Packet,
     pub time: std::time::SystemTime,
-    pub usid: Option<usize>
+    pub usid: Option<usize>,
+    pub game: Option<usize>,
 }
 
 impl WrappedPacket {
@@ -93,7 +97,8 @@ impl WrappedPacket {
         WrappedPacket {
             packet: packet.clone(),
             time: std::time::SystemTime::now(),
-            usid: packet.get_usid()
+            usid: packet.get_usid(),
+            game: None
         }
     }
 }

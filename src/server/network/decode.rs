@@ -88,6 +88,31 @@ pub fn stream_from_raw(raw: &str) -> Stream {
             },
             "9" => {
                 fin.packets.push(Packet::G2020RequestWaiting())
+            },
+            "a" => {
+                fin.packets.push(Packet::G2020RequestRunningGameID())
+            },
+            "b" => {
+                fin.packets.push(
+                    Packet::G2020RunningGameID(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020RunningGameID");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020RunningGameID", "usize");
+                        }),
+                    )
+                )
+            },
+            "c" => {
+                fin.packets.push(
+                    Packet::G2020LeaveQueue(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020LeaveQueue");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020LeaveQueue", "usize");
+                        }),
+                    )
+                )
             }
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);

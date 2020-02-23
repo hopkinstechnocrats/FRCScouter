@@ -114,6 +114,12 @@ pub fn launch_websocket() {
                         }
                         payload.push(Packet::G2020ScoutersWaiting(server.robots_scouted.len(), fin));
                         drop(server);
+                    },
+                    Packet::G2020RequestRunningGameID() => {
+                        let server = server.lock().unwrap();
+                        let id = server.game;
+                        drop(server);
+                        payload.push(Packet::G2020RunningGameID(id));
                     }
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));

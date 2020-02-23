@@ -47,6 +47,7 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
             let mut server = handle.lock().unwrap();
             server.start_game_flag = false;
             server.robots_scouted = vec![];
+            server.game += 1;
             drop(server);
         }
         // Rest thread before next iteration to not use 100% of thread additionally, don't ping the

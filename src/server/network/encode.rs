@@ -40,9 +40,15 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::G2020RequestWaiting() => {
                 fin += "9;";
             },
-            //Packet::F2019StartingPos(usid, position) => {
-            //    fin += &format!("7;{};{};", usid, position.to_usize());
-            //},
+            Packet::G2020RequestRunningGameID() => {
+                fin += "a;";
+            },
+            Packet::G2020RunningGameID(id) => {
+                fin += &format!("b;{};", id);
+            },
+            Packet::G2020LeaveQueue(usid) => {
+                fin += &format!("c;{};", usid);
+            }
         }
     }
     return fin;
