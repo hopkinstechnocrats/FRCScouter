@@ -53,18 +53,4 @@ impl Packet {
             Packet::G2020InitateScouting() | Packet::G2020RequestWaiting() => return None
         }
     }
-    /// Turns the packet into a Block, if possible
-    pub fn to_block(self) -> Option<Block> {
-        match self {
-            Packet::G2020RobotSelected(_, b) => {
-                return Some(Block::G2020RobotDeclaration(b));
-            },
-            Packet::PongClient(a, b) => {
-                return Some(Block::ClientPingRelated(a, b));
-            },
-            _ => {
-                return None;
-            }
-        }
-    }
 }

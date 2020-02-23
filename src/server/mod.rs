@@ -7,6 +7,8 @@ use ws::listen;
 
 use network::packet::Packet;
 
+use data::WrappedPacket;
+
 use std::sync::{Arc, Mutex};
 use std::thread;
 
@@ -55,22 +57,22 @@ pub fn launch_websocket() {
 
             // For each packet we have, handle it properly
             for packet in packets {
-                // If this packet can be stored then we should do that
-                let maybe_chunk = data::Chunk::new(packet.clone());
-                if maybe_chunk.is_some() {
-                    let mut server = server.lock().unwrap();
-                    server.add_data(maybe_chunk.unwrap());
-                    // Make sure we drop this handle to not block threads
-                    drop(server);
-                }
-                // If we need to do any immediate proccessing or response, that's here
+                // Process and respond to the packet
                 match packet {
+                    Packet::PongClient(a, b) => {
+                        let mut server = server.lock().unwrap();
+                        server.packets.pings.push(WrappedPacket::new_from_packet(Packet::PongClient(a, b)));
+                    }
+                    // User requested an id
                     Packet::PingUSID() => {
                         let mut server = server.lock().unwrap();
+                        // get the next id and send it to the user
                         payload.push(Packet::PongUSID(server.get_next_usid()));
                     },
+                    // User selected a robot to scout
                     Packet::G2020RobotSelected(usid, robot) => {
                         let mut server = server.lock().unwrap();
+                        // Save that info
                         server.robots_scouted.push((usid, robot));
                         let mut fin: Vec<(usize, usize)> = vec![];
                         for i in server.robots_scouted.clone() {
@@ -88,6 +90,7 @@ pub fn launch_websocket() {
                         if fin.len() == 6 {
                             server.start_game_flag = true;
                         }
+                        // Send user the robots that are being scouted
                         payload.push(Packet::G2020ScoutersWaiting(server.robots_scouted.len(), fin));
                         drop(server);
                     },

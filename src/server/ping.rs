@@ -1,4 +1,4 @@
-use super::data::{ServerData, Block};
+use super::data::{ServerData, WrappedPacket};
 use std::sync::{Arc, Mutex};
 
 use super::network::{
@@ -64,9 +64,9 @@ fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
         // for every unprocessed packet in the last two seconds, grab and store the usid and server
         // id if it's related to ping/pong processes.
         let mut clientpairs: Vec<(usize, usize)> = vec![];
-        for i in data.clone().get_chunks_after(std::time::SystemTime::now() - std::time::Duration::from_secs(2)) {
-            match i.data {
-                Block::ClientPingRelated(a, b) => {
+        for i in data.packets.clone().get_pings_after(std::time::SystemTime::now() - std::time::Duration::from_secs(2)) {
+            match i.packet {
+                Packet::PongClient(a, b) => {
                     clientpairs.push((a, b));
                 },
                 _ => {}

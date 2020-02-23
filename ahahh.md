@@ -1,9 +1,7 @@
 general
 ---
 
-- actually update waiting page
 - see which match you're on
-- choice to join post-start
 - track packet team
 - track packet match
 - track timestamp

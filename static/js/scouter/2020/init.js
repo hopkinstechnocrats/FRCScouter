@@ -36,18 +36,23 @@ function g_2020_custom_team_number() {
 }
 
 function g_2020_submit_team_num() {
-    CONNECTION.send(
-        raw_from_packets(
-            [
-                {
-                    packet_type: 6,
-                    usid: USID,
-                    team_number: BOTNUM
-                }
-            ]
-        )
-    );
-    g_2020_waiting_phase();
+    if (BOTNUM == "") {
+        g_2020_custom_team_number();
+    }
+    else {
+        CONNECTION.send(
+            raw_from_packets(
+                [
+                    {
+                        packet_type: 6,
+                        usid: USID,
+                        team_number: BOTNUM
+                    }
+                ]
+            )
+        );
+        g_2020_waiting_phase();
+    }
 }
 
 function g_2020_waiting_phase() {
