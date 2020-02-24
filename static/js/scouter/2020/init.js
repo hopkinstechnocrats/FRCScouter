@@ -33,6 +33,7 @@ function g_2020_custom_team_number() {
     create_break();
     create_break();
     create_button("Back to game selection ⏪", "load_scouter_base();");
+    EXIT_LOOP = false;
 }
 
 function g_2020_submit_team_num() {
@@ -55,9 +56,14 @@ function g_2020_submit_team_num() {
     }
 }
 
+EXIT_LOOP = false;
+
 function g_2020_waiting_phase() {
     if (SCOUTERS_READY) {
         g_2020_preloaded_cells();
+    }
+    else if (EXIT_LOOP) {
+        g_2020_custom_team_number();
     }
     else {
         clear_page();
@@ -75,6 +81,8 @@ function g_2020_waiting_phase() {
             create_text("Team " + SCOUTERS_INFO[i].team + " [" + SCOUTERS_INFO[i].amount + " people]");
         }
         create_break();
+        create_break();
+        create_button("Leave queue ❌", "CONNECTION.send(raw_from_packets([{packet_type:12,usid:USID}]));EXIT_LOOP=true;");
         create_break();
         create_button("Join game in progress ☠️", "SCOUTERS_READY = true;");
         CONNECTION.send(

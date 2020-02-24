@@ -69,6 +69,20 @@ pub fn launch_websocket() {
                         // get the next id and send it to the user
                         payload.push(Packet::PongUSID(server.get_next_usid()));
                     },
+                    Packet::G2020LeaveQueue(usid) => {
+                        let mut server = server.lock().unwrap();
+                        let mut changed = true;
+                        while changed {
+                            changed = false;
+                            for i in 0..server.robots_scouted.len() {
+                                if server.robots_scouted[i].0 == usid {
+                                    server.robots_scouted.remove(i);
+                                    changed = true;
+                                }
+                            }
+                        }
+                        drop(server);
+                    }
                     // User selected a robot to scout
                     Packet::G2020RobotSelected(usid, robot) => {
                         let mut server = server.lock().unwrap();
