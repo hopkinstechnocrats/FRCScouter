@@ -1,4 +1,4 @@
-use super::data::{ServerData, WrappedPacket};
+use super::data::{ServerData};
 use std::sync::{Arc, Mutex};
 
 use super::network::{
