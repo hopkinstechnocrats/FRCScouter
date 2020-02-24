@@ -113,7 +113,124 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         }),
                     )
                 )
-            }
+            },
+            "d" => {
+                fin.packets.push(
+                    Packet::G2020PreloadedCells(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020PreloadedCells");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020PreloadedCells", "usize");
+                        }),
+                    )
+                )
+            },
+            "e" => {
+                fin.packets.push(
+                    Packet::G2020AutoShot(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AutoShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AutoShot", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AutoShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AutoShot", "usize -> bool");
+                        }) == 1,
+                    )
+                )
+            },
+            "f" => {
+                fin.packets.push(
+                    Packet::G2020AutoLine(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AutoLine");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AutoLine", "usize -> bool");
+                        }) == 1,
+                    )
+                )
+            },
+            "g" => {
+                fin.packets.push(
+                    Packet::G2020TeleShot(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020TeleShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020TeleShot", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020TeleShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020TeleShot", "usize -> bool");
+                        }) == 1,
+                    )
+                )
+            },
+            "h" => {
+                fin.packets.push(Packet::G2020PositionControl());
+            },
+            "i" => {
+                fin.packets.push(Packet::G2020RotationControl());
+            },
+            "j" => {
+                fin.packets.push(
+                    Packet::G2020AttemptedClimb(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AttemptedClimb");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AttemptedClimb", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AttemptedClimb");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AttemptedClimb", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AttemptedClimb");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AttemptedClimb", "usize -> bool");
+                        }) == 1,
+                    )
+                )
+            },
+            "k" => {
+                fin.packets.push(
+                    Packet::G2020EndGameQuestions(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize");
+                        }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize");
+                        }),
+                    )
+                )
+            },
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);
             }

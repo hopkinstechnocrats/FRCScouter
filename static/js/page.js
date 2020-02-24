@@ -120,6 +120,18 @@ function create_text_massive(text) {
 }
 
 /**
+ * Creates a generic text node, in a supermassive size
+ * @param {String} text - Text to be used
+ */
+function create_text_clock(text) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("clock");
+    var textnode = document.createTextNode(text);
+    node.appendChild(textnode);
+    ctx.appendChild(node);
+}
+
+/**
  * Creates a meter with a value of amnt/100.
  * @param {Number} amnt - Amount out of 100 to fill the meter
  */ 

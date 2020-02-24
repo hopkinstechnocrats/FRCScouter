@@ -53,6 +53,10 @@ p, h3 {
     margin: 0;
 }
 
+clock {
+    font-size: 128px;
+}
+
 .smallline {
     margin: 0;
     left: 0;

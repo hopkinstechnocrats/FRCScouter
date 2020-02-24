@@ -84,7 +84,7 @@ function g_2020_waiting_phase() {
         create_break();
         create_button("Leave queue ❌", "CONNECTION.send(raw_from_packets([{packet_type:12,usid:USID}]));EXIT_LOOP=true;");
         create_break();
-        create_button("Join game in progress ☠️", "SCOUTERS_READY = true;");
+        create_button("Join game in progress ☠️", "CONNECTION.send(raw_from_packets([{packet_type:12,usid:USID}]));SCOUTERS_READY=true;");
         CONNECTION.send(
             raw_from_packets(
                 [

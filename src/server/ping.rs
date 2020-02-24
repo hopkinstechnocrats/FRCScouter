@@ -88,6 +88,8 @@ fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
                 break;
             }
         }
+        // clear out old packets to prevent infinite ram expansion
+        data.packets.pings = vec![];
         // Rest thread before next iteration to not use 100% of thread. Drop data beforehand so that
         // other threads can use it.
         drop(data);

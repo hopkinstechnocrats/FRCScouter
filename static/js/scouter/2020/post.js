@@ -62,43 +62,43 @@ function g_2020_game_end(clock) {
     create_text_big("Waiting for results... ")
     switch (clock) {
         case 0:
-            create_text_massive("🕛");
+            create_text_clock("🕛");
             break;
         case 1:
-            create_text_massive("🕐");
+            create_text_clock("🕐");
             break;
         case 2:
-            create_text_massive("🕑");
+            create_text_clock("🕑");
             break;
         case 3:
-            create_text_massive("🕒");
+            create_text_clock("🕒");
             break;
         case 4:
-            create_text_massive("🕓");
+            create_text_clock("🕓");
             break;
         case 5:
-            create_text_massive("🕔");
+            create_text_clock("🕔");
             break;
         case 6:
-            create_text_massive("🕕");
+            create_text_clock("🕕");
             break;
         case 7:
-            create_text_massive("🕖");
+            create_text_clock("🕖");
             break;
         case 8:
-            create_text_massive("🕗");
+            create_text_clock("🕗");
             break;
         case 9:
-            create_text_massive("🕘");
+            create_text_clock("🕘");
             break;
         case 10:
-            create_text_massive("🕙");
+            create_text_clock("🕙");
             break;
         case 11:
-            create_text_massive("🕚");
+            create_text_clock("🕚");
             break;
         default:
-            create_text_massive("❓");
+            create_text_clock("❓");
             break;
     }
     setTimeout(g_2020_game_end, 1000, clock + 1);
