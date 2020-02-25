@@ -26,6 +26,12 @@ function g_2020_auto_line() {
 
 function g_2020_finish_auto() {
     // SEND CHECKBOX TO SERVER HERE
+    if (OFF_AUTO_LINE) {
+        CONNECTION.send("f;1;");
+    }
+    else {
+        CONNECTION.send("f;0;");
+    }
     g_2020_teleop_base();
 }
 
@@ -38,7 +44,6 @@ function g_2020_map_phase(from) {
     clear_page();
     create_text("Select where the robot was");
     create_map(function(event) {
-        console.log("callback | " + event + " | " + MAP_FROM);
         if (MAP_FIRST) {
             MAP_FIRST = false;
         }
