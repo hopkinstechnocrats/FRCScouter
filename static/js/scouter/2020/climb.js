@@ -19,6 +19,26 @@ function g_2020_climb_base() {
 
 function g_2020_climb_to_end() {
     // SEND SERVER CHECKBOXES HERE
+    let appendable = "";
+    if (CLIMB_REPOSITION) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    if (CLIMB_BALENCED) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    if (CLIMB_SUCEESS) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    CONNECTION.send("j;" + appendable);
     g_2020_post_base();
 }
 

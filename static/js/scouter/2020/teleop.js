@@ -39,9 +39,6 @@ function g_2020_end_confirm() {
     create_button("No! ⛔", "g_2020_teleop_base();");
 }
 
-let MAP_FROM;
-let MAP_FIRST
-
 function g_2020_map_live_phase(from) {
     MAP_FROM = from;
     MAP_FIRST = false;
@@ -104,6 +101,7 @@ function g_2020_map_live_phase(from) {
                 case 3:
                     sucess = 1;
                     hight = 0;
+                    break;
                 default:
                     console.log("Weird map position, this is a critical error (see auto: ~50)");
                     break;
@@ -112,7 +110,7 @@ function g_2020_map_live_phase(from) {
             CONNECTION.send(
                 "g;" + sucess + ";" + hight + ";" + position + ";"
             );
-            g_2020_autonomous_base();
+            g_2020_teleop_base();
         }
     });
 }

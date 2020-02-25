@@ -36,7 +36,7 @@ function g_2020_finish_auto() {
 }
 
 let MAP_FROM;
-let MAP_FIRST
+let MAP_FIRST;
 
 function g_2020_map_phase(from) {
     MAP_FROM = from;
@@ -100,6 +100,7 @@ function g_2020_map_phase(from) {
                 case 3:
                     sucess = 1;
                     hight = 0;
+                    break;
                 default:
                     console.log("Weird map position, this is a critical error (see auto: ~50)");
                     break;
