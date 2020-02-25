@@ -138,6 +138,12 @@ pub fn launch_websocket() {
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },
+                    Packet::G2020PreloadedCells(_) | Packet::G2020AutoShot(_, _, _) => {
+                        let mut server = server.lock().unwrap();
+                        let game = server.game;
+                        server.packets.game.push(WrappedPacket::new_with_game(packet, game));
+                        drop(server);
+                    }
                     _ => {}
                 }
             }

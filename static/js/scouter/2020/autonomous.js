@@ -55,32 +55,40 @@ function g_2020_map_phase(from) {
             let mousey = event.clientY;
             if (mousex < 360/2) {
                 // left side
-                if (mousey < 480/3) {
-                    // top third
+                if (mousey < 480/4) {
+                    // top quarter
                     position = 0;
                 }
-                else if (mousey < 480/3*2) {
-                    // middle third
+                else if (mousey < 480/4*2) {
+                    // middle quarter
                     position = 1;
                 }
+                else if (mousey < 480/4*3) {
+                    // bottom middle quarter
+                    position = 3;
+                }
                 else {
-                    // bottom third
-                    position = 2;
+                    // bottom quarter
+                    position = 4;
                 }
             }
             else {
                 // right side
-                if (mousey < 480/3) {
-                    // top third
-                    position = 3;
+                if (mousey < 480/4) {
+                    // top quarter
+                    position = 5;
                 }
-                else if (mousey < 480/3*2) {
-                    // middle third
-                    position = 4;
+                else if (mousey < 480/4*2) {
+                    // middle quarter
+                    position = 6;
+                }
+                else if (mousey < 480/4*3) {
+                    // bottom middle quarter
+                    position = 7;
                 }
                 else {
-                    // bottom third
-                    position = 5;
+                    // bottom quarter
+                    position = 8;
                 }
             }
             switch (MAP_FROM) {
@@ -112,4 +120,6 @@ function g_2020_map_phase(from) {
             g_2020_autonomous_base();
         }
     });
+    create_break();
+    create_button("Back ⏪", "g_2020_autonomous_base();");
 }

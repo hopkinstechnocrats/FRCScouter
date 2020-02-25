@@ -18,6 +18,8 @@ pub struct ServerData {
     pub start_game_flag: bool,
     /// marks the ID of the user as well as the particular robot being scouted
     pub robots_scouted: Vec<(usize, usize)>, // usid, robot
+    /// marks the scouting applicability of a usid to a specified game
+    pub game_scouters: Vec<Vec<(usize, usize)>>,
     /// associates IDs with internal indexes (see `connected_ips`)
     pub usid_association: Vec<(usize, usize)>, // usid, internal
 }
@@ -32,6 +34,7 @@ impl ServerData {
             connected_ips: vec![],
             start_game_flag: false,
             robots_scouted: vec![],
+            game_scouters: vec![],
             usid_association: vec![]
         }
     }
@@ -99,6 +102,14 @@ impl WrappedPacket {
             time: std::time::SystemTime::now(),
             usid: packet.get_usid(),
             game: None
+        }
+    }
+    pub fn new_with_game(packet: packet::Packet, game: usize) -> WrappedPacket {
+        WrappedPacket {
+            packet: packet.clone(),
+            time: std::time::SystemTime::now(),
+            usid: packet.get_usid(),
+            game: Some(game)
         }
     }
 }
