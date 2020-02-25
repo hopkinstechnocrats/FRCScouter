@@ -9,9 +9,9 @@ function g_2020_post_base() {
     clear_page();
     create_text_massive("End of game questions");
     create_text("Has done control panel");
-    create_checkbox("g_2020_post_control();", DID_CONTROL);
+    create_checkbox("DID_CONTROL=!DID_CONTROL;", DID_CONTROL);
     create_text("Had fouls");
-    create_checkbox("g_2020_post_fouls();", HAD_FOULS);
+    create_checkbox("HAD_FOULS=!HAD_FOULS;", HAD_FOULS);
     create_text("Can do defense");
     create_checkbox("g_2020_post_toggle_did_def();", DID_DEFEND);
     if (DID_DEFEND) {
@@ -25,7 +25,38 @@ function g_2020_post_base() {
         create_slider("g_2020_deal_def(this);", SLIDER_2_VALUE);
     }
     create_break();
-    create_button("Done!", "g_2020_game_end(0);");
+    create_button("Done!", "g_2020_post_to_queue();");
+}
+
+function g_2020_post_to_queue() {
+    // SEND SERVER CHECKBOXES HERE
+    let appendable = "";
+    if (DID_CONTROL) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    if (HAD_FOULS) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    if (DID_DEFEND) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    if (DEALT_DEFEND) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    CONNECTION.send("k;" + appendable + SLIDER_1_VALUE + ";" + SLIDER_2_VALUE + ";");
+    g_2020_game_end(0);
 }
 
 function g_2020_did_def(self) {
@@ -34,14 +65,6 @@ function g_2020_did_def(self) {
 
 function g_2020_deal_def(self) {
     SLIDER_2_VALUE = self.value;
-}
-
-function g_2020_post_control() {
-    DID_CONTROL = !DID_CONTROL;
-}
-
-function g_2020_post_fouls() {
-    HAD_FOULS = !HAD_FOULS;
 }
 
 function g_2020_post_toggle_did_def() {
