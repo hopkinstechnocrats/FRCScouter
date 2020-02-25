@@ -49,8 +49,8 @@ pub enum Packet {
     G2020RotationControl(),
     /// Client tells server that climbing was attempted | packet id `j`/19 | (reposition, balenced, success)
     G2020AttemptedClimb(bool, bool, bool),
-    /// Client tells server end game questions | packet id `k`/20 | (ctrl_pannel, fouls, can_def, was_defed, can_def_prof, was_defed_prof)
-    G2020EndGameQuestions(bool, bool, bool, bool, usize, usize),
+    /// Client tells server end game questions | packet id `k`/20 | (ctrl_pannel, fouls, can_def, was_defed, was_red, can_def_prof, was_defed_prof)
+    G2020EndGameQuestions(bool, bool, bool, bool, bool, usize, usize),
 }
 
 impl Packet {

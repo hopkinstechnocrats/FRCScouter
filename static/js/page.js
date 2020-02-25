@@ -54,13 +54,19 @@ function create_map(callback) {
     node.addEventListener("touchdown", callback);
     ctx.appendChild(node);
     let context = node.getContext('2d');
+    // red aliance goal
     context.fillStyle = "rgb(240, 35, 35)";
-    context.fillRect(0, 0, 360, 50);
+    context.fillRect(360 / 2, 0, 360 / 2, 50);
+    // blue alliance goal
     context.fillStyle = "rgb(35, 35, 240)";
-    context.fillRect(0, 430, 360, 50);
+    context.fillRect(0, 430, 360 / 2, 50);
+    // control stations
     context.fillStyle = "rgb(240, 160, 35)";
+    // red side control
     context.fillRect(0, 480 / 4 * 2 - 5 - 50, 25, 25);
-    context.fillRect(335, 480 / 4 * 3 - 5 - 50, 25, 25);
+    // blue side control
+    context.fillRect(335, 480 / 4 * 2 + 5 + 25, 25, 25);
+    // section lines
     context.fillStyle = "rgb(35, 35, 35)";
     context.fillRect(360 / 2 - 5, 0, 10, 480);
     context.fillRect(0, 480 / 4 - 5, 360, 10);

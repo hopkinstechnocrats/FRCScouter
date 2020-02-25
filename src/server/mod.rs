@@ -138,7 +138,11 @@ pub fn launch_websocket() {
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },
-                    Packet::G2020PreloadedCells(_) | Packet::G2020AutoShot(_, _, _) => {
+                    Packet::G2020PreloadedCells(_) | Packet::G2020AutoShot(_, _, _) |
+                    Packet::G2020AutoLine(_) | Packet::G2020TeleShot(_, _, _) |
+                    Packet::G2020PositionControl() | Packet::G2020RotationControl() |
+                    Packet::G2020AttemptedClimb(_, _, _) |
+                    Packet::G2020EndGameQuestions(_, _, _, _, _, _, _) => {
                         let mut server = server.lock().unwrap();
                         let game = server.game;
                         server.packets.game.push(WrappedPacket::new_with_game(packet, game));

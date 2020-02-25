@@ -231,6 +231,11 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("G2020EndGameQuestions");
                         }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize -> bool");
+                        }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
                             not_parsable("G2020EndGameQuestions", "usize");
                         }),
                         data_chunks.next().unwrap_or_else(|| {

@@ -2,12 +2,15 @@ DID_DEFEND = false;
 DEALT_DEFEND = false;
 HAD_FOULS = false;
 DID_CONTROL = false;
+WAS_RED = false;
 SLIDER_1_VALUE = "5";
 SLIDER_2_VALUE = "5";
 
 function g_2020_post_base() {
     clear_page();
     create_text_massive("End of game questions");
+    create_text("Was red alliance");
+    create_checkbox("WAS_RED=!WAS_RED", WAS_RED);
     create_text("Has done control panel");
     create_checkbox("DID_CONTROL=!DID_CONTROL;", DID_CONTROL);
     create_text("Had fouls");
@@ -50,6 +53,12 @@ function g_2020_post_to_queue() {
         appendable += "0;";
     }
     if (DEALT_DEFEND) {
+        appendable += "1;";
+    }
+    else {
+        appendable += "0;";
+    }
+    if (WAS_RED) {
         appendable += "1;";
     }
     else {

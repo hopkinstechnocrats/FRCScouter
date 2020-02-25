@@ -86,18 +86,20 @@ pub fn stream_to_raw(stream: Stream) -> String {
                 if good { val3 = 1 } else { val3 = 0 }
                 fin += &format!("j;{};{};{};", val1, val2, val3);
             }
-            Packet::G2020EndGameQuestions(q1, q2, q3, q4, state1, state2) => {
+            Packet::G2020EndGameQuestions(q1, q2, q3, q4, q5, state1, state2) => {
                 // no. there has to be a btter way to do this, but frankly I don't have the time or
                 // energy to find it and fix this
                 let val1;
                 let val2;
                 let val3;
                 let val4;
+                let val5;
                 if q1 { val1 = 1 } else { val1 = 0 }
                 if q2 { val2 = 1 } else { val2 = 0 }
                 if q3 { val3 = 1 } else { val3 = 0 }
                 if q4 { val4 = 1 } else { val4 = 0 }
-                fin += &format!("k;{};{};{};{};{};{};", val1, val2, val3, val4, state1, state2);
+                if q5 { val5 = 1 } else { val5 = 0 }
+                fin += &format!("k;{};{};{};{};{};{};{};", val1, val2, val3, val4, val5, state1, state2);
             }
         }
     }
