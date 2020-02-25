@@ -42,6 +42,29 @@ function create_checkbox(callback, state) {
 }
 
 /**
+ * pretend this works well please
+ * @param {*} callback 
+ */
+function create_map(callback) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("canvas");
+    node.setAttribute("width", "360");
+    node.setAttribute("height", "480");
+    node.addEventListener("mousedown", callback);
+    node.addEventListener("touchdown", callback);
+    ctx.appendChild(node);
+    let context = node.getContext('2d');
+    context.fillStyle = "rgb(240, 35, 35)";
+    context.fillRect(0, 0, 360, 50);
+    context.fillStyle = "rgb(35, 35, 240)";
+    context.fillRect(0, 430, 360, 50);
+    context.fillStyle = "rgb(35, 35, 35)";
+    context.fillRect(360 / 2 - 10, 0, 20, 480);
+    context.fillRect(0, 480 / 3 - 10, 360, 20);
+    context.fillRect(0, 480 / 3 * 2 - 10, 360, 20);
+}
+
+/**
  * Creates a slider that calls a callback when it is changed
  * @param {Function} callback 
  * @param {String} value

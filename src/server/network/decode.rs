@@ -138,6 +138,11 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         }).parse::<usize>().unwrap_or_else(|_| {
                             not_parsable("G2020AutoShot", "usize -> bool");
                         }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AutoShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AutoShot", "usize");
+                        })
                     )
                 )
             },
@@ -165,6 +170,11 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         }).parse::<usize>().unwrap_or_else(|_| {
                             not_parsable("G2020TeleShot", "usize -> bool");
                         }) == 1,
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020TeleShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020TeleShot", "usize");
+                        })
                     )
                 )
             },

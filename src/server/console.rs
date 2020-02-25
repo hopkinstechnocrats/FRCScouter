@@ -19,6 +19,7 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("connected - lists the number of clients connected");
                 println!("dump - displays the server's state");
                 println!("start - prematurly set the start flag: this starts scouting immediately");
+                println!("clear - clears the waiting queue for the next match");
                 println!("stop - shuts down the server");
             },
             "connected" => {
@@ -31,6 +32,11 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
             },
             "dump" => {
                 println!("FULL SERVER STATE:\n{:?}", handle.lock().unwrap());
+            }
+            "clear" => {
+                let mut server = handle.lock().unwrap();
+                server.robots_scouted = vec![];
+                drop(server);
             }
             "stop" => {
                 println!("Shutting down...");

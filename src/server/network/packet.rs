@@ -29,27 +29,27 @@ pub enum Packet {
     G2020InitateScouting(),
     /// Client sends server request for the scouters that are waiting | packet id `9` | ()
     G2020RequestWaiting(),
-    /// Client sends server request for current running match id | packet id `a` | ()
+    /// Client sends server request for current running match id | packet id `a`/10 | ()
     G2020RequestRunningGameID(),
-    /// Server responds with the current running match id | packet id `b` | (id)
+    /// Server responds with the current running match id | packet id `b`/11 | (id)
     G2020RunningGameID(usize),
-    /// Client sends server request to leave queue | packet id `c` | (usid)
+    /// Client sends server request to leave queue | packet id `c`/12 | (usid)
     G2020LeaveQueue(usize),
-    /// Client sends server number of preloaded power cells | packet id `d` | (number)
+    /// Client sends server number of preloaded power cells | packet id `d`/13 | (number)
     G2020PreloadedCells(usize),
-    /// Client sends server an autonoumous shot data | packet id `e` | (is_high, did_miss)
-    G2020AutoShot(bool, bool),
-    /// Client sends server the state of the line cross checkbox | packet id `f` | (is_checked)
+    /// Client sends server an autonoumous shot data | packet id `e`/14 | (is_high, did_miss, position)
+    G2020AutoShot(bool, bool, usize),
+    /// Client sends server the state of the line cross checkbox | packet id `f`/15 | (is_checked)
     G2020AutoLine(bool),
-    /// Client sends server teleop shot data | packet id `g` | (is_high, did_miss)
-    G2020TeleShot(bool, bool),
-    /// Client tells server that position control happened | packet id `h` | ()
+    /// Client sends server teleop shot data | packet id `g`/16 | (is_high, did_miss, position)
+    G2020TeleShot(bool, bool, usize),
+    /// Client tells server that position control happened | packet id `h`/17 | ()
     G2020PositionControl(),
-    /// Client tells server that rotation control happened | packet id `i` | ()
+    /// Client tells server that rotation control happened | packet id `i`/18 | ()
     G2020RotationControl(),
-    /// Client tells server that climbing was attempted | packet id `j` | (reposition, balenced, success)
+    /// Client tells server that climbing was attempted | packet id `j`/19 | (reposition, balenced, success)
     G2020AttemptedClimb(bool, bool, bool),
-    /// Client tells server end game questions | packet id `k` | (ctrl_pannel, fouls, can_def, was_defed, can_def_prof, was_defed_prof)
+    /// Client tells server end game questions | packet id `k`/20 | (ctrl_pannel, fouls, can_def, was_defed, can_def_prof, was_defed_prof)
     G2020EndGameQuestions(bool, bool, bool, bool, usize, usize),
 }
 
