@@ -12,6 +12,10 @@ use data::WrappedPacket;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
+use chrono::offset::Utc;
+use chrono::DateTime;
+use std::time::SystemTime;
+
 /// Launches the WebSocket server. This communicates with clients and processes their data.
 /// Pretty much the core of this project.
 pub fn launch_websocket() {
@@ -171,7 +175,8 @@ pub fn launch_websocket() {
                                     tmp_obj5["packet"] = format!("{:?}", k.packet).into();
                                     tmp_obj5["game"] = k.game.unwrap().into();
                                     tmp_obj5["team"] = k.team.unwrap().into();
-                                    tmp_obj5["time"] = format!("{:?}", k.time).into();
+                                    let chronotmp: DateTime<Utc> = k.time.into();
+                                    tmp_obj5["time"] = format!("{}", chronotmp.format("%T")).into();
                                     tmp_obj4.push(tmp_obj5).unwrap();
                                 }
                                 tmp_obj3["match_number"] = j.0.into();
