@@ -107,6 +107,18 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::G2020ReturnData(len, json) => {
                 fin += &format!("m;{};{};", len, json);
             },
+            Packet::ARequestAccess(req) => {
+                fin += &format!("n;{};", req);
+            },
+            Packet::ADenyAccess() => {
+                fin += "o;";
+            },
+            Packet::AGrantAccess(token) => {
+                fin += &format!("p;{};", token);
+            },
+            Packet::ACommand(token, command, data) => {
+                fin += &format!("q;{};{};{};", token, command, data);
+            }
         }
     }
     return fin;

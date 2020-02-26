@@ -58,6 +58,17 @@ pub enum Packet {
     G2020RequestData(usize, usize),
     /// Server sends back data | packet id `m`/22 | (len, json)
     G2020ReturnData(usize, String),
+    /// Client reuqests admin access | packet id `n`/23 | (password)
+    ARequestAccess(usize),
+    /// Server denies access | packet id `o`/24 | ()
+    ADenyAccess(),
+    /// Server allows access | packet id `p`/25 | (token)
+    AGrantAccess(String),
+    /// Client sends admin command | packet id `q`/26 | (token, command, data)
+    /// command = 1: start match (no data)
+    /// command = 2: set password (password)
+    /// command = 3: reset games (no data)
+    ACommand(String, usize, usize)
 }
 
 impl Packet {

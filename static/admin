@@ -10,17 +10,8 @@
         <script src="js/network/encode.js"></script>
         <!-- Webpage creation tools -->
         <script src="js/page.js"></script>
-        <script src="js/dataviewer/canvas.js"></script>
-        <!-- dataviewer -->
-        <script src="js/dataviewer/base.js"></script>
-        <!-- SCOUTING APP PAGES -->
-        <script src="js/scouter/main.js"></script>
-        <!-- 2020 game -->
-        <script src="js/scouter/2020/init.js"></script>
-        <script src="js/scouter/2020/autonomous.js"></script>
-        <script src="js/scouter/2020/teleop.js"></script>
-        <script src="js/scouter/2020/climb.js"></script>
-        <script src="js/scouter/2020/post.js"></script>
+        <!-- ADMIN APP PAGE -->
+        <script src="js/admin.js"></script>
         <!-- CSS files -->
         <link href="main.css" rel="stylesheet" type="text/css" />
     </head>

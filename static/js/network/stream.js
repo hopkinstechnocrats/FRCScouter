@@ -24,6 +24,8 @@ let SCOUTERS_READY = false;
 let SCOUTERS_INFO = [];
 let RUNNING_GAME = -1;
 let DATA_QUEUE = {};
+let A_STATUS = -1;
+let A_TOKEN = "";
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {

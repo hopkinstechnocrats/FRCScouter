@@ -37,7 +37,7 @@ function g_2020_custom_team_number() {
 }
 
 function g_2020_submit_team_num() {
-    if (BOTNUM == "") {
+    if (BOTNUM == "" || BOTNUM.length > 10) {
         g_2020_custom_team_number();
     }
     else {

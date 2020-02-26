@@ -303,6 +303,35 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         }),
                     )
                 );
+            },
+            "n" => {
+                fin.packets.push(
+                    Packet::ARequestAccess(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("ARequestAccess");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("ARequestAccess", "usize");
+                        })
+                    )
+                )
+            },
+            "q" => {
+                //println!("DATA CHUNKS: {:?}", data_chunks);
+                fin.packets.push(
+                    Packet::ACommand(
+                        String::from(data_chunks.next().unwrap()),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("ACommand");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("ACommand", "usize");
+                        }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("ACommand");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("ACommand", "usize");
+                        })
+                    )
+                )
             }
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);

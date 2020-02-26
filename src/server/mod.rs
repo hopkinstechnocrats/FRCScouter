@@ -14,7 +14,7 @@ use std::thread;
 
 use chrono::offset::Utc;
 use chrono::DateTime;
-use std::time::SystemTime;
+use data::ServerData;
 
 /// Launches the WebSocket server. This communicates with clients and processes their data.
 /// Pretty much the core of this project.
@@ -23,7 +23,7 @@ pub fn launch_websocket() {
     // Server's local state inside of a bunch of stack and shared mut wrappers
     let server = Arc::new(
         Mutex::new(
-            data::ServerData::new()
+            ServerData::new()
         )
     );
 
@@ -191,6 +191,42 @@ pub fn launch_websocket() {
                         let finaldata = json::stringify_pretty(root, 4);
                         // send it off
                         payload.push(Packet::G2020ReturnData(finaldata.chars().count(), finaldata))
+                    },
+                    Packet::ARequestAccess(pass) => {
+                        let mut server = server.lock().unwrap();
+                        let serv_pass = server.admin_pass;
+                        if serv_pass == pass {
+                            payload.push(Packet::AGrantAccess(server.gen_token()));
+                        }
+                        else {
+                            payload.push(Packet::ADenyAccess());
+                        }
+                        drop(server);
+                    },
+                    Packet::ACommand(token, command, data) => {
+                        let mut server = server.lock().unwrap();
+                        if server.token != token {
+                            println!("INVALID ADMIN TOKEN!");
+                        }
+                        else {
+                            match command {
+                                1 => {
+                                    server.start_game_flag = true;
+                                    println!("Start flag set by admin.");
+                                }
+                                2 => {
+                                    server.admin_pass = data;
+                                    println!("Password set by admin.");
+                                }
+                                3 => {
+                                    server.game = 0;
+                                    server.packets = data::PacketList::new();
+                                    println!("Server games reset by admin.");
+                                }
+                                a => {println!("Unknown admin command `{}`", a)}
+                            }
+                        }
+                        drop(server);
                     },
                     _ => {}
                 }

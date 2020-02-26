@@ -80,6 +80,15 @@ function packets_from_raw(raw) {
                     json: data_chunks[position]
                 })
                 break;
+            case "o":
+                position++;
+                A_STATUS = 2;
+                break;
+            case "p":
+                position += 2;
+                A_STATUS = 1;
+                A_TOKEN = data_chunks[position - 1]
+                break;
             default:
                 console.error("An unkown data chunk was found while scanning for packets: " + data_chunks[position]);
                 console.error("all of data_chunks:\n" + data_chunks);

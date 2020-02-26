@@ -22,12 +22,16 @@ pub struct ServerData {
     pub game_scouters: Vec<Vec<(usize, usize)>>,
     /// associates IDs with internal indexes (see `connected_ips`)
     pub usid_association: Vec<(usize, usize)>, // usid, internal
+    /// reperesents the current login password for the admin portal
+    pub admin_pass: usize,
+    /// represents a long token to confirm identitiy
+    pub token: String,
 }
 
 impl ServerData {
     /// Creates a new ServerData
     pub fn new() -> ServerData {
-        ServerData {
+        let mut a = ServerData {
             usid: 0,
             game: 0,
             packets: PacketList::new(),
@@ -35,8 +39,21 @@ impl ServerData {
             start_game_flag: false,
             robots_scouted: vec![],
             game_scouters: vec![],
-            usid_association: vec![]
-        }
+            usid_association: vec![],
+            admin_pass: 2239,
+            token: String::from("NOTOKEN"),
+        };
+        a.gen_token();
+        return a;
+    }
+    pub fn gen_token(&mut self) -> String {
+        let mut rng = rand::thread_rng();
+        use rand::Rng;
+        let a: u128 = rng.gen();
+        let b: u128 = rng.gen();
+        let c: u128 = rng.gen();
+        self.token = format!("{:X}{:X}{:X}", a, b, c);
+        return self.token.clone();
     }
     /// Gets a unique USID (User Session IDentification) and increments the interal USID counter
     pub fn get_next_usid(&mut self) -> usize {

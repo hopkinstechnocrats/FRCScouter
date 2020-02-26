@@ -9,6 +9,7 @@ ws = "0.9.1"
 rocket = "0.4.2"
 json = "0.12.1"
 chrono = "0.4.10"
+rand = "0.7.3"
 
 [dependencies.rocket_contrib]
 version = "0.4.2"

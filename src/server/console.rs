@@ -20,6 +20,7 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("dump - displays the server's state");
                 println!("start - prematurly set the start flag: this starts scouting immediately");
                 println!("clear - clears the waiting queue for the next match");
+                println!("password - shows the current admin password");
                 println!("stop - shuts down the server");
             },
             "connected" => {
@@ -32,6 +33,11 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
             },
             "dump" => {
                 println!("FULL SERVER STATE:\n{:?}", handle.lock().unwrap());
+            }
+            "password" => {
+                let server = handle.lock().unwrap();
+                println!("Current admin password | token:\n{}|{}", server.admin_pass, server.token);
+                drop(server);
             }
             "clear" => {
                 let mut server = handle.lock().unwrap();

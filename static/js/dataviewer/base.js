@@ -77,7 +77,7 @@ function custom_team_number() {
 }
 
 function submit_team_num() {
-    if (TEAMNUM == "") {
+    if (TEAMNUM == "" || TEAMNUM.length > 10) {
         load_data_base();
     }
     else {
