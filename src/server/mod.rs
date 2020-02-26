@@ -138,16 +138,50 @@ pub fn launch_websocket() {
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },
-                    Packet::G2020PreloadedCells(_) | Packet::G2020AutoShot(_, _, _) |
-                    Packet::G2020AutoLine(_) | Packet::G2020TeleShot(_, _, _) |
-                    Packet::G2020PositionControl() | Packet::G2020RotationControl() |
-                    Packet::G2020AttemptedClimb(_, _, _) |
-                    Packet::G2020EndGameQuestions(_, _, _, _, _, _, _) => {
+                    Packet::G2020PreloadedCells(a, _) | Packet::G2020AutoShot(a, _, _, _) |
+                    Packet::G2020AutoLine(a, _) | Packet::G2020TeleShot(a, _, _, _) |
+                    Packet::G2020PositionControl(a) | Packet::G2020RotationControl(a) |
+                    Packet::G2020AttemptedClimb(a, _, _, _) |
+                    Packet::G2020EndGameQuestions(a, _, _, _, _, _, _, _) => {
                         let mut server = server.lock().unwrap();
                         let game = server.game;
-                        server.packets.game.push(WrappedPacket::new_with_game(packet, game));
+                        server.packets.game.push(WrappedPacket::new_with_team(packet, game, a));
                         drop(server);
-                    }
+                    },
+                    Packet::G2020RequestData(typeto, req) => {
+                        let server = server.lock().unwrap();
+                        let game_data = server.packets.game.clone();
+                        drop(server);
+                        let game_data_done = compute_game_data(game_data);
+                        println!("test general:\n`{:?}`", game_data_done);
+                        let mut root = json::JsonValue::new_object();
+                        let mut team_sub = json::JsonValue::new_array();
+                        for i in game_data_done.data {
+                            let mut tmp_obj = json::JsonValue::new_object();
+                            let mut tmp_obj2 = json::JsonValue::new_array();
+                            // Vec<(usize, Vec<WrappedPacket>)>
+                            for j in i.1 {
+                                let mut tmp_obj3 = json::JsonValue::new_object();
+                                let mut tmp_obj4 = json::JsonValue::new_array();
+                                for k in j.1 {
+                                    let mut tmp_obj5 = json::JsonValue::new_object();
+                                    tmp_obj5["packet"] = format!("{:?}", k.packet).into();
+                                    tmp_obj5["game"] = k.game.unwrap().into();
+                                    tmp_obj5["team"] = k.team.unwrap().into();
+                                    tmp_obj5["time"] = format!("{:?}", k.time).into();
+                                    tmp_obj4.push(tmp_obj5).unwrap();
+                                }
+                                tmp_obj3["match_number"] = j.0.into();
+                                tmp_obj3["packets"] = tmp_obj4.into();
+                                tmp_obj2.push(tmp_obj3).unwrap();
+                            }
+                            tmp_obj["team_number"] = i.0.into();
+                            tmp_obj["matches"] = tmp_obj2.into();
+                            team_sub.push(tmp_obj).unwrap();
+                        }
+                        root["teams"] = team_sub.into();
+                        println!("json test: \n`{}`", json::stringify_pretty(root, 4));
+                    },
                     _ => {}
                 }
             }
@@ -160,4 +194,43 @@ pub fn launch_websocket() {
         // Inform the user of failure
         println!("Failed to create WebSocket due to {:?}", error);
     }
+}
+
+fn compute_game_data(indata: Vec<WrappedPacket>) -> ComputedData {
+    // team, match, packets
+    let mut team_pack: Vec<(usize, Vec<(usize, Vec<WrappedPacket>)>)> = vec![];
+    for i in indata {
+        let mut found_team = false;
+        let mut found_match = false;
+        let mut index1 = 0;
+        for j in team_pack.clone() {
+            if i.team.unwrap() == j.0 {
+                found_team = true;
+                let mut index2 = 0;
+                for k in team_pack[index1].1.clone() {
+                    if i.game.unwrap() == k.0 {
+                        team_pack[index1].1[index2].1.push(i.clone());
+                        found_match = true;
+                        break;
+                    }
+                    index2 += 1;
+                }
+                break;
+            }
+            index1 += 1;
+        }
+        if !found_team {
+            team_pack.push((i.team.unwrap(), vec![(i.game.unwrap(), vec![i.clone()])]));
+        }
+        else if !found_match {
+            team_pack[index1].1.push((i.game.unwrap(), vec![i.clone()]));
+        }
+    }
+    return ComputedData { data: team_pack };
+}
+
+#[derive(Debug)]
+struct ComputedData {
+    // Vec<(team number, Vec<(match number, Vec<packets>)>)> 
+    pub data: Vec<(usize, Vec<(usize, Vec<WrappedPacket>)>)>
 }

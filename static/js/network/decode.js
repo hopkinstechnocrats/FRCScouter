@@ -72,6 +72,13 @@ function packets_from_raw(raw) {
                     game_id: parseInt(data_chunks[position - 1], 10)
                 });
                 break;
+            case "m":
+                position += 1;
+                ret.push({
+                    packet_type: 22,
+                    json: data_chunks[position - 1]
+                })
+                break;
             default:
                 console.error("An unkown data chunk was found while scanning for packets: " + data_chunks[position]);
                 console.error("all of data_chunks:\n" + data_chunks);

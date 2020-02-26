@@ -11,9 +11,9 @@ function g_2020_teleop_base() {
     create_button("Missed Low 💔", "g_2020_map_live_phase(3);");
     create_break();
     create_break();
-    create_button("Rotation Control 🔄", "CONNECTION.send(\"i;\");");
+    create_button("Rotation Control 🔄", "CONNECTION.send(\"i;" + BOTNUM + ";\");");
     create_break();
-    create_button("Position Control ♿", "CONNECTION.send(\"h;\");");
+    create_button("Position Control ♿", "CONNECTION.send(\"h;" + BOTNUM + ";\");");
     create_break();
     create_break();
     create_button("Attempted climb 🧗‍♀️", "g_2020_climb_confirm();");
@@ -116,7 +116,7 @@ function g_2020_map_live_phase(from) {
             }
             // send server map data
             CONNECTION.send(
-                "g;" + sucess + ";" + hight + ";" + position + ";"
+                "g;" + BOTNUM + ";" + sucess + ";" + hight + ";" + position + ";"
             );
             g_2020_teleop_base();
         }

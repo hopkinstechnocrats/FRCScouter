@@ -122,12 +122,22 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         }).parse::<usize>().unwrap_or_else(|_| {
                             not_parsable("G2020PreloadedCells", "usize");
                         }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020PreloadedCells");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020PreloadedCells", "usize");
+                        }),
                     )
                 )
             },
             "e" => {
                 fin.packets.push(
                     Packet::G2020AutoShot(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AutoShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AutoShot", "usize");
+                        }),
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("G2020AutoShot");
                         }).parse::<usize>().unwrap_or_else(|_| {
@@ -152,6 +162,11 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("G2020AutoLine");
                         }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AutoLine", "usize");
+                        }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AutoLine");
+                        }).parse::<usize>().unwrap_or_else(|_| {
                             not_parsable("G2020AutoLine", "usize -> bool");
                         }) == 1,
                     )
@@ -160,6 +175,11 @@ pub fn stream_from_raw(raw: &str) -> Stream {
             "g" => {
                 fin.packets.push(
                     Packet::G2020TeleShot(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020TeleShot");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020TeleShot", "usize");
+                        }),
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("G2020TeleShot");
                         }).parse::<usize>().unwrap_or_else(|_| {
@@ -179,14 +199,31 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                 )
             },
             "h" => {
-                fin.packets.push(Packet::G2020PositionControl());
+                fin.packets.push(Packet::G2020PositionControl(
+                    data_chunks.next().unwrap_or_else(|| {
+                        no_sufficent_data("G2020PositionControl");
+                    }).parse::<usize>().unwrap_or_else(|_| {
+                        not_parsable("G2020PositionControl", "usize");
+                    }),
+                ));
             },
             "i" => {
-                fin.packets.push(Packet::G2020RotationControl());
+                fin.packets.push(Packet::G2020RotationControl(
+                    data_chunks.next().unwrap_or_else(|| {
+                        no_sufficent_data("G2020RotationControl");
+                    }).parse::<usize>().unwrap_or_else(|_| {
+                        not_parsable("G2020RotationControl", "usize");
+                    }),
+                ));
             },
             "j" => {
                 fin.packets.push(
                     Packet::G2020AttemptedClimb(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020AttemptedClimb");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020AttemptedClimb", "usize");
+                        }),
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("G2020AttemptedClimb");
                         }).parse::<usize>().unwrap_or_else(|_| {
@@ -211,6 +248,11 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                         data_chunks.next().unwrap_or_else(|| {
                             no_sufficent_data("G2020EndGameQuestions");
                         }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020EndGameQuestions", "usize");
+                        }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020EndGameQuestions");
+                        }).parse::<usize>().unwrap_or_else(|_| {
                             not_parsable("G2020EndGameQuestions", "usize -> bool");
                         }) == 1,
                         data_chunks.next().unwrap_or_else(|| {
@@ -246,6 +288,22 @@ pub fn stream_from_raw(raw: &str) -> Stream {
                     )
                 )
             },
+            "l" => {
+                fin.packets.push(
+                    Packet::G2020RequestData(
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020RequestData");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020RequestData", "usize");
+                        }),
+                        data_chunks.next().unwrap_or_else(|| {
+                            no_sufficent_data("G2020RequestData");
+                        }).parse::<usize>().unwrap_or_else(|_| {
+                            not_parsable("G2020RequestData", "usize");
+                        }),
+                    )
+                );
+            }
             other => {
                 println!("WARNING: AN UNKNOWN TOKEN WAS FOUND WHILST PARSING A STREAM: `{}`", other);
             }

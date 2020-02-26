@@ -64,7 +64,7 @@ function g_2020_post_to_queue() {
     else {
         appendable += "0;";
     }
-    CONNECTION.send("k;" + appendable + SLIDER_1_VALUE + ";" + SLIDER_2_VALUE + ";");
+    CONNECTION.send("k;" + BOTNUM + ";" + appendable + SLIDER_1_VALUE + ";" + SLIDER_2_VALUE + ";");
     g_2020_game_end(0);
 }
 

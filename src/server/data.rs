@@ -93,6 +93,7 @@ pub struct WrappedPacket {
     pub time: std::time::SystemTime,
     pub usid: Option<usize>,
     pub game: Option<usize>,
+    pub team: Option<usize>,
 }
 
 impl WrappedPacket {
@@ -101,7 +102,8 @@ impl WrappedPacket {
             packet: packet.clone(),
             time: std::time::SystemTime::now(),
             usid: packet.get_usid(),
-            game: None
+            game: None,
+            team: None
         }
     }
     pub fn new_with_game(packet: packet::Packet, game: usize) -> WrappedPacket {
@@ -109,7 +111,17 @@ impl WrappedPacket {
             packet: packet.clone(),
             time: std::time::SystemTime::now(),
             usid: packet.get_usid(),
-            game: Some(game)
+            game: Some(game),
+            team: None
+        }
+    }
+    pub fn new_with_team(packet: packet::Packet, game: usize, team: usize) -> WrappedPacket {
+        WrappedPacket {
+            packet: packet.clone(),
+            time: std::time::SystemTime::now(),
+            usid: packet.get_usid(),
+            game: Some(game),
+            team: Some(team)
         }
     }
 }

@@ -38,7 +38,7 @@ function g_2020_climb_to_end() {
     else {
         appendable += "0;";
     }
-    CONNECTION.send("j;" + appendable);
+    CONNECTION.send("j;" + BOTNUM + ";" + appendable);
     g_2020_post_base();
 }
 

@@ -1,5 +1,6 @@
 function load_data_base() {
     FIRST_PAGE = false;
+    CONNECTION.send("l;2;0;");
     clear_page();
     create_text_massive("Data Viewer");
     create_text_big("Try a View");

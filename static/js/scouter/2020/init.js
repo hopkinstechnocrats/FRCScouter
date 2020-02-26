@@ -107,11 +107,11 @@ function g_2020_preloaded_cells() {
     clear_page();
     create_text_massive("Amount of preloaded Power Cells ⚽");
     create_break();
-    create_button("3!", "CONNECTION.send(\"d;3;\");g_2020_autonomous_base();");
+    create_button("3!", "CONNECTION.send(\"d;" + BOTNUM + ";3;\");g_2020_autonomous_base();");
     create_break();
-    create_button("2", "CONNECTION.send(\"d;2;\");g_2020_autonomous_base();");
+    create_button("2", "CONNECTION.send(\"d;" + BOTNUM + ";2;\");g_2020_autonomous_base();");
     create_break();
-    create_button("1", "CONNECTION.send(\"d;1;\");g_2020_autonomous_base();");
+    create_button("1", "CONNECTION.send(\"d;" + BOTNUM + ";1;\");g_2020_autonomous_base();");
     create_break();
-    create_button("0...", "CONNECTION.send(\"d;0;\");g_2020_autonomous_base();");
+    create_button("0...", "CONNECTION.send(\"d;" + BOTNUM + ";0;\");g_2020_autonomous_base();");
 }

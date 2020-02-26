@@ -27,10 +27,10 @@ function g_2020_auto_line() {
 function g_2020_finish_auto() {
     // SEND CHECKBOX TO SERVER HERE
     if (OFF_AUTO_LINE) {
-        CONNECTION.send("f;1;");
+        CONNECTION.send("f;" + BOTNUM + ";1;");
     }
     else {
-        CONNECTION.send("f;0;");
+        CONNECTION.send("f;" + BOTNUM + ";0;");
     }
     g_2020_teleop_base();
 }
@@ -115,7 +115,7 @@ function g_2020_map_phase(from) {
             }
             // send server map data
             CONNECTION.send(
-                "e;" + sucess + ";" + hight + ";" + position + ";"
+                "e;" + BOTNUM + ";" + sucess + ";" + hight + ";" + position + ";"
             );
             g_2020_autonomous_base();
         }
