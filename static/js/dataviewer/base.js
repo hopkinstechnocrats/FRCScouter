@@ -12,114 +12,60 @@ function load_data_base() {
     create_button("Update page 🔄", "load_data_base();");
 }
 
-function game_results() {
-    clear_page();
-    create_text_massive("Game Results 📊");
-    create_text("This is incomplete. All the data is currently sample data. Waiting for game implimentation to finish this.");
-    create_text_big("Mobile");
-    create_button("Point totals", "dv_mobile_point_totals();");
-    create_text_big("Desktop");
-    create_break();
-    create_button("Done with results ⏪", "location.reload();");
-}
-
-function dv_mobile_point_totals() {
-    clear_page();
-    create_bar_graph(
-        "360", "480", // x, y
-        [{
-            label: "team1",
-            value: 10
-        },
-        {
-            label: "team2",
-            value: 15
-        },
-        {
-            label: "team3",
-            value: 20
-        },
-        {
-            label: "team4",
-            value: 25
-        },
-        {
-            label: "team5",
-            value: 35
-        },
-        {
-            label: "team6",
-            value: 37
-        }]
-    );
-    create_break();
-    create_button("Back ⏪", "game_results();");
-}
-
-function bar_test() {
-    clear_page();
-    create_bar_graph(
-        "360", //x
-        "480", //y
-        [
-            {
-                label: "test",
-                value: 29
-            },
-            {
-                label: "1524",
-                value: 15
-            },
-            {
-                label: "very long label",
-                value: 14
-            }
-        ]
-    );
-    create_break();
-    create_button("Back ⏪", "load_data_base();");
-}
-
 function team_statistics(teamnum) {
     clear_page();
-    create_text_big(teamnum);
+    create_text_massive("Data for team " + teamnum);
     create_break();
+    let dispdata;
+    let found_data = false;
+    for (let i = 0; i < DATA_QUEUE.teams.length; i++) {
+        if (DATA_QUEUE.teams[i].team_number == parseInt(TEAMNUM, 10)) {
+            dispdata = DATA_QUEUE.teams[i];
+            found_data = true;
+        }
+    }
+    if (found_data) {
+        create_text("raw: " + JSON.stringify(dispdata, null, 4));
+    }
+    else {
+        create_text("Data could not be found for team " + TEAMNUM + ". Please try again later.");
+    }
     create_button("Back ⏪", "load_data_base();");
 }
 
-BOTNUM = "";
+TEAMNUM = "";
 
 function custom_team_number() {
     create_text_massive("Pick a Team To View Results");
-    if (BOTNUM == "") {
+    if (TEAMNUM == "") {
         create_text_big("----");
     }
     else {
-        create_text_big(BOTNUM);
+        create_text_big(TEAMNUM);
     }
-    create_button("7", "BOTNUM+=\"7\";custom_team_number();");
-    create_button("8", "BOTNUM+=\"8\";custom_team_number();");
-    create_button("9", "BOTNUM+=\"9\";custom_team_number();");
+    create_button("7", "TEAMNUM+=\"7\";load_data_base();");
+    create_button("8", "TEAMNUM+=\"8\";load_data_base();");
+    create_button("9", "TEAMNUM+=\"9\";load_data_base();");
     create_break();
-    create_button("4", "BOTNUM+=\"4\";custom_team_number();");
-    create_button("5", "BOTNUM+=\"5\";custom_team_number();");
-    create_button("6", "BOTNUM+=\"6\";custom_team_number();");
+    create_button("4", "TEAMNUM+=\"4\";load_data_base();");
+    create_button("5", "TEAMNUM+=\"5\";load_data_base();");
+    create_button("6", "TEAMNUM+=\"6\";load_data_base();");
     create_break();
-    create_button("1", "BOTNUM+=\"1\";custom_team_number();");
-    create_button("2", "BOTNUM+=\"2\";custom_team_number();");
-    create_button("3", "BOTNUM+=\"3\";custom_team_number();");
+    create_button("1", "TEAMNUM+=\"1\";load_data_base();");
+    create_button("2", "TEAMNUM+=\"2\";load_data_base();");
+    create_button("3", "TEAMNUM+=\"3\";load_data_base();");
     create_break();
-    create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);custom_team_number();");
-    create_button("0", "BOTNUM+=\"0\";custom_team_number();")
+    create_button("⏪", "TEAMNUM=TEAMNUM.slice(0,-1);load_data_base();");
+    create_button("0", "TEAMNUM+=\"0\";load_data_base();")
     create_button("✅", "submit_team_num();");
     EXIT_LOOP = false;
 }
 
 function submit_team_num() {
-    if (BOTNUM == "") {
-        g_2020_custom_team_number();
+    if (TEAMNUM == "") {
+        load_data_base();
     }
     else {
-        team_statistics(BOTNUM);
+        team_statistics(TEAMNUM);
     }
 }
