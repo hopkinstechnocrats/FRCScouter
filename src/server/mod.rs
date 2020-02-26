@@ -149,11 +149,14 @@ pub fn launch_websocket() {
                         drop(server);
                     },
                     Packet::G2020RequestData(typeto, req) => {
+                        // quickly grap packets of server and drop
                         let server = server.lock().unwrap();
                         let game_data = server.packets.game.clone();
                         drop(server);
+                        // compute
                         let game_data_done = compute_game_data(game_data);
-                        println!("test general:\n`{:?}`", game_data_done);
+                        //println!("test general:\n`{:?}`", game_data_done);
+                        // convert to json
                         let mut root = json::JsonValue::new_object();
                         let mut team_sub = json::JsonValue::new_array();
                         for i in game_data_done.data {
@@ -180,7 +183,9 @@ pub fn launch_websocket() {
                             team_sub.push(tmp_obj).unwrap();
                         }
                         root["teams"] = team_sub.into();
-                        println!("json test: \n`{}`", json::stringify_pretty(root, 4));
+                        let finaldata = json::stringify_pretty(root, 4);
+                        // send it off
+                        payload.push(Packet::G2020ReturnData(finaldata.chars().count(), finaldata))
                     },
                     _ => {}
                 }

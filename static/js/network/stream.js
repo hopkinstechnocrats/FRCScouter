@@ -134,7 +134,7 @@ function start_connection() {
                         RUNNING_GAME = pack.game_id;
                         break;
                     case 22:
-                        DATA_QUEUE = pack.json;
+                        DATA_QUEUE = JSON.parse(pack.json);
                         break;
                     default:
                         console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");

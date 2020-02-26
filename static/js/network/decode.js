@@ -73,10 +73,11 @@ function packets_from_raw(raw) {
                 });
                 break;
             case "m":
-                position += 1;
+                position += 2;
                 ret.push({
                     packet_type: 22,
-                    json: data_chunks[position - 1]
+                    size: data_chunks[position - 1],
+                    json: data_chunks[position]
                 })
                 break;
             default:

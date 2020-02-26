@@ -2,14 +2,14 @@ function load_data_base() {
     FIRST_PAGE = false;
     CONNECTION.send("l;2;0;");
     clear_page();
-    create_text_massive("Data Viewer");
-    create_text_big("Try a View");
-    create_break();
-    create_button("Team Statistics", "team_statistics();");
+    create_text("json: " + JSON.stringify(DATA_QUEUE, null, 4));
     create_break();
     custom_team_number();
     create_break();
+    create_break();
     create_button("Back to main page ⏪", "location.reload();");
+    create_break();
+    create_button("Update page 🔄", "load_data_base();");
 }
 
 function game_results() {
@@ -19,8 +19,6 @@ function game_results() {
     create_text_big("Mobile");
     create_button("Point totals", "dv_mobile_point_totals();");
     create_text_big("Desktop");
-    create_button("Point totals", "dv_mobile_point_totals();");
-    create_break();
     create_break();
     create_button("Done with results ⏪", "location.reload();");
 }
@@ -92,7 +90,6 @@ function team_statistics(teamnum) {
 BOTNUM = "";
 
 function custom_team_number() {
-    clear_page();
     create_text_massive("Pick a Team To View Results");
     if (BOTNUM == "") {
         create_text_big("----");
@@ -115,9 +112,6 @@ function custom_team_number() {
     create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);custom_team_number();");
     create_button("0", "BOTNUM+=\"0\";custom_team_number();")
     create_button("✅", "submit_team_num();");
-    create_break();
-    create_break();
-    create_button("Back to game selection ⏪", "load_scouter_base();");
     EXIT_LOOP = false;
 }
 
