@@ -2,8 +2,8 @@ function load_data_base() {
     FIRST_PAGE = false;
     CONNECTION.send("l;2;0;");
     clear_page();
-    create_text("json: " + JSON.stringify(DATA_QUEUE, null, 4));
-    create_break();
+    //create_text("json: " + JSON.stringify(DATA_QUEUE, null, 4));
+    //create_break();
     custom_team_number();
     create_break();
     create_break();
@@ -15,7 +15,6 @@ function load_data_base() {
 function team_statistics(teamnum) {
     clear_page();
     create_text_massive("Data for team " + teamnum);
-    create_break();
     let dispdata;
     let found_data = false;
     let ival = 0;
@@ -27,9 +26,10 @@ function team_statistics(teamnum) {
         }
     }
     if (found_data) {
-        create_text("raw: " + JSON.stringify(dispdata, null, 4));
+        //create_text("raw: " + JSON.stringify(dispdata, null, 4));
+        create_text("Team " + teamnum + " has participated in " + dispdata.matches.length + " matches.");
         for (let j = 0; j < dispdata.matches.length; j++) {
-            create_button("Match [" + dispdata.matches[j].match_number + "]", "match_stats(" + ival + "," + j + ");");
+            create_button("Match " + dispdata.matches[j].match_number, "match_stats(" + ival + "," + j + ");");
             create_break();
         }
     }

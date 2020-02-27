@@ -91,7 +91,7 @@ function g_2020_game_end(clock) {
         clock = 0;
     }
     clear_page();
-    create_text_big("Waiting for results... ")
+    create_text_big("Done with match!")
     switch (clock) {
         case 0:
             create_text_clock("🕛");
@@ -133,5 +133,8 @@ function g_2020_game_end(clock) {
             create_text_clock("❓");
             break;
     }
+    create_break();
+    create_break();
+    create_button("Return to the main page", "location.reload();");
     setTimeout(g_2020_game_end, 1000, clock + 1);
 }

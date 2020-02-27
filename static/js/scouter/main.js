@@ -12,6 +12,7 @@ function load_page() {
     create_text("Connected to server ✅");
     create_text("USID | " + USID);
     create_text("Network | " + NETCODE);
+    create_links();
 }
 
 /**

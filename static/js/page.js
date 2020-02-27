@@ -43,7 +43,7 @@ function create_checkbox(callback, state) {
 
 /**
  * pretend this works well please
- * @param {*} callback 
+ * @param {Function} callback - Onclick callback, actual function pls
  */
 function create_map(callback) {
     var ctx = document.getElementById("content");
@@ -60,6 +60,9 @@ function create_map(callback) {
     // blue alliance goal
     context.fillStyle = "rgb(35, 35, 240)";
     context.fillRect(0, 430, 360 / 2, 50);
+    context.font = "bold 32px serif";
+    context.fillStyle = "rgb(35, 35, 35)";
+    context.fillText("Blue Goal", 0, 450, 360 / 2);
     // control stations
     context.fillStyle = "rgb(240, 160, 35)";
     // red side control
@@ -126,6 +129,24 @@ function create_text(text) {
     var textnode = document.createTextNode(text);
     node.appendChild(textnode);
     ctx.appendChild(node);
+}
+
+function create_links() {
+    var ctx = document.getElementById("content");
+    var node1 = document.createElement("a");
+    var node1point5 = document.createElement("a");
+    var node2 = document.createElement("a");
+    var textnode1 = document.createTextNode("Report Issues");
+    var textnode1point5 = document.createTextNode(" | ");
+    var textnode2 = document.createTextNode("Admin Portal");
+    node1.appendChild(textnode1);
+    node1.href = "https://github.com/hopkinstechnocrats/FRCScouter/issues/new";
+    node1point5.appendChild(textnode1point5);
+    node2.appendChild(textnode2);
+    node2.href = "http://scouting.technocrats2239.org/admin";
+    ctx.appendChild(node1);
+    ctx.appendChild(textnode1point5)
+    ctx.appendChild(node2);
 }
 
 /**

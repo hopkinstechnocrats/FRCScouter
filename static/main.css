@@ -9,6 +9,11 @@ html, body {
     color: white;
 }
 
+a {
+    color: white;
+    text-decoration: none;
+}
+
 button {
     font-size: 150%;
     font-family: Arial, Helvetica;
