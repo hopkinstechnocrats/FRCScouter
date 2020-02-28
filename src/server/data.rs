@@ -22,6 +22,7 @@ pub struct ServerData {
     pub game_scouters: Vec<Vec<(usize, usize)>>,
     /// associates IDs with internal indexes (see `connected_ips`)
     pub usid_association: Vec<(usize, usize)>, // usid, internal
+    pub recent_clear: bool,
     /// reperesents the current login password for the admin portal
     pub admin_pass: usize,
     /// represents a long token to confirm identitiy
@@ -40,6 +41,7 @@ impl ServerData {
             robots_scouted: vec![],
             game_scouters: vec![],
             usid_association: vec![],
+            recent_clear: false,
             admin_pass: 2239,
             token: String::from("NOTOKEN"),
         };

@@ -73,9 +73,7 @@ setInterval(() => {
         else {
             console.log("Not connected?? CRITICAL");
             clear_page();
-            create_text_massive("Disconnected From Server! Please refresh the page. If you get this\
-            page during a competition there may be a critical server error. In this case, DO NOT\
-            REFRESH! The page will automagically resume shortly.");
+            create_text_massive("Disconnected From Server! Please refresh the page.");
         }
     }
 }, 20);

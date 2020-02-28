@@ -66,7 +66,17 @@ pub fn launch_websocket() {
                     Packet::PongClient(a, b) => {
                         let mut server = server.lock().unwrap();
                         server.packets.pings.push(WrappedPacket::new_from_packet(Packet::PongClient(a, b)));
-                    }
+                        let mut found = false;
+                        for i in server.usid_association.clone() {
+                            if i.0 == a || i.1 == b {
+                                found = true;
+                            }
+                        }
+                        if !found {
+                            server.usid_association.push((a, b));
+                        }
+                        drop(server);
+                    },
                     // User requested an id
                     Packet::PingUSID() => {
                         let mut server = server.lock().unwrap();
@@ -78,11 +88,13 @@ pub fn launch_websocket() {
                         let mut changed = true;
                         while changed {
                             changed = false;
-                            for i in 0..server.robots_scouted.len() {
-                                if server.robots_scouted[i].0 == usid {
-                                    server.robots_scouted.remove(i);
+                            let mut pos = 0;
+                            for i in server.robots_scouted.clone() {
+                                if i.0 == usid {
+                                    server.robots_scouted.remove(pos);
                                     changed = true;
                                 }
+                                pos += 1;
                             }
                         }
                         drop(server);

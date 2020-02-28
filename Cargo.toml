@@ -1,6 +1,6 @@
 [package]
 name = "FRCScouter"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["jadedgem", "henryscheible", "https://www.twitch.tv/x03t/", "team2239"]
 edition = "2018"
 

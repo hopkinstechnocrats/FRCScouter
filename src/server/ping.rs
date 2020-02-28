@@ -27,10 +27,14 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
         let data = tmp_data.clone();
         drop(tmp_data);
         let mut loc = 0;
+        // for ever connection
         for ip in data.clone().get_connections() {
+            // if we're starting the game
             if data.start_game_flag {
+                // tell users that
                 ip.send(stream_to_raw(Stream::new_with_packets(vec![Packet::G2020InitateScouting()]))).unwrap_or_else(|_| println!("unable to send flag: CRITICAL"));
             }
+            // send ping
             ip.send(
                 stream_to_raw(
                     Stream::new_with_packets(vec![
@@ -43,12 +47,32 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
             loc += 1;
         }
         if data.start_game_flag {
+            // reset flag and data
             println!("A game has started (6 teams being scouted)");
             let mut server = handle.lock().unwrap();
             server.start_game_flag = false;
             server.robots_scouted = vec![];
             server.game += 1;
             drop(server);
+        }
+        if !data.recent_clear {
+            let mut index = 0;
+            for i in data.robots_scouted.clone() {
+                let mut found = false;
+                for j in data.usid_association.clone() {
+                    if j.0 == i.0 {
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
+                    let mut tmp_data = handle.lock().unwrap();
+                    tmp_data.robots_scouted.remove(index);
+                    drop(tmp_data);
+                    break;
+                }
+                index += 1;
+            }
         }
         // Rest thread before next iteration to not use 100% of thread additionally, don't ping the
         // client infinite times per second, clogging up the client's inbound packets.
@@ -62,6 +86,8 @@ fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
         // Grab the server data. Keep the handled data because we need to change it. Other threads
         // resume when data is dropped, either at the end of the loop or earlier if possible.
         let mut data = handle.lock().unwrap();
+        data.usid_association = vec![];
+        data.recent_clear = true;
         // for every unprocessed packet in the last two seconds, grab and store the usid and server
         // id if it's related to ping/pong processes.
         let mut clientpairs: Vec<(usize, usize)> = vec![];
@@ -93,6 +119,10 @@ fn ping_thread_b(handle: Arc<Mutex<ServerData>>) -> ! {
         // Rest thread before next iteration to not use 100% of thread. Drop data beforehand so that
         // other threads can use it.
         drop(data);
-        std::thread::sleep(std::time::Duration::from_millis(5000));
+        std::thread::sleep(std::time::Duration::from_millis(1000));
+        let mut data = handle.lock().unwrap();
+        data.recent_clear = false;
+        drop(data);
+        std::thread::sleep(std::time::Duration::from_millis(4000));
     }
 }

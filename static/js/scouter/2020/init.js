@@ -2,6 +2,13 @@ function display_2020_game() {
     create_text_big("2020 - Infinite Recharge 🔋");
     create_break();
     create_button("Confirm Scouting ✅", "g_2020_custom_team_number();");
+    CONNECTION.send(
+        raw_from_packets(
+            [
+                { packet_type: 9 }
+            ]
+        )
+    );
 }
 
 BOTNUM = "";
@@ -31,6 +38,11 @@ function g_2020_custom_team_number() {
     create_button("0", "BOTNUM+=\"0\";g_2020_custom_team_number();")
     create_button("✅", "g_2020_submit_team_num();");
     create_break();
+    create_break();
+    create_text("Teams currently being scouted:");
+    for (let i = 0; i < SCOUTERS_INFO.length; i++) {
+        create_text("Team " + SCOUTERS_INFO[i].team);
+    }
     create_break();
     create_button("Back to game selection ⏪", "load_scouter_base();");
     EXIT_LOOP = false;

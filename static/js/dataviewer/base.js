@@ -2,14 +2,18 @@ function load_data_base() {
     FIRST_PAGE = false;
     CONNECTION.send("l;2;0;");
     clear_page();
-    //create_text("json: " + JSON.stringify(DATA_QUEUE, null, 4));
-    //create_break();
+    create_text("json: " + JSON.stringify(DATA_QUEUE, null, 4));
+    create_break();
     custom_team_number();
     create_break();
     create_break();
     create_button("Back to main page ⏪", "location.reload();");
     create_break();
     create_button("Update page 🔄", "CONNECTION.send(\"l;2;0\");load_data_base();");
+    create_text("Teams with matches:");
+    for (let i = 0; i < DATA_QUEUE.teams.length; i++) {
+        create_text(DATA_QUEUE.teams[i].team_number);
+    }
 }
 
 function team_statistics(teamnum) {
