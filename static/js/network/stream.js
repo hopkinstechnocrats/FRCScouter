@@ -26,6 +26,7 @@ let RUNNING_GAME = -1;
 let DATA_QUEUE = {};
 let A_STATUS = -1;
 let A_TOKEN = "";
+let HAS_DATA = false;
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
@@ -135,6 +136,7 @@ function start_connection() {
                         break;
                     case 22:
                         DATA_QUEUE = JSON.parse(pack.json);
+                        HAS_DATA = true;
                         break;
                     default:
                         console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");
