@@ -83,74 +83,6 @@ pub fn launch_websocket() {
                         // get the next id and send it to the user
                         payload.push(Packet::PongUSID(server.get_next_usid()));
                     },
-                    Packet::G2020LeaveQueue(usid) => {
-                        let mut server = server.lock().unwrap();
-                        let mut changed = true;
-                        while changed {
-                            changed = false;
-                            let mut pos = 0;
-                            for i in server.robots_scouted.clone() {
-                                if i.0 == usid {
-                                    server.robots_scouted.remove(pos);
-                                    changed = true;
-                                }
-                                pos += 1;
-                            }
-                        }
-                        drop(server);
-                    }
-                    // User selected a robot to scout
-                    Packet::G2020RobotSelected(usid, robot) => {
-                        let mut server = server.lock().unwrap();
-                        // Save that info
-                        server.robots_scouted.push((usid, robot));
-                        let mut fin: Vec<(usize, usize)> = vec![];
-                        for i in server.robots_scouted.clone() {
-                            let mut matched = false;
-                            for j in 0..fin.len() {
-                                if i.1 == fin[j].0 {
-                                    fin[j].1 += 1;
-                                    matched = true;
-                                }
-                            }
-                            if !matched {
-                                fin.push((i.1, 1));
-                            }
-                        }
-                        if server.robots_scouted.len() == 6 {
-                            server.start_game_flag = true;
-                        }
-                        // Send user the robots that are being scouted
-                        payload.push(Packet::G2020ScoutersWaiting(server.robots_scouted.len(), fin));
-                        drop(server);
-                    },
-                    Packet::G2020RequestWaiting() => {
-                        let mut server = server.lock().unwrap();
-                        let mut fin: Vec<(usize, usize)> = vec![];
-                        for i in server.robots_scouted.clone() {
-                            let mut matched = false;
-                            for j in 0..fin.len() {
-                                if i.1 == fin[j].0 {
-                                    fin[j].1 += 1;
-                                    matched = true;
-                                }
-                            }
-                            if !matched {
-                                fin.push((i.1, 1));
-                            }
-                        }
-                        if fin.len() == 6 {
-                            server.start_game_flag = true;
-                        }
-                        payload.push(Packet::G2020ScoutersWaiting(server.robots_scouted.len(), fin));
-                        drop(server);
-                    },
-                    Packet::G2020RequestRunningGameID() => {
-                        let server = server.lock().unwrap();
-                        let id = server.game;
-                        drop(server);
-                        payload.push(Packet::G2020RunningGameID(id));
-                    }
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },
@@ -163,7 +95,7 @@ pub fn launch_websocket() {
                         server.packets.game.push(WrappedPacket::new_with_team(packet, b, a));
                         drop(server);
                     },
-                    Packet::G2020RequestData(typeto, req) => {
+                    Packet::G2020RequestData(_, _) => {
                         // quickly grap packets of server and drop
                         let server = server.lock().unwrap();
                         let game_data = server.packets.game.clone();
@@ -222,7 +154,8 @@ pub fn launch_websocket() {
                         else {
                             match command {
                                 1 => {
-                                    server.start_game_flag = true;
+                                    // DEPRECIATED, TO BE REMOVED
+                                    //server.start_game_flag = true;
                                     println!("Start flag set by admin.");
                                 }
                                 2 => {
@@ -230,7 +163,7 @@ pub fn launch_websocket() {
                                     println!("Password set by admin.");
                                 }
                                 3 => {
-                                    server.game = 0;
+                                    //server.game = 0;
                                     server.packets = data::PacketList::new();
                                     println!("Server games reset by admin.");
                                 }

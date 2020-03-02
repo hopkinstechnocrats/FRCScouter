@@ -8,18 +8,12 @@ use crate::server::network::packet;
 pub struct ServerData {
     /// represents the highest unique ID handed out by the server.
     usid: usize,
-    /// represents the current game's ID number
-    pub game: usize,
     /// represents all the received data and packets to the server.
     pub packets: PacketList,
     /// represents all the client connections
     connected_ips: Vec<ws::Sender>,
-    /// marks if a match is starting
-    pub start_game_flag: bool,
     /// marks the ID of the user as well as the particular robot being scouted
     pub robots_scouted: Vec<(usize, usize)>, // usid, robot
-    /// marks the scouting applicability of a usid to a specified game
-    pub game_scouters: Vec<Vec<(usize, usize)>>,
     /// associates IDs with internal indexes (see `connected_ips`)
     pub usid_association: Vec<(usize, usize)>, // usid, internal
     pub recent_clear: bool,
@@ -34,12 +28,9 @@ impl ServerData {
     pub fn new() -> ServerData {
         let mut a = ServerData {
             usid: 0,
-            game: 0,
             packets: PacketList::new(),
             connected_ips: vec![],
-            start_game_flag: false,
             robots_scouted: vec![],
-            game_scouters: vec![],
             usid_association: vec![],
             recent_clear: false,
             admin_pass: 2239,
@@ -122,15 +113,6 @@ impl WrappedPacket {
             time: std::time::SystemTime::now(),
             usid: packet.get_usid(),
             game: None,
-            team: None
-        }
-    }
-    pub fn new_with_game(packet: packet::Packet, game: usize) -> WrappedPacket {
-        WrappedPacket {
-            packet: packet.clone(),
-            time: std::time::SystemTime::now(),
-            usid: packet.get_usid(),
-            game: Some(game),
             team: None
         }
     }

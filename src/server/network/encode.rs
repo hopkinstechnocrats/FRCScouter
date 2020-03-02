@@ -27,14 +27,14 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::G2020RobotSelected(usid, robot) => {
                 fin += &format!("6;{};{};", usid, robot);
             },
-            Packet::G2020ScoutersWaiting(len, list) => {
+            Packet::_G2020ScoutersWaiting(len, list) => {
                 let mut tmp = String::new();
                 for i in list {
                     tmp = format!("{}{};{};", tmp, i.0, i.1);
                 }
                 fin += &format!("7;{};{}", len, tmp)
             },
-            Packet::G2020InitateScouting() => {
+            Packet::_G2020InitateScouting() => {
                 fin += "8;";
             },
             Packet::G2020RequestWaiting() => {
@@ -62,7 +62,7 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::G2020AutoLine(robo, game, passed) => {
                 let val;
                 if passed { val = 1 } else { val = 0 }
-                fin += &format!("f;{};{};", robo, val);
+                fin += &format!("f;{};{};{};", robo, game, val);
             },
             Packet::G2020TeleShot(robo, game, high, missed, position) => {
                 let val1;

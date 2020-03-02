@@ -29,11 +29,6 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
         let mut loc = 0;
         // for ever connection
         for ip in data.clone().get_connections() {
-            // if we're starting the game
-            if data.start_game_flag {
-                // tell users that
-                ip.send(stream_to_raw(Stream::new_with_packets(vec![Packet::G2020InitateScouting()]))).unwrap_or_else(|_| println!("unable to send flag: CRITICAL"));
-            }
             // send ping
             ip.send(
                 stream_to_raw(
@@ -45,15 +40,6 @@ fn ping_thread_a(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("WARN: unable to ping client: `{}`", e);
             });
             loc += 1;
-        }
-        if data.start_game_flag {
-            // reset flag and data
-            println!("A game has started (6 teams being scouted)");
-            let mut server = handle.lock().unwrap();
-            server.start_game_flag = false;
-            server.robots_scouted = vec![];
-            server.game += 1;
-            drop(server);
         }
         if !data.recent_clear {
             let mut index = 0;

@@ -24,9 +24,11 @@ pub enum Packet {
     /// Client sends the robot it is watching | packet id `6` | (usid, robot number)
     G2020RobotSelected(usize, usize),
     /// Server sends client scouter information | packet id `7` | ([length], Vec<team number, amount> where len = [length])
-    G2020ScoutersWaiting(usize, Vec<(usize, usize)>),
+    /// DEPRECIATED, TO BE REMOVED
+    _G2020ScoutersWaiting(usize, Vec<(usize, usize)>),
     /// Server tells scouters to begin scouting | packet id `8` | ()
-    G2020InitateScouting(),
+    /// DEPRECIATED, TO BE REMOVED
+    _G2020InitateScouting(),
     /// Client sends server request for the scouters that are waiting | packet id `9` | ()
     G2020RequestWaiting(),
     /// Client sends server request for current running match id | packet id `a`/10 | ()
@@ -89,13 +91,6 @@ impl Packet {
             Packet::PongServer(a) => return Some(a),
             Packet::PongUSID(a) => return Some(a),
             Packet::G2020LeaveQueue(a) => return Some(a),
-            // I am well aware that all these conditions can be covered with one match arm like
-            // `_ => {return None;}` but I'm doing it this way so it errors and reminds me when I
-            // add new packets to check that they can't be added here.
-            Packet::PingUSID() | Packet::PingClient(_) | Packet::G2020ScoutersWaiting(_, _) |
-            Packet::G2020InitateScouting() | Packet::G2020RequestWaiting() |
-            Packet::G2020RequestRunningGameID() | Packet::G2020RunningGameID(_) => return None,
-            // ah, I gave up
             _ => { return None }
         }
     }

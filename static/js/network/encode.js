@@ -33,24 +33,6 @@ function raw_from_packets(packets) {
                 ret += thisp.server_loc;
                 ret += ";";
                 break;
-            case 6: // G2020RobotSelected (usid, robot team num)
-                ret += "6;";
-                ret += thisp.usid;
-                ret += ";";
-                ret += thisp.team_number;
-                ret += ";";
-                break;
-            case 9: // G2020RequestWaiting ()
-                ret += "9;";
-                break;
-            case 10: // G2020RequestRunningGameID ()
-                ret += "a;";
-                break;
-            case 12: // G2020LeaveQueue (usid)
-                ret += "c;";
-                ret += thisp.usid;
-                ret += ";";
-                break;
             default:
                 console.error("Unkown packet id while compressing: " + thisp.packet_type);
                 break;

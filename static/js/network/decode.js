@@ -65,13 +65,6 @@ function packets_from_raw(raw) {
                     packet_type: 8
                 });
                 break;
-            case "b":
-                position += 2;
-                ret.push({
-                    packet_type: 11,
-                    game_id: parseInt(data_chunks[position - 1], 10)
-                });
-                break;
             case "m":
                 position += 2;
                 ret.push({

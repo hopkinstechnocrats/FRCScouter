@@ -48,12 +48,6 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("Shutting down...");
                 std::process::exit(0);
             },
-            "start" => {
-                let mut server = handle.lock().unwrap();
-                server.start_game_flag = true;
-                drop(server);
-                println!("Start flag set.");
-            },
             /*
             "loadjson" => {
                 let mut server = handle.lock().unwrap();
