@@ -115,7 +115,70 @@ pub fn launch_websocket() {
                                 let mut tmp_obj4 = json::JsonValue::new_array();
                                 for k in j.1 {
                                     let mut tmp_obj5 = json::JsonValue::new_object();
-                                    tmp_obj5["packet"] = format!("{:?}", k.packet).into();
+                                    match k.packet {
+                                        Packet::G2020PreloadedCells(_, _, cells) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object(); 
+                                            tmp_obj6["type"] = "PreloadedCells".into();
+                                            tmp_obj6["amount"] = cells.into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020AutoShot(_, _, high, missed, position) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object(); 
+                                            tmp_obj6["type"] = "AutoShot".into();
+                                            tmp_obj6["high"] = high.into();
+                                            tmp_obj6["missed"] = missed.into();
+                                            tmp_obj6["position"] = position.into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020AutoLine(_, _, state) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object();
+                                            tmp_obj6["type"] = "AutoLine".into();
+                                            tmp_obj6["amount"] = state.into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020TeleShot(_, _, high, missed, position) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object(); 
+                                            tmp_obj6["type"] = "TeleShot".into();
+                                            tmp_obj6["high"] = high.into();
+                                            tmp_obj6["missed"] = missed.into();
+                                            tmp_obj6["position"] = position.into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020PositionControl(_, _) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object();
+                                            tmp_obj6["type"] = "PositionControl".into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020RotationControl(_, _) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object();
+                                            tmp_obj6["type"] = "RotationControl".into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020AttemptedClimb(_, _, repo, bal, succ) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object();
+                                            tmp_obj6["type"] = "AttemptedClimb".into();
+                                            tmp_obj6["repositioned"] = repo.into();
+                                            tmp_obj6["balenced"] = bal.into();
+                                            tmp_obj6["completed"] = succ.into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        Packet::G2020EndGameQuestions(_, _, ctrl, foul, can_def, was_def, was_red, can_def_prof, was_def_prof) => {
+                                            let mut tmp_obj6 = json::JsonValue::new_object();
+                                            tmp_obj6["type"] = "EndQuestions".into();
+                                            tmp_obj6["did_control"] = ctrl.into();
+                                            tmp_obj6["did_foul"] = foul.into();
+                                            tmp_obj6["can_defend"] = can_def.into();
+                                            tmp_obj6["was_defended"] = was_def.into();
+                                            tmp_obj6["was_red"] = was_red.into();
+                                            tmp_obj6["defending_ablitiy"] = can_def_prof.into();
+                                            tmp_obj6["defended_ability"] = was_def_prof.into();
+                                            tmp_obj5["packet"] = tmp_obj6;
+                                        },
+                                        _ => {
+                                            tmp_obj5["packet"] = "INVALID".into();
+                                        }
+                                    }
+                                    //tmp_obj5["packet"] = format!("{}", packetres).into();
                                     tmp_obj5["game"] = k.game.unwrap().into();
                                     tmp_obj5["team"] = k.team.unwrap().into();
                                     let chronotmp: DateTime<Utc> = k.time.into();

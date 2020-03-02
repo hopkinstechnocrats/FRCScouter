@@ -67,10 +67,7 @@ function invalid_pass() {
 
 function portal() {
     clear_page();
-    create_text_big("Admin portal")
-    create_button("Start match now", "CONNECTION.send(\"q;" + A_TOKEN + ";1;0;\");");
-    create_break();
-    create_break();
+    create_text_big("Admin portal");
     create_button("Change password", "change_password();");
     create_break();
     create_break();
