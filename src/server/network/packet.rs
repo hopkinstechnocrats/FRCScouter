@@ -35,22 +35,22 @@ pub enum Packet {
     G2020RunningGameID(usize),
     /// Client sends server request to leave queue | packet id `c`/12 | (usid)
     G2020LeaveQueue(usize),
-    /// Client sends server number of preloaded power cells | packet id `d`/13 | (robot, number)
-    G2020PreloadedCells(usize, usize),
-    /// Client sends server an autonoumous shot data | packet id `e`/14 | (robot, is_high, did_miss, position)
-    G2020AutoShot(usize, bool, bool, usize),
-    /// Client sends server the state of the line cross checkbox | packet id `f`/15 | (robot, is_checked)
-    G2020AutoLine(usize, bool),
-    /// Client sends server teleop shot data | packet id `g`/16 | (robot, is_high, did_miss, position)
-    G2020TeleShot(usize, bool, bool, usize),
-    /// Client tells server that position control happened | packet id `h`/17 | (robot)
-    G2020PositionControl(usize),
-    /// Client tells server that rotation control happened | packet id `i`/18 | (robot)
-    G2020RotationControl(usize),
-    /// Client tells server that climbing was attempted | packet id `j`/19 | (robot, reposition, balenced, success)
-    G2020AttemptedClimb(usize, bool, bool, bool),
-    /// Client tells server end game questions | packet id `k`/20 | (robot, ctrl_pannel, fouls, can_def, was_defed, was_red, can_def_prof, was_defed_prof)
-    G2020EndGameQuestions(usize, bool, bool, bool, bool, bool, usize, usize),
+    /// Client sends server number of preloaded power cells | packet id `d`/13 | (robot, match, cells)
+    G2020PreloadedCells(usize, usize, usize),
+    /// Client sends server an autonoumous shot data | packet id `e`/14 | (robot, match, is_high, did_miss, position)
+    G2020AutoShot(usize, usize, bool, bool, usize),
+    /// Client sends server the state of the line cross checkbox | packet id `f`/15 | (robot, match, is_checked)
+    G2020AutoLine(usize, usize, bool),
+    /// Client sends server teleop shot data | packet id `g`/16 | (robot, match, is_high, did_miss, position)
+    G2020TeleShot(usize, usize, bool, bool, usize),
+    /// Client tells server that position control happened | packet id `h`/17 | (robot, match)
+    G2020PositionControl(usize, usize),
+    /// Client tells server that rotation control happened | packet id `i`/18 | (robot, match)
+    G2020RotationControl(usize, usize),
+    /// Client tells server that climbing was attempted | packet id `j`/19 | (robot, match, reposition, balenced, success)
+    G2020AttemptedClimb(usize, usize, bool, bool, bool),
+    /// Client tells server end game questions | packet id `k`/20 | (robot, match, ctrl_pannel, fouls, can_def, was_defed, was_red, can_def_prof, was_defed_prof)
+    G2020EndGameQuestions(usize, usize, bool, bool, bool, bool, bool, usize, usize),
     /// Client tells server it wants data | packet id `l`/21 | (type, id)
     /// type = 0: id = team
     /// type = 1: id = match

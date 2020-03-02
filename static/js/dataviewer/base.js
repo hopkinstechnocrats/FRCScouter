@@ -47,6 +47,7 @@ function match_stats(i, j) {
     clear_page();
     let team = DATA_QUEUE.teams[i].team_number;
     let match = DATA_QUEUE.teams[i].matches[j].match_number;
+    let final = {};
     create_text_massive("Data for team " + team + " in match " + match);
     create_text("raw: " + JSON.stringify(DATA_QUEUE.teams[i].matches[j], null, 4));
     create_button("Back ⏪", "team_statistics(" + team + ");");

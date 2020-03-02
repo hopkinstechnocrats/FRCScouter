@@ -18,6 +18,7 @@ function g_2020_autonomous_base() {
     create_break();
     create_break();
     create_button("Finish autonomous ⏭️", "g_2020_finish_auto();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }
 
 function g_2020_auto_line() {
@@ -27,10 +28,10 @@ function g_2020_auto_line() {
 function g_2020_finish_auto() {
     // SEND CHECKBOX TO SERVER HERE
     if (OFF_AUTO_LINE) {
-        CONNECTION.send("f;" + BOTNUM + ";1;");
+        CONNECTION.send("f;" + BOTNUM + ";" + MATCHNUM + ";1;");
     }
     else {
-        CONNECTION.send("f;" + BOTNUM + ";0;");
+        CONNECTION.send("f;" + BOTNUM + ";" + MATCHNUM + ";0;");
     }
     g_2020_teleop_base();
 }
@@ -115,11 +116,12 @@ function g_2020_map_phase(from) {
             }
             // send server map data
             CONNECTION.send(
-                "e;" + BOTNUM + ";" + sucess + ";" + hight + ";" + position + ";"
+                "e;" + BOTNUM + ";" + MATCHNUM + ";" + sucess + ";" + hight + ";" + position + ";"
             );
             g_2020_autonomous_base();
         }
     });
     create_break();
     create_button("Back ⏪", "g_2020_autonomous_base();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }

@@ -117,7 +117,7 @@ pub fn launch_websocket() {
                                 fin.push((i.1, 1));
                             }
                         }
-                        if fin.len() == 6 {
+                        if server.robots_scouted.len() == 6 {
                             server.start_game_flag = true;
                         }
                         // Send user the robots that are being scouted
@@ -154,14 +154,13 @@ pub fn launch_websocket() {
                     Packet::PingServer(usid) => {
                         payload.push(Packet::PongServer(usid));
                     },
-                    Packet::G2020PreloadedCells(a, _) | Packet::G2020AutoShot(a, _, _, _) |
-                    Packet::G2020AutoLine(a, _) | Packet::G2020TeleShot(a, _, _, _) |
-                    Packet::G2020PositionControl(a) | Packet::G2020RotationControl(a) |
-                    Packet::G2020AttemptedClimb(a, _, _, _) |
-                    Packet::G2020EndGameQuestions(a, _, _, _, _, _, _, _) => {
+                    Packet::G2020PreloadedCells(a, b, _) | Packet::G2020AutoShot(a, b, _, _, _) |
+                    Packet::G2020AutoLine(a, b, _) | Packet::G2020TeleShot(a, b, _, _, _) |
+                    Packet::G2020PositionControl(a, b) | Packet::G2020RotationControl(a, b) |
+                    Packet::G2020AttemptedClimb(a, b, _, _, _) |
+                    Packet::G2020EndGameQuestions(a, b, _, _, _, _, _, _, _) => {
                         let mut server = server.lock().unwrap();
-                        let game = server.game;
-                        server.packets.game.push(WrappedPacket::new_with_team(packet, game, a));
+                        server.packets.game.push(WrappedPacket::new_with_team(packet, b, a));
                         drop(server);
                     },
                     Packet::G2020RequestData(typeto, req) => {
@@ -288,7 +287,7 @@ fn compute_game_data(indata: Vec<WrappedPacket>) -> ComputedData {
 }
 
 #[derive(Debug)]
-struct ComputedData {
+pub struct ComputedData {
     // Vec<(team number, Vec<(match number, Vec<packets>)>)> 
     pub data: Vec<(usize, Vec<(usize, Vec<WrappedPacket>)>)>
 }

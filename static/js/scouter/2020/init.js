@@ -1,21 +1,56 @@
 function display_2020_game() {
     create_text_big("2020 - Infinite Recharge 🔋");
     create_break();
-    create_button("Confirm Scouting ✅", "g_2020_custom_team_number();");
-    CONNECTION.send(
-        raw_from_packets(
-            [
-                { packet_type: 9 }
-            ]
-        )
-    );
+    create_button("Confirm Scouting ✅", "g_2020_custom_match_number();");
+}
+
+MATCHNUM = "";
+
+function g_2020_custom_match_number() {
+    clear_page();
+    create_text_massive("Enter a match number");
+    if (MATCHNUM == "") {
+        create_text_big("--");
+    }
+    else {
+        create_text_big(MATCHNUM);
+    }
+    create_button("7", "MATCHNUM+=\"7\";g_2020_custom_match_number();");
+    create_button("8", "MATCHNUM+=\"8\";g_2020_custom_match_number();");
+    create_button("9", "MATCHNUM+=\"9\";g_2020_custom_match_number();");
+    create_break();
+    create_button("4", "MATCHNUM+=\"4\";g_2020_custom_match_number();");
+    create_button("5", "MATCHNUM+=\"5\";g_2020_custom_match_number();");
+    create_button("6", "MATCHNUM+=\"6\";g_2020_custom_match_number();");
+    create_break();
+    create_button("1", "MATCHNUM+=\"1\";g_2020_custom_match_number();");
+    create_button("2", "MATCHNUM+=\"2\";g_2020_custom_match_number();");
+    create_button("3", "MATCHNUM+=\"3\";g_2020_custom_match_number();");
+    create_break();
+    create_button("⏪", "MATCHNUM=MATCHNUM.slice(0,-1);g_2020_custom_match_number();");
+    create_button("0", "MATCHNUM+=\"0\";g_2020_custom_match_number();")
+    create_button("✅", "g_2020_submit_match_num();");
+    create_break();
+    create_break();
+    create_button("Back to game selection ⏪", "load_scouter_base();");
+}
+
+function g_2020_submit_match_num() {
+    // eventually this will pull the live teams, if avalable, for the specified match.
+    // for now, forward to team selection.
+    if (MATCHNUM == "" || MATCHNUM.length > 2) {
+        g_2020_custom_match_number();
+    }
+    else {
+        g_2020_custom_team_number();
+    }
 }
 
 BOTNUM = "";
 
 function g_2020_custom_team_number() {
     clear_page();
-    create_text_massive("Pick a Robot to Scout");
+    create_text_massive("Pick a robot to scout for match " + MATCHNUM);
     if (BOTNUM == "") {
         create_text_big("----");
     }
@@ -39,13 +74,7 @@ function g_2020_custom_team_number() {
     create_button("✅", "g_2020_submit_team_num();");
     create_break();
     create_break();
-    create_text("Teams currently being scouted:");
-    for (let i = 0; i < SCOUTERS_INFO.length; i++) {
-        create_text("Team " + SCOUTERS_INFO[i].team);
-    }
-    create_break();
-    create_button("Back to game selection ⏪", "load_scouter_base();");
-    EXIT_LOOP = false;
+    create_button("Back to match selection ⏪", "g_2020_custom_match_number();");
 }
 
 function g_2020_submit_team_num() {
@@ -53,65 +82,7 @@ function g_2020_submit_team_num() {
         g_2020_custom_team_number();
     }
     else {
-        CONNECTION.send(
-            raw_from_packets(
-                [
-                    {
-                        packet_type: 6,
-                        usid: USID,
-                        team_number: BOTNUM
-                    }
-                ]
-            )
-        );
-        g_2020_waiting_phase();
-    }
-}
-
-EXIT_LOOP = false;
-
-function g_2020_waiting_phase() {
-    if (SCOUTERS_READY) {
         g_2020_preloaded_cells();
-    }
-    else if (EXIT_LOOP) {
-        g_2020_custom_team_number();
-    }
-    else {
-        clear_page();
-        create_text_massive("Waiting for Scouters...");
-        create_text_big("Currently scouting: Team " + BOTNUM);
-        if (RUNNING_GAME == -1) {
-            create_text_big("Waiting for match number ?");
-        }
-        else {
-            create_text_big("Waiting for match number " + (RUNNING_GAME + 1));
-        }
-        create_break();
-        for (let i = 0; i < SCOUTERS_INFO.length; i++) {
-            create_break();
-            create_text("Team " + SCOUTERS_INFO[i].team + " [" + SCOUTERS_INFO[i].amount + " people]");
-        }
-        create_break();
-        create_break();
-        create_button("Leave queue ❌", "CONNECTION.send(raw_from_packets([{packet_type:12,usid:USID}]));EXIT_LOOP=true;");
-        create_break();
-        create_button("Join game in progress ☠️", "CONNECTION.send(raw_from_packets([{packet_type:12,usid:USID}]));SCOUTERS_READY=true;");
-        CONNECTION.send(
-            raw_from_packets(
-                [
-                    { packet_type: 9 }
-                ]
-            )
-        );
-        CONNECTION.send(
-            raw_from_packets(
-                [
-                    { packet_type: 10 }
-                ]
-            )
-        )
-        setTimeout(g_2020_waiting_phase, 500);
     }
 }
 
@@ -119,11 +90,15 @@ function g_2020_preloaded_cells() {
     clear_page();
     create_text_massive("Amount of preloaded Power Cells ⚽");
     create_break();
-    create_button("3!", "CONNECTION.send(\"d;" + BOTNUM + ";3;\");g_2020_autonomous_base();");
+    create_button("3!", "CONNECTION.send(\"d;" + BOTNUM + ";" + MATCHNUM + ";3;\");g_2020_autonomous_base();");
     create_break();
-    create_button("2", "CONNECTION.send(\"d;" + BOTNUM + ";2;\");g_2020_autonomous_base();");
+    create_button("2", "CONNECTION.send(\"d;" + BOTNUM + ";" + MATCHNUM + ";2;\");g_2020_autonomous_base();");
     create_break();
-    create_button("1", "CONNECTION.send(\"d;" + BOTNUM + ";1;\");g_2020_autonomous_base();");
+    create_button("1", "CONNECTION.send(\"d;" + BOTNUM + ";" + MATCHNUM + ";1;\");g_2020_autonomous_base();");
     create_break();
-    create_button("0...", "CONNECTION.send(\"d;" + BOTNUM + ";0;\");g_2020_autonomous_base();");
+    create_button("0...", "CONNECTION.send(\"d;" + BOTNUM + ";" + MATCHNUM + ";0;\");g_2020_autonomous_base();");
+    create_break();
+    create_break();
+    create_button("Back to robot selection ⏪", "g_2020_custom_team_number();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }

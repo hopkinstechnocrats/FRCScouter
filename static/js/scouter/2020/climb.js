@@ -13,8 +13,8 @@ function g_2020_climb_base() {
     create_checkbox("g_2020_climb_sucsess();", CLIMB_SUCEESS);
     create_break();
     create_break();
-
     create_button("Game end 🔚", "g_2020_climb_to_end();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }
 
 function g_2020_climb_to_end() {
@@ -38,7 +38,7 @@ function g_2020_climb_to_end() {
     else {
         appendable += "0;";
     }
-    CONNECTION.send("j;" + BOTNUM + ";" + appendable);
+    CONNECTION.send("j;" + BOTNUM + ";" + MATCHNUM + ";" + appendable);
     g_2020_post_base();
 }
 

@@ -29,6 +29,7 @@ function g_2020_post_base() {
     }
     create_break();
     create_button("Done!", "g_2020_post_to_queue();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }
 
 function g_2020_post_to_queue() {
@@ -64,7 +65,7 @@ function g_2020_post_to_queue() {
     else {
         appendable += "0;";
     }
-    CONNECTION.send("k;" + BOTNUM + ";" + appendable + SLIDER_1_VALUE + ";" + SLIDER_2_VALUE + ";");
+    CONNECTION.send("k;" + BOTNUM + ";" + MATCHNUM + ";" + appendable + SLIDER_1_VALUE + ";" + SLIDER_2_VALUE + ";");
     g_2020_game_end(0);
 }
 
@@ -136,5 +137,5 @@ function g_2020_game_end(clock) {
     create_break();
     create_break();
     create_button("Return to the main page", "location.reload();");
-    setTimeout(g_2020_game_end, 1000, clock + 1);
+    setTimeout(g_2020_game_end, 500, clock + 1);
 }

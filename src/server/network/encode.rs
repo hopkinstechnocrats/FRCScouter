@@ -49,44 +49,44 @@ pub fn stream_to_raw(stream: Stream) -> String {
             Packet::G2020LeaveQueue(usid) => {
                 fin += &format!("c;{};", usid);
             },
-            Packet::G2020PreloadedCells(robo, cells) => {
-                fin += &format!("d;{};{};", robo, cells);
+            Packet::G2020PreloadedCells(robo, game, cells) => {
+                fin += &format!("d;{};{};{};", robo, game, cells);
             },
-            Packet::G2020AutoShot(robo, high, missed, position) => {
+            Packet::G2020AutoShot(robo, game, high, missed, position) => {
                 let val1;
                 let val2;
                 if high { val1 = 1 } else { val1 = 0 }
                 if missed { val2 = 1 } else { val2 = 0 }
-                fin += &format!("e;{};{};{};{};", robo, val1, val2, position);
+                fin += &format!("e;{};{};{};{};{};", robo, game, val1, val2, position);
             },
-            Packet::G2020AutoLine(robo, passed) => {
+            Packet::G2020AutoLine(robo, game, passed) => {
                 let val;
                 if passed { val = 1 } else { val = 0 }
                 fin += &format!("f;{};{};", robo, val);
             },
-            Packet::G2020TeleShot(robo, high, missed, position) => {
+            Packet::G2020TeleShot(robo, game, high, missed, position) => {
                 let val1;
                 let val2;
                 if high { val1 = 1 } else { val1 = 0 }
                 if missed { val2 = 1 } else { val2 = 0 }
-                fin += &format!("g;{};{};{};{};", robo, val1, val2, position);
+                fin += &format!("g;{};{};{};{};{};", robo, game, val1, val2, position);
             },
-            Packet::G2020PositionControl(robo) => {
-                fin += &format!("h;{};", robo);
+            Packet::G2020PositionControl(robo, game) => {
+                fin += &format!("h;{};{};", robo, game);
             },
-            Packet::G2020RotationControl(robo) => {
-                fin += &format!("i;{};", robo);
+            Packet::G2020RotationControl(robo, game) => {
+                fin += &format!("i;{};{};", robo, game);
             },
-            Packet::G2020AttemptedClimb(robo, moved, balenced, good) => {
+            Packet::G2020AttemptedClimb(robo, game, moved, balenced, good) => {
                 let val1;
                 let val2;
                 let val3;
                 if moved { val1 = 1 } else { val1 = 0 }
                 if balenced { val2 = 1 } else { val2 = 0 }
                 if good { val3 = 1 } else { val3 = 0 }
-                fin += &format!("j;{};{};{};{};", robo, val1, val2, val3);
+                fin += &format!("j;{};{};{};{};{};", robo, game, val1, val2, val3);
             },
-            Packet::G2020EndGameQuestions(robo, q1, q2, q3, q4, q5, state1, state2) => {
+            Packet::G2020EndGameQuestions(robo, game, q1, q2, q3, q4, q5, state1, state2) => {
                 // no. there has to be a btter way to do this, but frankly I don't have the time or
                 // energy to find it and fix this
                 let val1;
@@ -99,7 +99,7 @@ pub fn stream_to_raw(stream: Stream) -> String {
                 if q3 { val3 = 1 } else { val3 = 0 }
                 if q4 { val4 = 1 } else { val4 = 0 }
                 if q5 { val5 = 1 } else { val5 = 0 }
-                fin += &format!("k;{};{};{};{};{};{};{};{};", robo, val1, val2, val3, val4, val5, state1, state2);
+                fin += &format!("k;{};{};{};{};{};{};{};{};{};", robo, game, val1, val2, val3, val4, val5, state1, state2);
             },
             Packet::G2020RequestData(typeto, data) => {
                 fin += &format!("l;{};{};", typeto, data);

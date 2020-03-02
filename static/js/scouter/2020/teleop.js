@@ -11,14 +11,15 @@ function g_2020_teleop_base() {
     create_button("Missed Low 💔", "g_2020_map_live_phase(3);");
     create_break();
     create_break();
-    create_button("Rotation Control 🔄", "CONNECTION.send(\"i;" + BOTNUM + ";\");");
+    create_button("Rotation Control 🔄", "CONNECTION.send(\"i;" + BOTNUM + ";" + MATCHNUM + ";\");");
     create_break();
-    create_button("Position Control ♿", "CONNECTION.send(\"h;" + BOTNUM + ";\");");
+    create_button("Position Control ♿", "CONNECTION.send(\"h;" + BOTNUM + ";" + MATCHNUM + ";\");");
     create_break();
     create_break();
     create_button("Attempted climb 🧗‍♀️", "g_2020_climb_confirm();");
     create_break();
     create_button("Game end 🔚", "g_2020_end_confirm();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }
 
 function g_2020_climb_confirm() {
@@ -116,11 +117,12 @@ function g_2020_map_live_phase(from) {
             }
             // send server map data
             CONNECTION.send(
-                "g;" + BOTNUM + ";" + sucess + ";" + hight + ";" + position + ";"
+                "g;" + BOTNUM + ";" + MATCHNUM + ";" + sucess + ";" + hight + ";" + position + ";"
             );
             g_2020_teleop_base();
         }
     });
     create_break();
     create_button("Back ⏪", "g_2020_teleop_base();");
+    create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }
