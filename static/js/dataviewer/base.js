@@ -39,7 +39,7 @@ function team_statistics(teamnum) {
     }
     if (found_data) {
         create_text("Team " + teamnum + " has participated in " + dispdata.matches.length + " matches.");
-        create_button("Overall statistics", "multi_match_stats(" + i + ");");
+        create_button("Overall statistics", "multi_match_stats(" + ival + ");");
         create_break();
         create_break();
         for (let j = 0; j < dispdata.matches.length; j++) {
@@ -58,7 +58,7 @@ function multi_match_stats(i) {
     create_text_big("Autonomous");
     create_text("not done!");
     create_break();
-    create_button("Back ⏪", "team_statistics(" + team + ");");
+    create_button("Back ⏪", "team_statistics(" + DATA_QUEUE.teams[i].team_number + ");");
 }
 
 function match_stats(i, j) {
@@ -66,7 +66,6 @@ function match_stats(i, j) {
     let team = DATA_QUEUE.teams[i].team_number;
     let match = DATA_QUEUE.teams[i].matches[j].match_number;
     create_text_massive("Data for team " + team + " in match " + match);
-    //create_text("raw: " + JSON.stringify(DATA_QUEUE.teams[i].matches[j], null, 4));
     let data = {
         autoshots: 0,
         autoshotsgood: 0,
@@ -78,6 +77,8 @@ function match_stats(i, j) {
         reposition: false,
         balenced: false,
         completed_climb: false,
+        red_alliance: false,
+        fouled: false,
     };
     for (let k = 0; k < DATA_QUEUE.teams[i].matches[j].packets.length; k++) {
         let this_packet = DATA_QUEUE.teams[i].matches[j].packets[k];
@@ -104,6 +105,16 @@ function match_stats(i, j) {
         }
         else if (this_packet.packet.type == "RotationControl") {
             data.rotation += 1;
+        }
+        else if (this_packet.packet.type == "AttemptedClimb") {
+            data.climbed = true;
+            data.reposition = this_packet.packet.repositioned;
+            data.balenced = this_packet.packet.reposition;
+            data.completed_climb = this_packet.packet.completed;
+        }
+        else if (this_packet.packet.type == "EndQuestions") {
+            data.red_alliance = this_packet.packet.was_red;
+            data.fouled = this_packet.packet.did_foul;
         }
         else {
             console.log("unregistered type: " + this_packet.packet.type);
@@ -162,6 +173,46 @@ function match_stats(i, j) {
     }
     else {
         create_text("Rotation control attempted " + data.rotation + " times. ✔️");
+    }
+    create_break();
+    create_text_big("Climbing");
+    if (!data.climbed) {
+        create_text("Did not attempt to climb. ❌");
+    }
+    else {
+        create_text("Attempted to climb. ✔️");
+        if (data.balenced) {
+            create_text("Was balenced. ✔️");
+        }
+        else {
+            create_text("Was not balenced. ❌");
+        }
+        if (data.reposition) {
+            create_text("Can reposition. ✔️");
+        }
+        else {
+            create_text("Cannot reposition. ❌");
+        }
+        if (data.completed_climb) {
+            create_text("Climbed successfully. ✔️");
+        }
+        else {
+            create_text("Failed to complete climbing. ❌");
+        }
+    }
+    create_break();
+    create_text_big("General");
+    if (data.red_alliance) {
+        create_text("Team was on the red alliance. 🔴");
+    }
+    else {
+        create_text("Team was on the blue alliance. 🔵");
+    }
+    if (data.fouled) {
+        create_text("Had fouls. ❌");
+    }
+    else {
+        create_text("Did not have fouls. ✔️");
     }
     create_break();
     create_button("Back ⏪", "team_statistics(" + team + ");");
