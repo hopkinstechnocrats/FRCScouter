@@ -67,9 +67,10 @@ pub enum Packet {
     /// Server allows access | packet id `p`/25 | (token)
     AGrantAccess(String),
     /// Client sends admin command | packet id `q`/26 | (token, command, data)
-    /// command = 1: start match (no data)
+    /// command = 1: clear data full (no data)
     /// command = 2: set password (password)
-    /// command = 3: reset games (no data)
+    /// command = 3: clear team (team number)
+    /// command = 4: clear match (match number)
     ACommand(String, usize, usize)
 }
 

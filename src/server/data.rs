@@ -12,14 +12,9 @@ pub struct ServerData {
     pub packets: PacketList,
     /// represents all the client connections
     connected_ips: Vec<ws::Sender>,
-    /// marks the ID of the user as well as the particular robot being scouted
-    pub robots_scouted: Vec<(usize, usize)>, // usid, robot
-    /// associates IDs with internal indexes (see `connected_ips`)
-    pub usid_association: Vec<(usize, usize)>, // usid, internal
-    pub recent_clear: bool,
     /// reperesents the current login password for the admin portal
     pub admin_pass: usize,
-    /// represents a long token to confirm identitiy
+    /// represents a long token to confirm admin identitiy
     pub token: String,
 }
 
@@ -30,9 +25,6 @@ impl ServerData {
             usid: 0,
             packets: PacketList::new(),
             connected_ips: vec![],
-            robots_scouted: vec![],
-            usid_association: vec![],
-            recent_clear: false,
             admin_pass: 2239,
             token: String::from("NOTOKEN"),
         };

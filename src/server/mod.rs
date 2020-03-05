@@ -66,15 +66,6 @@ pub fn launch_websocket() {
                     Packet::PongClient(a, b) => {
                         let mut server = server.lock().unwrap();
                         server.packets.pings.push(WrappedPacket::new_from_packet(Packet::PongClient(a, b)));
-                        let mut found = false;
-                        for i in server.usid_association.clone() {
-                            if i.0 == a || i.1 == b {
-                                found = true;
-                            }
-                        }
-                        if !found {
-                            server.usid_association.push((a, b));
-                        }
                         drop(server);
                     },
                     // User requested an id
@@ -102,7 +93,6 @@ pub fn launch_websocket() {
                         drop(server);
                         // compute
                         let game_data_done = compute_game_data(game_data);
-                        //println!("test general:\n`{:?}`", game_data_done);
                         // convert to json
                         let mut root = json::JsonValue::new_object();
                         let mut team_sub = json::JsonValue::new_array();
@@ -213,23 +203,42 @@ pub fn launch_websocket() {
                         let mut server = server.lock().unwrap();
                         if server.token != token {
                             println!("INVALID ADMIN TOKEN!");
+                            payload.push(Packet::ADenyAccess());
                         }
                         else {
                             match command {
                                 1 => {
-                                    // DEPRECIATED, TO BE REMOVED
-                                    //server.start_game_flag = true;
-                                    println!("Start flag set by admin.");
-                                }
+                                    server.packets = data::PacketList::new();
+                                    println!("Mass server data reset by admin.");
+                                },
                                 2 => {
                                     server.admin_pass = data;
-                                    println!("Password set by admin.");
-                                }
+                                    println!("Password set to {} by admin.", data);
+                                },
                                 3 => {
-                                    //server.game = 0;
-                                    server.packets = data::PacketList::new();
-                                    println!("Server games reset by admin.");
-                                }
+                                    let mut index = 0;
+                                    let mut removals = 0;
+                                    for i in server.packets.game.clone() {
+                                        if i.team == Some(data) {
+                                            server.packets.game.remove(index - removals);
+                                            removals += 1;
+                                        }
+                                        index += 1;
+                                    }
+                                    println!("Team {}'s data reset by admin.", data);
+                                },
+                                4 => {
+                                    let mut index = 0;
+                                    let mut removals = 0;
+                                    for i in server.packets.game.clone() {
+                                        if i.game == Some(data) {
+                                            server.packets.game.remove(index - removals);
+                                            removals += 1;
+                                        }
+                                        index += 1;
+                                    }
+                                    println!("Match {}'s data reset by admin.", data);
+                                },
                                 a => {println!("Unknown admin command `{}`", a)}
                             }
                         }

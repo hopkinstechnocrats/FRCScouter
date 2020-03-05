@@ -1,11 +1,21 @@
 OFF_AUTO_LINE = false;
+OUT_OF_TIME = false;
 
 function g_2020_autonomous_base() {
+    setTimeout(() => {OUT_OF_TIME = true;}, 45000);
     clear_page();
     create_text_massive("Autonomous 🤖")
     create_break();
     create_text("Moved off auto line: ⚙️");
     create_checkbox("g_2020_auto_line();", OFF_AUTO_LINE);
+    create_break();
+    create_break();
+    if (!OUT_OF_TIME) {
+        create_button("Finish autonomous ⏭️", "g_2020_finish_auto();");
+    }
+    else {
+        create_button("FINISH AUTONOMOUS ⏭️", "g_2020_finish_auto();");
+    }
     create_break();
     create_break();
     create_button("Shot High ⬆️", "g_2020_map_phase(0);");
@@ -15,9 +25,6 @@ function g_2020_autonomous_base() {
     create_button("Missed High 💔", "g_2020_map_phase(2);");
     create_break();
     create_button("Missed Low 💔", "g_2020_map_phase(3);");
-    create_break();
-    create_break();
-    create_button("Finish autonomous ⏭️", "g_2020_finish_auto();");
     create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }
 

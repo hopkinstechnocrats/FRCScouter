@@ -27,6 +27,38 @@ function create_button(text, callback) {
     ctx.appendChild(node);
 }
 
+
+NUMPADRESULT = "";
+
+/**
+ * Creates a numpad that generates NUMPADRESULT when used
+ * @param {Function} pagename - Function on any button press
+ * @param {Function} confirmpage - Function when the checkmark button is clicked
+ */
+function create_numpad(pagename, confirmpage) {
+    if (NUMPADRESULT == "") {
+        create_text_big("----");
+    }
+    else {
+        create_text_big(NUMPADRESULT);
+    }
+    create_button("7", "NUMPADRESULT+=\"7\";" + pagename);
+    create_button("8", "NUMPADRESULT+=\"8\";" + pagename);
+    create_button("9", "NUMPADRESULT+=\"9\";" + pagename);
+    create_break();
+    create_button("4", "NUMPADRESULT+=\"4\";" + pagename);
+    create_button("5", "NUMPADRESULT+=\"5\";" + pagename);
+    create_button("6", "NUMPADRESULT+=\"6\";" + pagename);
+    create_break();
+    create_button("1", "NUMPADRESULT+=\"1\";" + pagename);
+    create_button("2", "NUMPADRESULT+=\"2\";" + pagename);
+    create_button("3", "NUMPADRESULT+=\"3\";" + pagename);
+    create_break();
+    create_button("⏪", "NUMPADRESULT=NUMPADRESULT.slice(0,-1);" + pagename);
+    create_button("0", "NUMPADRESULT+=\"0\";" + pagename)
+    create_button("✅", confirmpage);
+}
+
 /**
  * Creates a checkbox that calls a callback when it is clicked
  * @param {Function} callback - Function called on a click

@@ -20,27 +20,7 @@ let BOTNUM = "";
 function load_admin_base() {
     clear_page();
     create_text_massive("Enter password");
-    if (BOTNUM == "") {
-        create_text_big("----");
-    }
-    else {
-        create_text_big(BOTNUM);
-    }
-    create_button("7", "BOTNUM+=\"7\";load_admin_base();");
-    create_button("8", "BOTNUM+=\"8\";load_admin_base();");
-    create_button("9", "BOTNUM+=\"9\";load_admin_base();");
-    create_break();
-    create_button("4", "BOTNUM+=\"4\";load_admin_base();");
-    create_button("5", "BOTNUM+=\"5\";load_admin_base();");
-    create_button("6", "BOTNUM+=\"6\";load_admin_base();");
-    create_break();
-    create_button("1", "BOTNUM+=\"1\";load_admin_base();");
-    create_button("2", "BOTNUM+=\"2\";load_admin_base();");
-    create_button("3", "BOTNUM+=\"3\";load_admin_base();");
-    create_break();
-    create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);load_admin_base();");
-    create_button("0", "BOTNUM+=\"0\";load_admin_base();")
-    create_button("✅", "submit_password();");
+    create_numpad("load_admin_base();", "submit_password();");
 }
 
 function submit_password() {
@@ -52,7 +32,7 @@ function submit_password() {
         invalid_pass();
     }
     else {
-        CONNECTION.send("n;" + BOTNUM + ";");
+        CONNECTION.send("n;" + NUMPADRESULT + ";");
         create_text_big("Logging in...");
         setTimeout(function() {submit_password()}, 500);
     }
@@ -71,36 +51,32 @@ function portal() {
     create_button("Change password", "change_password();");
     create_break();
     create_break();
-    create_button("Reset server games", "CONNECTION.send(\"q;" + A_TOKEN + ";3;0\");");
+    create_button("Reset team", "reset_team_keypad();");
+    create_button();
+    create_button("Reset match", "reset_match_keypad();");
+    create_break();
+    create_button("Reset server games", "CONNECTION.send(\"q;" + A_TOKEN + ";1;0;\");");
+}
+
+function reset_team_keypad() {
+    clear_page();
+    create_text_massive("Enter team number");
+    create_numpad("reset_team_keypad();", "CONNECTION.send(\"q;" + A_TOKEN + ";3;NUMPADRESULT;\");");
+}
+
+function reset_match_keypad() {
+    clear_page();
+    create_text_massive("Enter match number");
+    create_numpad("reset_match_keypad();", "CONNECTION.send(\"q;" + A_TOKEN + ";4;NUMPADRESULT;\");");
 }
 
 function change_password() {
     clear_page();
     create_text_massive("Enter password");
-    if (BOTNUM == "") {
-        create_text_big("----");
-    }
-    else {
-        create_text_big(BOTNUM);
-    }
-    create_button("7", "BOTNUM+=\"7\";change_password();");
-    create_button("8", "BOTNUM+=\"8\";change_password();");
-    create_button("9", "BOTNUM+=\"9\";change_password();");
-    create_break();
-    create_button("4", "BOTNUM+=\"4\";change_password();");
-    create_button("5", "BOTNUM+=\"5\";change_password();");
-    create_button("6", "BOTNUM+=\"6\";change_password();");
-    create_break();
-    create_button("1", "BOTNUM+=\"1\";change_password();");
-    create_button("2", "BOTNUM+=\"2\";change_password();");
-    create_button("3", "BOTNUM+=\"3\";change_password();");
-    create_break();
-    create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);change_password();");
-    create_button("0", "BOTNUM+=\"0\";change_password();")
-    create_button("✅", "confirm_change();");
+    create_numpad("change_password();", "confirm_change();");
 }
 
 function confirm_change() {
-    CONNECTION.send("q;" + A_TOKEN + ";2;" + BOTNUM + ";");
+    CONNECTION.send("q;" + A_TOKEN + ";2;" + NUMPADRESULT + ";");
     portal();
 }

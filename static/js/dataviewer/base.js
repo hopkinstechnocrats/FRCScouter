@@ -55,8 +55,64 @@ function team_statistics(teamnum) {
 
 function multi_match_stats(i) {
     clear_page();
-    create_text_big("Autonomous");
-    create_text("not done!");
+    let accum_data = [];
+    for (let j = 0; j < DATA_QUEUE.teams[i].matches.length; j++) {
+        for (let k = 0; k < DATA_QUEUE.teams[i].matches[j].packets.length; k++) {
+            accum_data.push(DATA_QUEUE.teams[i].matches[j].packets[k].packet);
+        }
+    }
+    create_text(JSON.stringify(accum_data));
+    let data = {
+        matches_paticipated: DATA_QUEUE.teams[i].matches.length,
+        cells_low: 3,
+        cells_high: 0,
+        cells: [],
+        line_passed: 0,
+        shots_total_auto: 0,
+        shots_missed_auto: 0,
+        shots_high_auto: 0,
+        shots_total_tele: 0,
+        shots_missed_tele: 0,
+        shots_high_tele: 0,
+    };
+    for (let j = 0; j < accum_data.length; j++) {
+        let this_packet = accum_data[j];
+        if (this_packet.type == "PreloadedCells") {
+            if (this_packet.amount > data.cells_high) {
+                data.cells_high = this_packet.amount;
+            }
+            if (this_packet.amount < data.cells_low) {
+                data.cells_low = this_packet.amount;
+            }
+            data.cells.push(this_packet.amount);
+        }
+        else if (this_packet.type == "AutoLine") {
+            if (this_packet.amount) {
+                data.line_passed += 1;
+            }
+        }
+    }
+    create_text_massive("Autonomous");
+    create_text_big("Preloaded Cells");
+    let avg_cells = 0;
+    for (let j = 0; j < data.cells.length; j++) {
+        avg_cells += data.cells[j];
+    }
+    avg_cells /= data.cells.length;
+    create_text(data.cells_low + " cells minimum, " + data.cells_high + " cells maximum, with an average of " + Math.round(avg_cells) + " cells.");
+    create_button("Compare");
+    create_text_big("Auto Line");
+    create_text("Crossed auto line " + data.line_passed + "/" + data.matches_paticipated + " times. (" + Math.round(data.line_passed / data.matches_paticipated * 100) + "%)");
+    create_button("Compare");
+    create_text_big("Shots");
+    create_text(data.shots_missed_auto + "/" + data.shots_total_auto + " shots missed (" + Math.round(data.shots_missed_auto / data.shots_total_auto * 100) + "%)");
+    create_button("Compare");
+    create_break();
+    create_text_big("Teleop");
+    create_break();
+    create_text_big("Climbing");
+    create_break();
+    create_text_big("General")
     create_break();
     create_button("Back ⏪", "team_statistics(" + DATA_QUEUE.teams[i].team_number + ");");
 }
