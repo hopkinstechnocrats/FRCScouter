@@ -230,10 +230,14 @@ function create_meter(amnt) {
 }
 
 /**
- * Creates a newline/break.
+ * Creates a newlines.
+ * @param {Number} amount - Optional number of lines to create
  */
-function create_break() {
+function create_break(amount) {
     var ctx = document.getElementById("content");
     var node = document.createElement("br");
     ctx.appendChild(node);
+    if (amount > 1) {
+        create_break(amount - 1);
+    }
 }

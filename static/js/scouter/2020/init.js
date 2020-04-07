@@ -1,7 +1,7 @@
 function display_2020_game() {
     create_text_big("2020 - Infinite Recharge 🔋");
     create_break();
-    create_button("Confirm Scouting ✅", "g_2020_custom_match_number();");
+    create_button("Confirm Scouting ✅", "ON_GAMES=false;g_2020_custom_match_number();");
 }
 
 MATCHNUM = "";
@@ -30,8 +30,7 @@ function g_2020_custom_match_number() {
     create_button("⏪", "MATCHNUM=MATCHNUM.slice(0,-1);g_2020_custom_match_number();");
     create_button("0", "MATCHNUM+=\"0\";g_2020_custom_match_number();")
     create_button("✅", "g_2020_submit_match_num();");
-    create_break();
-    create_break();
+    create_break(2);
     create_button("Back to game selection ⏪", "load_scouter_base();");
 }
 
@@ -72,8 +71,7 @@ function g_2020_custom_team_number() {
     create_button("⏪", "BOTNUM=BOTNUM.slice(0,-1);g_2020_custom_team_number();");
     create_button("0", "BOTNUM+=\"0\";g_2020_custom_team_number();")
     create_button("✅", "g_2020_submit_team_num();");
-    create_break();
-    create_break();
+    create_break(2);
     create_button("Back to match selection ⏪", "g_2020_custom_match_number();");
 }
 
@@ -97,8 +95,7 @@ function g_2020_preloaded_cells() {
     create_button("1", "CONNECTION.send(\"d;" + BOTNUM + ";" + MATCHNUM + ";1;\");g_2020_autonomous_base();");
     create_break();
     create_button("0...", "CONNECTION.send(\"d;" + BOTNUM + ";" + MATCHNUM + ";0;\");g_2020_autonomous_base();");
-    create_break();
-    create_break();
+    create_break(2);
     create_button("Back to robot selection ⏪", "g_2020_custom_team_number();");
     create_text("Scouting team " + BOTNUM + " for match " + MATCHNUM);
 }

@@ -27,6 +27,7 @@ let DATA_QUEUE = {};
 let A_STATUS = -1;
 let A_TOKEN = "";
 let HAS_DATA = false;
+let NETWORK_GAMES = [];
 
 setInterval(() => {
     if (ACTIVE_CONNECTION) {
