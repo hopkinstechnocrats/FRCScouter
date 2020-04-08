@@ -1,4 +1,6 @@
 FRCScouter
+![Rust](https://github.com/hopkinstechnocrats/FRCScouter/workflows/Rust/badge.svg)
+![Version](https://img.shields.io/github/v/tag/hopkinstechnocrats/FRCScouter?color=yellow&label=Version)
 ===
 A robust and easy to use robot scouting tool with built in data analasys. Made for FRC robotics teams, by an FRC robotics team.
 
@@ -7,7 +9,7 @@ Setting it up Locally
 - [Download](https://github.com/hopkinstechnocrats/FRCScouter/releases) the latest distributed package
 - Unzip the file
 - Run the executable
-- Chnage the IP adress in `static/js/network/steam.js` to the local server
+- Chnage the IP adress in `static/js/network.js` to the local server
 - [Visit the site!](http://127.0.0.1/) (link works locally only)
 - If you'd like to use this website externaly, forward the ports 80 and 81
 
@@ -17,9 +19,13 @@ Building from Source
 - If wanted, change `Rocket.toml` to a diffrent address/port
 - `cargo build --release`
 - Put the `static` folder in the same location as the generated executable (`target/release/frcscouter.exe`)
-- Set `static/js/network/stream.js`'s IP variable to be the ip of your server
+- Set `static/js/network.js`'s IP variable to be the ip of your server
 - Also put `Rocket.toml` alongside these
 - Enjoy!
+
+Using the API
+---
+Coming soon!
 
 Project Structure
 ---
@@ -40,22 +46,11 @@ src             ; Backend Rust server
 static          ; Frontend HTML/JS/CSS
 | index.html    ; Base HTML
 | main.css      ; Base CSS
-| admin         ; Base HTML for /admin
 | favicon.ico   ; Page icon
 | js            ; Contains all page JS
 | | page.js     ; Tools for creating page elements
-| | admin.js    ; Page material for admin
-| | network     ; Contains network JS
-| | | encode.js ; Encode Token -> String
-| | | decode.js ; Decode String -> Token
-| | | stream.js ; Handle connections and reponding
-| | dataviewer  ; View Collected Data JS
-| | | base.js   ; It's dataviewer.
-| | | canvas.js ; Depreciated, removing soon
-| | scouter     ; Contains Scouter code
-| | | main.js   ; Base page
-| | | 2020      ; 2020 Game
-| | | | ...     ; 
+| | network.js  ; Contains network JS
+| | scouter.js  ; Loads the scouter material
 Cargo.toml  ; Rust project config
 Rocket.toml ; Rust server IP/Port
 ```

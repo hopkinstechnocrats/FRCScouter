@@ -4,31 +4,18 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>FRC Scouter</title>
-        <!-- Network stuff: sending and reciving packets across WebSocket -->
-        <script src="js/network/stream.js"></script>
-        <script src="js/network/decode.js"></script>
-        <script src="js/network/encode.js"></script>
-        <!-- Webpage creation tools -->
+        <!-- JS -->
+        <script src="js/network.js"></script>
         <script src="js/page.js"></script>
-        <script src="js/dataviewer/canvas.js"></script>
-        <!-- dataviewer -->
-        <script src="js/dataviewer/base.js"></script>
-        <!-- SCOUTING APP PAGES -->
-        <script src="js/scouter/main.js"></script>
-        <!-- 2020 game -->
-        <script src="js/scouter/2020/init.js"></script>
-        <script src="js/scouter/2020/autonomous.js"></script>
-        <script src="js/scouter/2020/teleop.js"></script>
-        <script src="js/scouter/2020/climb.js"></script>
-        <script src="js/scouter/2020/post.js"></script>
-        <!-- CSS files -->
+        <script src="js/scouter.js"></script>
+        <!-- CSS -->
         <link href="main.css" rel="stylesheet" type="text/css" />
     </head>
     <body id="content">
-        <!-- Default page content -->
-        <h1>
-            Page Loading...
-        </h1>
-        <h5 id="serv">Server Connection Pending... ❓</h5>
+        <h5 id="serv">Attempting to connect to server... ❓</h5>
+        <h5>
+            If a connection cannot be established in 5 seconds you will be connected to a backed up
+            version of the site.
+        </h5>
     </body>
 </html>
