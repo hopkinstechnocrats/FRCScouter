@@ -24,6 +24,25 @@ setTimeout(() => {
     load_cookie_site();
 }, 5000);
 
+
+/**
+ * Requests something from the server.
+ * @param {Object} request - Object of request to send
+ * @returns {Object} - Object of response
+ */
+function server_request(request) {
+    // create a new connection to IP:PORT
+    CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
+    // return response when recieved
+    CONNECTION.onmessage = function(e) {
+        return e.data;
+    }
+    // send message as soon as we can
+    CONNECTION.onopen = function(_) {
+        CONNECTION.send(JSON.stringify(request));
+    }
+}
+
 /**
  * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
  */

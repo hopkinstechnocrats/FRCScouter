@@ -1,17 +1,16 @@
 [package]
 name = "FRCScouter"
 version = "0.1.1"
-authors = ["jadedgem", "henryscheible", "https://www.twitch.tv/x03t/", "team2239"]
+authors = ["thisjaiden", "henryscheible", "https://www.twitch.tv/x03t/", "team2239"]
 edition = "2018"
 
 [dependencies]
 ws = "0.9.1"
-rocket = "0.4.2"
-json = "0.12.1"
-chrono = "0.4.10"
+rocket = "0.4.4"
+json = "0.12.4"
 rand = "0.7.3"
 
 [dependencies.rocket_contrib]
-version = "0.4.2"
+version = "0.4.4"
 default-features = false
 features = ["json", "serve"]
