@@ -2,55 +2,21 @@ FRCScouter
 ![Rust](https://github.com/hopkinstechnocrats/FRCScouter/workflows/Rust/badge.svg)
 ![Version](https://img.shields.io/github/v/tag/hopkinstechnocrats/FRCScouter?color=yellow&label=Version)
 ===
-A robust and easy to use robot scouting tool with built in data analasys. Made for FRC robotics teams, by an FRC robotics team.
+A robust and easy to use robot scouting tool with built in data analasys. Use the built in templates for each year's game or customize it to exactly how you need it with no Javascript or Rust knowledge needed.
 
-Setting it up Locally
----
-- [Download](https://github.com/hopkinstechnocrats/FRCScouter/releases) the latest distributed package
-- Unzip the file
-- Run the executable
-- Chnage the IP adress in `static/js/network.js` to the local server
-- [Visit the site!](http://127.0.0.1/) (link works locally only)
-- If you'd like to use this website externaly, forward the ports 80 and 81
+![Include an image here of the app's homepage]()
 
-Building from Source
+Features
 ---
-- Make sure you have nightly [Rust](https://rust-lang.org) installed and updated (`rustup install nightly`/`rustup update nightly`)
-- If wanted, change `Rocket.toml` to a diffrent address/port
-- `cargo build --release`
-- Put the `static` folder in the same location as the generated executable (`target/release/frcscouter.exe`)
-- Set `static/js/network.js`'s IP variable to be the ip of your server
-- Also put `Rocket.toml` alongside these
-- Enjoy!
+ - **No active connection needed**, data is backed up to your device and uploaded when you get wifi or data automagically
+ - **Low size** (size here), can be loaded over poor cell connection easily
+ - **Designed mobile first**, everything else later
+ - Made to be **easy to use**
+ - Built in **[data anyalsis](put an image here)**
+ - Optional **[cloud backup to AWS](link to docs advanced backing up)**
+ - Server is extremely performant and takes minimal resources
+ - Did I mention **easy customizability**?
+ - Seriously, you can change nothing or everything if you'd like
 
-Using the API
+[See the Docs](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/index.md)
 ---
-Coming soon!
-
-Project Structure
----
-```
-src             ; Backend Rust server
-| main.rs       ; Bootstraps the Rust server
-| server        ; Contains the server code
-| | mod.rs      ; Responds to clients
-| | data.rs     ; Describes data structures used
-| | ping.rs     ; Pings and checks to connections
-| | console.rs  ; Provides the user-facing console
-| | network     ; Contains core network utitilies
-| | | mod.rs    ; Imports other files
-| | | encode.rs ; Encode Token -> String
-| | | decode.rs ; Decode String -> Token
-| | | stream.rs ; Sends strings over the network
-| | | packet.rs ; Describes network packets
-static          ; Frontend HTML/JS/CSS
-| index.html    ; Base HTML
-| main.css      ; Base CSS
-| favicon.ico   ; Page icon
-| js            ; Contains all page JS
-| | page.js     ; Tools for creating page elements
-| | network.js  ; Contains network JS
-| | scouter.js  ; Loads the scouter material
-Cargo.toml  ; Rust project config
-Rocket.toml ; Rust server IP/Port
-```

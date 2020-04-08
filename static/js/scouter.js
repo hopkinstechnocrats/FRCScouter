@@ -13,5 +13,8 @@ function load_network_site() {
 }
 
 function load_cookie_site() {
-
+    if (Cookies.get("exists") == undefined) {
+        clear_page();
+        create_text_massive("No backed up version of the site could be found. The server may be down or your connection may be poor. Refresh the page when you would like to try again.");
+    }
 }
