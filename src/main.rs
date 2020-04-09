@@ -27,8 +27,18 @@ fn main() {
             let input = &msg.clone().into_text().unwrap_or_else(|_| {
                 // warn that bytes were passed instead of a string, but don't crash.
                 println!("WS SERVER UNABLE TO UNWRAP MESSAGE");
-                return String::from("{invalid_data: true}");
+                return String::from("{\"result\": \"wrong-format\"}");
             });
+            let alt = json::parse("{\"result\":\"not-json\"}").unwrap();
+            let json = json::parse(input).unwrap_or(alt);
+            if json["result"].is_string() {
+                if json["result"] == "not-json" || json["result"] == "wrong-format" {
+                    return out.send(json::stringify(json));
+                }
+                else {
+                    // ERROR!
+                }
+            }
             let mut output = String::new();
             out.send(output)
         }

@@ -1,24 +1,25 @@
 Using the API
 ===
 
-Connecting via WebSocket
+Requesting via WebSocket
 ---
 The websocket server is hosted at the IP address of your server on port 81, unless reconfigured. In Javascript connecting is as easy as the following code sample:
 
 ```js
 IP = "example.ip.address.here";
 PORT = "81";
+DATA = {};
 /**
- * Requests something from the server.
+ * Requests something from the server. Populates DATA when received.
  * @param {Object} request - Object of request to send
- * @returns {Object} - Object of response
  */
 function server_request(request) {
+    DATA = {};
     // create a new connection to IP:PORT
     CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
     // return response when recieved
     CONNECTION.onmessage = function(e) {
-        return e.data;
+        DATA = e.data;
     }
     // send message as soon as we can
     CONNECTION.onopen = function(_) {
@@ -41,8 +42,104 @@ Checking Versions
 ---
 When you connect, it is **ESSENTIAL** that you check versions. If you don't, you can run into a whole host of problems that can be hard to diagnose and can easily break custom clients, and even occasionally servers. Use the `version` request field shown below.
 
-Requests
+Format for Normal Requests and Responses
+---
+**Get server version**  
+Queries a server for the version of netcode/the API that it is using
+
+Request
+```json
+{
+    "request": "version"
+}
+```
+Response
+```json
+{
+    "result": "version",
+    "version": "version_name_here"
+}
+```
+
+**Get Page**  
+Queries a server for the material of a page. A valid list of page names and their uses can be found below. Note that this is subject to change.
+
+_Valid names_
+ - homepage
+ - game-lister
+ - data-home
+
+Either an error for an invalid page name will be returned or the contents of a page as a [JSON Page](put link here)
+
+```json
+// Request
+{
+    "request": "get-page",
+    "page": "page_name_here"
+}
+```
+On success
+```json
+// Response
+{
+    "result": "get-page",
+    "page-name": "page_name_here",
+    "status": "pass",
+    "page-material": {
+        // See JSON page docs above
+    }
+}
+```
+On faliure
+```json
+// Response
+{
+    "result": "get-page",
+    "status": "fail",
+    "reason": "error_message_here"
+}
+```
+
+Unusual Responses
 ---
 
-Responses
----
+This is a list of responses you might not expect from a particular request but that can be emmited at any point.  
+
+**Unkown request**  
+
+The `request` field of the header was not a known value.
+```json
+// Response
+{
+    "result": "unkown-request",
+    "request": "the_received_and_unkown_request"
+}
+```
+
+**Missing or broken key**
+```json
+// Response
+{
+    "result": "broken-key"
+}
+```
+
+**Wrong format**
+
+Data received was in the wrong format. (sent bytes instead of a string)
+```json
+// Response
+{
+    "result": "wrong-format"
+}
+```
+
+**Not JSON**
+
+Data received was not parseable JSON.
+```json
+// Response
+{
+    "result": "not-json"
+}
+```
