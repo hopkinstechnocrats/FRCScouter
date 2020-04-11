@@ -7,7 +7,23 @@ use rocket_contrib::serve::StaticFiles;
 use std::thread;
 use ws::listen;
 
+static NETCODE: &str = "rev.5.0.0";
+
+// Helps file writing/reading
+use std::fs::File;
+use std::io::prelude::*;
+
 fn main() {
+    // If a Rocket.toml is not present, create one.
+    let rockettoml = include_bytes!("Rocket.toml");
+    let mut tmp_dir = std::env::current_dir().unwrap();
+    tmp_dir.push("Rocket.toml");
+    if !tmp_dir.exists() {
+        let mut tmp_file = std::fs::File::create(tmp_dir).unwrap();
+        tmp_file.write_all(rockettoml).unwrap();
+    }
+    drop(rockettoml);
+
     // Create and launch rocket website (see /static), on localhost::[rocket.toml]
     // This is done in a new thread
     let _ = thread::spawn(move || {
@@ -21,7 +37,7 @@ fn main() {
     if let Err(error) = listen("0.0.0.0:81", |out| {
         // The handler needs to take ownership of out, so we use move
         {
-            println!("Connecting new client to server.");
+            //println!("Connecting new client to server.");
         }
         move |msg: ws::Message| {
             let input = &msg.clone().into_text().unwrap_or_else(|_| {
@@ -39,8 +55,20 @@ fn main() {
                     // ERROR!
                 }
             }
-            let mut output = String::new();
-            out.send(output)
+            let mut finaljson = json::parse("{}").unwrap();
+            match json["request"].as_str().unwrap_or("NOT STR") {
+                "NOT STR" => {
+                    println!("WARN: Received non string data! {:?}", json["request"]);
+                },
+                "version" => {
+                    finaljson["result"] = "version".into();
+                    finaljson["version"] = NETCODE.into();
+                }
+                _ => {
+                    println!("WARN: Received unknown request! {:?}", json["request"]);
+                }
+            }
+            return out.send(json::stringify(finaljson));
         }
     }) {
         // Inform the user of failure

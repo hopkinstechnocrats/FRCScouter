@@ -13,114 +13,101 @@ let PORT = "81";
 // Represents all globals used for networking
 
 let NETWORK = {
-    // represents the NETCODE version being used in a client. Used for user facing debugging and API
+    // represents the netcode version being used in a client. Used for user facing debugging and API
     // compatibility checking
-    NETCODE: "rev.5.0.0",
-    // tells if the CONNECTION object has triggered onopen
-    OPENED_CONNECTION: false
+    netcode: "rev.5.0.0",
+    // represents data streamed from the network
+    rx_queue: [],
+    // represents data waiting to be outgoing onto the network
+    tx_queue: [],
+    // represents events on network
+    waiting: 0,
+    // `true` if client is waiting for response. `false` if nothing is queued for network
+    network_busy: false,
+    // how often in ms to check the network
+    network_refresh: 100,
+    // amount of refreshes before a network timeout.
+    // (network_refresh * network_timeout = timeout_time)
+    network_timeout: 50,
+    // exactly what it sounds like
+    network_timeout_progress: 0,
+    // if the server could be sucessfully connected to
+    server_found: false,
+    // version of netcode used by server
+    foriegn_netcode: "NEVER_CONNECTED",
+    // represents all received data on the network that may be stored
+    data: {
+        
+    }
 };
 
+// after network stuff is sorted out
 setTimeout(() => {
-    load_cookie_site();
-}, 5000);
+    if (NETWORK.server_found) {
+        if (NETWORK.netcode != NETWORK.foriegn_netcode) {
+            // show netcode error
+            clear_page();
+            create_text_massive("LOCAL NETCODE DOES NOT MATCH FORIEGN NETCODE:");
+            create_text(NETWORK.netcode + " vs " + NETWORK.foriegn_netcode);
+        }
+        else {
+            // show main page
+            load_site();
+        }
+    }
+    else {
+        // show backed up page
+        load_cookie_site();
+    }
+}, 3000);
 
+// after page loads
+server_request({"request": "version"});
 
 /**
  * Requests something from the server.
  * @param {Object} request - Object of request to send
- * @returns {Object} - Object of response
  */
 function server_request(request) {
+    NETWORK.waiting += 1;
+    NETWORK.tx_queue.push(request);
+    NETWORK.network_busy = true;
     // create a new connection to IP:PORT
     CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
     // return response when recieved
     CONNECTION.onmessage = function(e) {
-        return e.data;
+        NETWORK.rx_queue.push(JSON.parse(e.data));
     }
     // send message as soon as we can
     CONNECTION.onopen = function(_) {
-        CONNECTION.send(JSON.stringify(request));
+        CONNECTION.send(JSON.stringify(NETWORK.tx_queue.shift()));
     }
+    network_busy();
 }
 
 /**
- * Starts a new connection if there is not one running. Sets the ACTIVE_CONNECTION flag.
+ * Network loop.
  */
-function start_connection() {
-    if (ACTIVE_CONNECTION) {
-        // This isn't technically possible with current project config, but by the time that anything
-        // might cause this to fail I'll have forgotten about it so here's a reminder.
-        console.log("Warning: a connection was already active when start_connection was called.");
-    }
-    else if (!EVER_CONNECTED) {
-        CONNECTION_QUEUED = true;
-        CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
-        // Maybe we should just suck it up and put all client network logic here?
-        // Meh, I'll do that tomorrow
-        CONNECTION.onmessage = function(event) {
-            let data = event.data;
-            let packets = packets_from_raw(data);
-            for (let i = 0; i < packets.length; i++) {
-                let pack = packets[i];
-                switch (pack.packet_type) {
-                    case 1:
-                        if (USID == -1) {
-                            USID = pack.usid;
-                            console.log("USID set! (" + USID + ")");
-                        }
-                        else {
-                            console.log("Warning: recived the USID assignment `" + pack.usid + "` while already using `" + USID + "`");
-                        }
-                        break;
-                    case 4:
-                        if (USID == -1) {
-                            console.log("Warning: no USID avalable when needed (packet responder 4)");
-                        }
-                            else {
-                            pack.packet_type = 5;
-                            pack.usid = USID;
-                            CONNECTION.send(
-                                raw_from_packets(
-                                    [
-                                        pack
-                                    ]
-                                )
-                            );
-                            PINGSTATE += 1;
-                        }
-                        break;
-                    case 7:
-                        SCOUTERS_INFO = pack.scouters;
-                        break;
-                    case 8:
-                        SCOUTERS_READY = true;
-                        break;
-                    case 11:
-                        RUNNING_GAME = pack.game_id;
-                        break;
-                    case 22:
-                        DATA_QUEUE = JSON.parse(pack.json);
-                        HAS_DATA = true;
-                        break;
-                    default:
-                        console.log("Warning: no handler was found for the packet id `" + pack.packet_type + "`");
-                        break;
-                }
+function network_busy() {
+    if (NETWORK.rx_queue.length != 0) {
+        NETWORK.server_found = true;
+        while (NETWORK.rx_queue.length > 0) {
+            NETWORK.waiting -= 1;
+            let current = NETWORK.rx_queue.pop();
+            switch (current.result) {
+                case "version":
+                    NETWORK.foriegn_netcode = current.version;
+                    break;
+                default:
+                    console.error("Unkown switch during network_busy(): " + current.result);
+                    break;
             }
         }
-        // When we start the connection
-        CONNECTION.onopen = function(_) {
-            // mark that we have opened it, or at least started opening it
-            OPENED_CONNECTION = true;
-        }
-        CONNECTION.onclose = function(_) {
-            console.error("CONNECTION should never be closed.");
-            clear_page();
-            create_text_massive("Disconnected From Server! Please refresh the page.");
-            create_break();
-        }
     }
-    else {
-        console.log("attempted to reconnect when already connected. yeet. not doing that.");
+    if (NETWORK.waiting == 0) {
+        NETWORK.network_busy = false;
+    }
+    if (NETWORK.network_busy) {
+        setTimeout(network_busy, NETWORK.network_refresh);
     }
 }

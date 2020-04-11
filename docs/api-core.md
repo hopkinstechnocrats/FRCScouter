@@ -69,7 +69,7 @@ _Valid names_
  - game-lister
  - data-home
 
-Either an error for an invalid page name will be returned or the contents of a page as a [JSON Page](put link here)
+Either an error for an invalid page name will be returned or the contents of a page as a [JSON Page](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/json-page.md)
 
 ```json
 // Request
@@ -78,7 +78,7 @@ Either an error for an invalid page name will be returned or the contents of a p
     "page": "page_name_here"
 }
 ```
-On success
+On success, `page-material` is a [JSON Page](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/json-page.md)
 ```json
 // Response
 {
@@ -86,7 +86,7 @@ On success
     "page-name": "page_name_here",
     "status": "pass",
     "page-material": {
-        // See JSON page docs above
+
     }
 }
 ```
