@@ -10,7 +10,6 @@ use ws::listen;
 static NETCODE: &str = "rev.5.0.0";
 
 // Helps file writing/reading
-use std::fs::File;
 use std::io::prelude::*;
 
 fn main() {
@@ -52,7 +51,7 @@ fn main() {
                     return out.send(json::stringify(json));
                 }
                 else {
-                    // ERROR!
+                    return out.send("{\"result\":\"broken-key\"}");
                 }
             }
             let mut finaljson = json::parse("{}").unwrap();
@@ -63,9 +62,34 @@ fn main() {
                 "version" => {
                     finaljson["result"] = "version".into();
                     finaljson["version"] = NETCODE.into();
-                }
+                },
+                "get-page" => {
+                    finaljson["result"] = "get-page".into();
+                    match json["page"].as_str().unwrap_or("NOT STR") {
+                        "NOT STR" => {
+                            println!("WARN: Request for non string page!");
+                            finaljson["status"] = "fail".into();
+                            finaljson["reason"] = "`page` field was not a String".into();
+                        },
+                        "homepage" => {
+                            finaljson["status"] = "pass".into();
+                            finaljson["page_name"] = json["page"].clone();
+                            finaljson["page_material"] = json::parse(
+                                &String::from_utf8(
+                                    include_bytes!("pages/homepage.json").to_vec()
+                                ).unwrap()
+                            ).unwrap();
+                        },
+                        _ => {
+                            println!("WARN: Request for unkown page! {:?}", json["page"]);
+                            finaljson["status"] = "fail".into();
+                            finaljson["reason"] = "Unkown page".into();
+                        }
+                    }
+                },
                 _ => {
                     println!("WARN: Received unknown request! {:?}", json["request"]);
+                    finaljson["result"] = "broken-key".into();
                 }
             }
             return out.send(json::stringify(finaljson));

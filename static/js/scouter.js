@@ -10,10 +10,51 @@ function load_network_site() {
     create_links();
 }
 
+function reset_and_load_site() {
+    NETWORK.data.page_loading_state = 0;
+    NETWORK.data.homepage = {};
+    NETWORK.data.plugin_list = [];
+    load_site();
+}
+
 function load_site() {
     clear_page();
     create_text_massive("Transfering data from server...");
-    server_request({"request": "get-page", "page": "homepage"});
+    if (NETWORK.data.page_loading_state == 0) {
+        create_text("- homepage");
+        server_request({"request": "get-page", "page": "homepage"});
+        NETWORK.data.page_loading_state += 1;
+    }
+    else if (NETWORK.data.page_loading_state == 1) {
+        create_text("- homepage");
+        if (NETWORK.data.homepage.version != undefined) {
+            NETWORK.data.page_loading_state += 1;
+        }
+    }
+    else if (NETWORK.data.page_loading_state == 2) {
+        create_text("+ homepage");
+        create_text("X dataviewer");
+        create_text("- plugins");
+        server_request({"request": "plugins"});
+        NETWORK.data.page_loading_state += 1;
+        
+    }
+    else if (NETWORK.data.page_loading_state == 3) {
+        create_text("+ homepage");
+        create_text("X dataviewer");
+        create_text("- plugins");
+        if (NETWORK.data.plugin_list[0] != undefined) {
+            NETWORK.data.page_loading_state += 1;
+        }
+    }
+    else if (NETWORK.data.page_loading_state == 4) {
+        create_text("+ homepage");
+        create_text("X dataviewer");
+        create_text("+ plugins");
+    }
+    if (NETWORK.data.page_loading_state < 10) {
+        setTimeout(load_site, 50);
+    }
 }
 
 function load_cookie_site() {

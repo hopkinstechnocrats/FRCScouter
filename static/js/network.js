@@ -37,7 +37,9 @@ let NETWORK = {
     foriegn_netcode: "NEVER_CONNECTED",
     // represents all received data on the network that may be stored
     data: {
-        
+        page_loading_state: 0,
+        homepage: {},
+        plugin_list: [],
     }
 };
 
@@ -51,8 +53,8 @@ setTimeout(() => {
             create_text(NETWORK.netcode + " vs " + NETWORK.foriegn_netcode);
         }
         else {
-            // show main page
-            load_site();
+            // show main page after loading in fresh material
+            reset_and_load_site();
         }
     }
     else {
@@ -97,6 +99,19 @@ function network_busy() {
             switch (current.result) {
                 case "version":
                     NETWORK.foriegn_netcode = current.version;
+                    break;
+                case "get-page":
+                    if (current.status == "fail") {
+                        console.error("Getting page failed: " + current.reason);
+                    }
+                    else {
+                        if (current.page_name == "homepage") {
+                            NETWORK.data.homepage = current.page_material;
+                        }
+                        else {
+                            console.error("Unkown page received: " + current.page_name);
+                        }
+                    }
                     break;
                 default:
                     console.error("Unkown switch during network_busy(): " + current.result);

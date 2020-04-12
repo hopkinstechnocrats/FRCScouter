@@ -78,14 +78,14 @@ Either an error for an invalid page name will be returned or the contents of a p
     "page": "page_name_here"
 }
 ```
-On success, `page-material` is a [JSON Page](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/json-page.md)
+On success, `page_material` is a [JSON Page](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/json-page.md)
 ```json
 // Response
 {
     "result": "get-page",
-    "page-name": "page_name_here",
+    "page_name": "page_name_here",
     "status": "pass",
-    "page-material": {
+    "page_material": {
 
     }
 }
@@ -97,6 +97,30 @@ On faliure
     "result": "get-page",
     "status": "fail",
     "reason": "error_message_here"
+}
+```
+
+**Get Plugins**  
+Queries a server for a list of plugins.
+
+```json
+// Request
+{
+    "request": "plugins"
+}
+```
+
+The response is a list of objects containing a plugin name and version.
+```json
+// Response
+{
+    "result": "plugins",
+    "plugins": [
+        {
+            "name": "exampleplugin",
+            "version": "exampleversion"
+        }
+    ]
 }
 ```
 
