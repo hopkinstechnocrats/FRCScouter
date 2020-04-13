@@ -17,43 +17,43 @@ JSON Page example
     "format": "objects-decending",
     "objects": [
         {
-            "object-type": "text-massive",
+            "object_type": "text-massive",
             "text": "Hello World!"
         },
         {
-            "object-type": "text",
+            "object_type": "text",
             "text": "This is how you create a JSON Page."
         },
         {
-            "object-type": "button",
+            "object_type": "button",
             "text": "does nothing",
             "action": "none"
         }
         {
-            "object-type": "break",
+            "object_type": "break",
             "amount": 3
         },
         {
-            "object-type": "button",
+            "object_type": "button",
             "text": "go to page b",
             "action": {
                 "type": "redirect",
                 "name": "page-b",
-                "sub-action": "none"
+                "sub_action": "none"
             }
         },
         {
-            "object-type": "break",
+            "object_type": "break",
             "amount": 1
         },
         {
-            "object-type": "button",
+            "object_type": "button",
             "text": "submit",
             "action": {
                 "type": "network",
                 "direction": "send",
                 "data": "variable-name-a",
-                "sub-action": "none"
+                "sub_action": "none"
             }
         }
     ]

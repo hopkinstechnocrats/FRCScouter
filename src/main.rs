@@ -31,7 +31,24 @@ fn main() {
             .launch();
     });
 
+    // load plugins
+    let mut tmp_dir = std::env::current_dir().unwrap();
+    tmp_dir.push("plugins");
+    if !tmp_dir.exists() {
+        std::fs::create_dir(tmp_dir.clone()).unwrap();
+    }
+    let files = std::fs::read_dir(tmp_dir).unwrap();
+    let mut pluginlist: Vec<String> = vec![];
+    for file in files {
+        let realfile = file.unwrap().path();
+        if !realfile.is_dir() {
+            panic!("PLUGIN ERROR: {:?} is not a directory!", realfile.display());
+        }
+        pluginlist.push(realfile.file_name().unwrap().to_str().unwrap().to_string());
+    }
+
     println!("FRCScouter v{} READY", env!("CARGO_PKG_VERSION"));
+    println!("{} plugins loaded", pluginlist.len());
     // Listen on an address and call the closure for each connection
     if let Err(error) = listen("0.0.0.0:81", |out| {
         // The handler needs to take ownership of out, so we use move

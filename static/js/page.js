@@ -3,7 +3,45 @@
  * create and distribute basic elements around the screen.
  */
 
- /**
+
+function read_page(json) {
+    if (NETWORK.jsonvers != json.version) {
+        console.error("Unable to load page: JSON Page version " + json.version + " incompatible with local version " + NETWORK.jsonvers + ".");
+        return;
+    }
+    if (json.format == "objects-decending") {
+        clear_page();
+        for (let i = 0; i < json.objects.length; i++) {
+            let obj = json.objects[i];
+            switch (obj.object_type) {
+                case "text":
+                    create_text(obj.text);
+                    break;
+                case "text-big":
+                    create_text_big(obj.text);
+                    break;
+                case "text-massive":
+                    create_text_massive(obj.text);
+                    break;
+                case "text-clock":
+                    create_text_clock(obj.text);
+                    break;
+                case "break":
+                    create_break(obj.amount);
+                    break;
+                default:
+                    console.error("Unkown object type parsing JSON Page: " + obj.object_type);
+                    break;
+            }
+        }
+    }
+    else {
+        console.error("Unable to load page: JSON Page format unkown: " + json.format);
+        return;
+    }
+}
+
+/**
  * Removes everything inside of the body tags of the page
  */
 function clear_page() {

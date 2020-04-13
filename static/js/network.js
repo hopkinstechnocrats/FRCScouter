@@ -16,6 +16,8 @@ let NETWORK = {
     // represents the netcode version being used in a client. Used for user facing debugging and API
     // compatibility checking
     netcode: "rev.5.0.0",
+    // represents the JSON Page version being used in a client.
+    jsonvers: "JSONPage.5.0.0",
     // represents data streamed from the network
     rx_queue: [],
     // represents data waiting to be outgoing onto the network

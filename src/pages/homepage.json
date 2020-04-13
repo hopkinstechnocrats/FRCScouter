@@ -3,6 +3,18 @@
     "name": "homepage",
     "format": "objects-decending",
     "objects": [
-        
+        {
+            "object_type": "text-massive",
+            "text": "FRC Scouter 🔍🏃‍♀️"
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "button",
+            "text": "Scout! 🔌📊",
+            "action": "none"
+        }
     ]
 }
