@@ -40,8 +40,10 @@ let NETWORK = {
     // represents all received data on the network that may be stored
     data: {
         page_loading_state: 0,
+        requests: 0,
         homepage: {},
         plugin_list: [],
+        loaded_plugins: [],
     }
 };
 
@@ -63,7 +65,7 @@ setTimeout(() => {
         // show backed up page
         load_cookie_site();
     }
-}, 3000);
+}, 250);
 
 // after page loads
 server_request({"request": "version"});
@@ -114,6 +116,9 @@ function network_busy() {
                             console.error("Unkown page received: " + current.page_name);
                         }
                     }
+                    break;
+                case "plugins":
+                    NETWORK.data.plugin_list = current.plugins;
                     break;
                 default:
                     console.error("Unkown switch during network_busy(): " + current.result);

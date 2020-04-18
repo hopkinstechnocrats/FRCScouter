@@ -44,17 +44,34 @@ function load_site() {
         create_text("X dataviewer");
         create_text("- plugins");
         if (NETWORK.data.plugin_list[0] != undefined) {
-            NETWORK.data.page_loading_state += 1;
+            NETWORK.data.page_loading_state = 10;
         }
     }
-    else if (NETWORK.data.page_loading_state == 4) {
+    else if (NETWORK.data.plugin_list.length > NETWORK.data.loaded_plugins.length) {
+        if (NETWORK.data.page_loading_state == 10) {
+            NETWORK.data.page_loading_state = 11;
+            server_request({"request": "plugin-data", "plugin": NETWORK.data.plugin_list[NETWORK.data.requests].name});
+            NETWORK.data.requests += 1;
+        }
+        else {
+            if (NETWORK.data.requests == NETWORK.data.loaded_plugins.length) {
+                NETWORK.data.page_loading_state = 10;
+            }
+        }
         create_text("+ homepage");
         create_text("X dataviewer");
-        create_text("+ plugins");
+        create_text("/ plugins");
+        if (NETWORK.data.loaded_plugins.length) {
+        }
+        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+            create_text(" + " + NETWORK.data.plugin_list[i].name);
+        }
+        create_text("-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
     }
-    if (NETWORK.data.page_loading_state < 10) {
-        setTimeout(load_site, 50);
+    else {
+        ///
     }
+    setTimeout(load_site, 50);
 }
 
 function load_cookie_site() {
