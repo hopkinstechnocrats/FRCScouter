@@ -1,13 +1,13 @@
 function load_network_site() {
-    clear_page();
-    create_text_massive("FRC Scouter 🔍🏃‍♀️");
-    create_break();
-    create_button("Scout! 🔌📊", "");
-    create_break(2);
-    create_button("Private rooms", "");
-    create_break(2);
-    create_text("Connected to server! ✅");
-    create_links();
+    read_page(NETWORK.data.homepage);
+}
+
+function gotopage(page) {
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        for (let j = 0; j < NETWORK.data.loaded_plugins[i].objs.length; j++) {
+            
+        }
+    }
 }
 
 function reset_and_load_site() {
@@ -16,6 +16,9 @@ function reset_and_load_site() {
     NETWORK.data.plugin_list = [];
     load_site();
 }
+
+
+LOADING = true;
 
 function load_site() {
     clear_page();
@@ -69,9 +72,13 @@ function load_site() {
         create_text("-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
     }
     else {
-        ///
+        create_text("All objects loaded. Waiting for main page...");
+        LOADING = false;
+        setTimeout(load_network_site, 100);
     }
-    setTimeout(load_site, 50);
+    if (LOADING) {
+        setTimeout(load_site, 50);
+    }
 }
 
 function load_cookie_site() {

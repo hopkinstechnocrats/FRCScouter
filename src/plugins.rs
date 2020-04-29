@@ -75,6 +75,8 @@ impl PluginConstructor {
 pub enum HookType {
     OnLoad,
     OnCall,
+    GameSelect,
+    DataViewer,
 }
 
 impl HookType {
@@ -82,6 +84,8 @@ impl HookType {
         match string.to_lowercase().as_ref() {
             "onload" => HookType::OnLoad,
             "oncall" => HookType::OnCall,
+            "gameselect" => HookType::GameSelect,
+            "dataviewer" => HookType::DataViewer,
             other => panic!("Unkown hook type {} while loading plugin.", other)
         }
     }
@@ -89,6 +93,8 @@ impl HookType {
         match self {
             HookType::OnLoad => String::from("onload"),
             HookType::OnCall => String::from("oncall"),
+            HookType::GameSelect => String::from("gameselect"),
+            HookType::DataViewer => String::from("dataviewer"),
         }
     }
 }

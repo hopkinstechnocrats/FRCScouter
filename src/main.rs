@@ -160,9 +160,9 @@ fn main() {
                     }
                 },
                 "plugins" => {
+                    finaljson["result"] = "plugins".into();
+                    finaljson["plugins"] = json::JsonValue::new_array();
                     for i in pluginlisttmp {
-                        finaljson["result"] = "plugins".into();
-                        finaljson["plugins"] = json::JsonValue::new_array();
                         finaljson["plugins"].push(json::parse(&format!("{{\"name\":\"{}\",\"version\":\"{}\"}}", i.clone().get_name(), i.get_version())).unwrap()).unwrap();
                     }
                 },
@@ -177,12 +177,25 @@ fn main() {
                         if tostr == i.clone().get_name() {
                             // send out the data
                             finaljson["result"] = "plugin-data".into();
-                            finaljson["datamap"] = json::JsonValue::new_array();
+                            finaljson["plugin"] = json["plugin"].clone();
+                            finaljson["map"] = json::JsonValue::new_array();
                             for (triggertype, filename) in i.clone().get_hooks() {
                                 let mut tmp_obj = json::JsonValue::new_object();
                                 tmp_obj["trigger"] = triggertype.to_string().into();
-                                tmp_obj["name"] = filename.into();
-                                finaljson["datamap"].push(tmp_obj).unwrap();
+                                tmp_obj["name"] = filename.clone().into();
+                                let files = i.clone().get_files();
+                                let mut foundfile = false;
+                                for (filetitle, filecontents) in files {
+                                    if filetitle == format!("{}.json", filename) {
+                                        foundfile = true;
+                                        tmp_obj["content"] = filecontents.into();
+                                        finaljson["map"].push(tmp_obj).unwrap();
+                                        break;
+                                    }
+                                }
+                                if !foundfile {
+                                    panic!("A plugin had a refrence to a file that does not exist.");
+                                }
                             }
                             return out.send(json::stringify(finaljson));
                         }

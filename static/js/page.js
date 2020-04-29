@@ -29,6 +29,9 @@ function read_page(json) {
                 case "break":
                     create_break(obj.amount);
                     break;
+                case "button":
+                    create_button(obj.text, evaluate_action(obj.action));
+                    break;
                 default:
                     console.error("Unkown object type parsing JSON Page: " + obj.object_type);
                     break;
@@ -38,6 +41,16 @@ function read_page(json) {
     else {
         console.error("Unable to load page: JSON Page format unkown: " + json.format);
         return;
+    }
+}
+
+function evaluate_action(action) {
+    if (action == "none") {
+        return "";
+    }
+    if (action.type == "redirect") {
+        evaluate_action(action.sub_action);
+        return "gotopage(" + action.name + ");";
     }
 }
 

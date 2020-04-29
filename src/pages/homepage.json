@@ -14,7 +14,11 @@
         {
             "object_type": "button",
             "text": "Scout! 🔌📊",
-            "action": "none"
+            "action": {
+                "type": "redirect",
+                "name": "games",
+                "sub_action": "none"
+            }
         }
     ]
 }

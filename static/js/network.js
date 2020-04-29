@@ -120,6 +120,9 @@ function network_busy() {
                 case "plugins":
                     NETWORK.data.plugin_list = current.plugins;
                     break;
+                case "plugin-data":
+                    NETWORK.data.loaded_plugins.push(current);
+                    break;
                 default:
                     console.error("Unkown switch during network_busy(): " + current.result);
                     break;

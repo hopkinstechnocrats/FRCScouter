@@ -5,6 +5,10 @@
         {
             "type": "onload",
             "name": "load"
+        },
+        {
+            "type": "gameselect",
+            "name": "entry"
         }
     ]
 }
