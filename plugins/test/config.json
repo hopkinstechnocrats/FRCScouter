@@ -9,6 +9,10 @@
         {
             "type": "gameselect",
             "name": "entry"
+        },
+        {
+            "type": "oncall",
+            "name": "game_2020"
         }
     ]
 }

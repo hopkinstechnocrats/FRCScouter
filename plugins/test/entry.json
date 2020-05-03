@@ -1,3 +1,16 @@
 {
-
+    "version": "JSONPage.5.0.0",
+    "name": "entry",
+    "format": "objects-decending",
+    "objects": [
+        {
+            "object_type": "button",
+            "text": "FRC game 2020",
+            "action": {
+                "type": "redirect",
+                "name": "test:game_2020",
+                "sub_action": "none"
+            }
+        }
+    ]
 }

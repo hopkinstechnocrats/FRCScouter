@@ -10,7 +10,6 @@ function read_page(json) {
         return;
     }
     if (json.format == "objects-decending") {
-        clear_page();
         for (let i = 0; i < json.objects.length; i++) {
             let obj = json.objects[i];
             switch (obj.object_type) {
@@ -32,6 +31,9 @@ function read_page(json) {
                 case "button":
                     create_button(obj.text, evaluate_action(obj.action));
                     break;
+                case "variable":
+                    create_text(get_env(obj.variable));
+                    break;
                 default:
                     console.error("Unkown object type parsing JSON Page: " + obj.object_type);
                     break;
@@ -49,8 +51,13 @@ function evaluate_action(action) {
         return "";
     }
     if (action.type == "redirect") {
-        evaluate_action(action.sub_action);
-        return "gotopage(" + action.name + ");";
+        return "gotopage(\"" + action.name + "\");" + evaluate_action(action.sub_action);
+    }
+    if (action.type == "set-var") {
+        return "set_env(\"" + action.variable + "\"," + action.value + ");" + evaluate_action(action.sub_action);
+    }
+    if (action.type == "modify-var") {
+        return "set_env(\"" + action.variable + "\",get_env(\"" + action.variable + "\")+" + action.value + ");" + evaluate_action(action.sub_action);
     }
 }
 

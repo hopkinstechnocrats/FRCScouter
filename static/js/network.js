@@ -44,6 +44,7 @@ let NETWORK = {
         homepage: {},
         plugin_list: [],
         loaded_plugins: [],
+        env_data: []
     }
 };
 

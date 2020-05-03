@@ -19,6 +19,32 @@
                 "name": "games",
                 "sub_action": "none"
             }
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "button",
+            "text": "View Data",
+            "action": {
+                "type": "redirect",
+                "name": "dataviewer",
+                "sub_action": "none"
+            }
+        },
+        {
+            "object_type": "break",
+            "amount": 2
+        },
+        {
+            "object_type": "button",
+            "text": "Developer Tools",
+            "action": {
+                "type": "redirect",
+                "name": "devtools",
+                "sub_action": "none"
+            }
         }
     ]
 }
