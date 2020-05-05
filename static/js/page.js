@@ -71,6 +71,19 @@ function clear_page() {
     }
 }
 
+function vers_el(loc_left, loc_top, el_type, el_text, el_onclick, el_id) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement(el_type);
+    var textnode = document.createTextNode(el_text);
+    node.appendChild(textnode);
+    node.setAttribute("onclick", el_onclick);
+    node.classList.add("vers_el");
+    node.style.left = loc_left;
+    node.style.top = loc_top;
+    node.id = el_id;
+    ctx.appendChild(node);
+}
+
 /**
  * Creates a button that calls a function when pressed.
  * @param {String} text - Text inside of the button
@@ -219,24 +232,6 @@ function create_text(text) {
     var textnode = document.createTextNode(text);
     node.appendChild(textnode);
     ctx.appendChild(node);
-}
-
-function create_links() {
-    var ctx = document.getElementById("content");
-    var node1 = document.createElement("a");
-    var node1point5 = document.createElement("a");
-    var node2 = document.createElement("a");
-    var textnode1 = document.createTextNode("Report Issues");
-    var textnode1point5 = document.createTextNode(" | ");
-    var textnode2 = document.createTextNode("Admin Portal");
-    node1.appendChild(textnode1);
-    node1.href = "https://github.com/hopkinstechnocrats/FRCScouter/issues/new";
-    node1point5.appendChild(textnode1point5);
-    node2.appendChild(textnode2);
-    node2.href = "http://scouting.technocrats2239.org/admin";
-    ctx.appendChild(node1);
-    ctx.appendChild(textnode1point5)
-    ctx.appendChild(node2);
 }
 
 /**

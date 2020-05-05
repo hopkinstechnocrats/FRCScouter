@@ -5,9 +5,9 @@
  */
 
 // This is the IP and port of the remote server's websocket address. This is not the
-// port specified in Rocket.toml. The port usually should stay the same. IP will most
-// likely need to be configured.
-let IP = "68.46.79.147";
+// port specified in Rocket.toml. The port usually should stay the same. IP should work
+// properly but may need to be reconfigured to a string of the IP you're using for WS instead.
+let IP = window.location.hostname;
 // The port to go along with the IP for the server
 let PORT = "81";
 // Represents all globals used for networking

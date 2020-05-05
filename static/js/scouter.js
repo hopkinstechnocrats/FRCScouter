@@ -1,3 +1,13 @@
+PAGEBUILDER = {
+    "version": "JSONPage.5.0.0",
+    "name": "entry",
+    "format": "objects-decending",
+    "objects": []
+};
+
+DISPLAYMODE = 0;
+TEXT_SIZE = "text";
+
 function load_network_site() {
     NETWORK.data.exists = true;
     Cookies.set("data", NETWORK.data);
@@ -46,6 +56,58 @@ function gotopage(page) {
         }
         return;
     }
+    if (page == "devtools") {
+        clear_page();
+        create_text_big("Advanced Tools");
+        create_button("Page Builder", "gotopage(\"pagebuilder\");");
+        create_break();
+        create_button("Pull Server Data", "gotopage(\"datadump\");");
+        create_break();
+        create_button("Versions", "gotopage(\"versions\");");
+        return;
+    }
+    if (page == "pagebuilder") {
+        clear_page();
+        read_page(PAGEBUILDER);
+        if (DISPLAYMODE == 0) { // root
+            vers_el("50%", "0", "p", "What do you want to do?");
+            vers_el("50%", "20px", "button", "Create an Element", "DISPLAYMODE=1;gotopage(\"pagebuilder\");");
+            vers_el("50%", "65px", "button", "Move an Element", "DISPLAYMODE=2;gotopage(\"pagebuilder\");");
+            vers_el("50%", "110px", "button", "Import Page", "DISPLAYMODE=4;gotopage(\"pagebuilder\");");
+            vers_el("50%", "155px", "button", "Export Page", "DISPLAYMODE=5;gotopage(\"pagebuilder\");");
+        }
+        else if (DISPLAYMODE == 1) { // create element
+            vers_el("50%", "0", "p", "Select an element to create");
+            vers_el("50%", "20px", "button", "Text", "TEXT_SIZE=\"text\";DISPLAYMODE=3;gotopage(\"pagebuilder\");");
+            vers_el("50%", "65px", "button", "Cancel", "DISPLAYMODE=0;gotopage(\"pagebuilder\");");
+        }
+        else if (DISPLAYMODE == 2) { // move element
+            for (let i = 0; i < PAGEBUILDER.objects.length; i++) {
+
+            }
+        }
+        else if (DISPLAYMODE == 3) { // create text
+            vers_el("50%", "0", "button", "Create Text!", "PAGEBUILDER.objects.push({text:document.getElementById(\"textinput\").value,object_type:TEXT_SIZE});DISPLAYMODE=0;gotopage(\"pagebuilder\");");
+            vers_el("50%", "45px", "p", "Text:");
+            vers_el("50%", "70px", "input", "", "", "textinput");
+            vers_el("50%", "97px", "p", "Text Size:");
+            vers_el("50%", "120px", "button", "Small", "TEXT_SIZE=\"text\";");
+            vers_el("50%", "165px", "button", "Medium", "TEXT_SIZE=\"text-big\";");
+            vers_el("50%", "210px", "button", "Big", "TEXT_SIZE=\"text-massive\";");
+        }
+        else {
+            vers_el("50%", "0", "p", "Unkown display mode!");
+        }
+        return;
+    }
+    if (page == "versions") {
+        clear_page();
+        create_text_big("Versions");
+        create_text("Netcode: " + NETWORK.netcode);
+        create_text("JSON Page: " + NETWORK.jsonvers);
+        create_button("Return", "gotopage(\"devtools\");");
+        return;
+    }
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
         for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
             let plug_component = NETWORK.data.loaded_plugins[i].map[j];
@@ -91,14 +153,31 @@ function load_site() {
     else if (NETWORK.data.page_loading_state == 2) {
         create_text("+ homepage");
         create_text("X dataviewer");
+        create_text("- pagebuilder");
+        //server_request({"request": "get-page", "page": "pagebuilder"});
+        NETWORK.data.page_loading_state += 1;
+    }
+    else if (NETWORK.data.page_loading_state == 3) {
+        create_text("+ homepage");
+        create_text("X dataviewer");
+        create_text("X pagebuilder");
+        //if (NETWORK.data.pagebuilder.version != undefined) {
+            NETWORK.data.page_loading_state += 1;
+        //}
+    }
+    else if (NETWORK.data.page_loading_state == 4) {
+        create_text("+ homepage");
+        create_text("X dataviewer");
+        create_text("X pagebuilder");
         create_text("- plugins");
         server_request({"request": "plugins"});
         NETWORK.data.page_loading_state += 1;
         
     }
-    else if (NETWORK.data.page_loading_state == 3) {
+    else if (NETWORK.data.page_loading_state == 5) {
         create_text("+ homepage");
         create_text("X dataviewer");
+        create_text("X pagebuilder");
         create_text("- plugins");
         if (NETWORK.data.plugin_list[0] != undefined) {
             NETWORK.data.page_loading_state = 10;
@@ -117,6 +196,7 @@ function load_site() {
         }
         create_text("+ homepage");
         create_text("X dataviewer");
+        create_text("X pagebuilder");
         create_text("/ plugins");
         for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
             create_text(" + " + NETWORK.data.plugin_list[i].name);
@@ -126,10 +206,10 @@ function load_site() {
     else {
         create_text("All objects loaded. Waiting for main page...");
         LOADING = false;
-        setTimeout(load_network_site, 100);
+        setTimeout(load_network_site, 20);
     }
     if (LOADING) {
-        setTimeout(load_site, 50);
+        setTimeout(load_site, 10);
     }
 }
 

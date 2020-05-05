@@ -78,3 +78,12 @@ input[type='range'] {
     width: 200px;
     height: 20px;
 }
+
+.vers_el {
+    position: fixed;
+}
+
+.selected_el {
+    background-color: blue;
+    color: gray;
+}
