@@ -48,6 +48,26 @@ let NETWORK = {
     }
 };
 
+function save_data() {
+    window.localStorage.clear();
+    window.localStorage.setItem("data", JSON.stringify(NETWORK.data));
+    console.log("Saved data to persistent storage.");
+}
+
+function load_data() {
+    console.log("Attempting to load data from persisitent storage...");
+    let data = window.localStorage.getItem("data");
+    if (data == null) {
+        console.warn("Failed!");
+        return false;
+    }
+    else {
+        NETWORK.data = data;
+        console.log("Loaded.");
+        return true;
+    }
+}
+
 // after network stuff is sorted out
 setTimeout(() => {
     if (NETWORK.server_found) {

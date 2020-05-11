@@ -84,6 +84,13 @@ function vers_el(loc_left, loc_top, el_type, el_text, el_onclick, el_id) {
     ctx.appendChild(node);
 }
 
+function create_input(id) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("input");
+    node.id = id;
+    ctx.appendChild(node);
+}
+
 /**
  * Creates a button that calls a function when pressed.
  * @param {String} text - Text inside of the button
