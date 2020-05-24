@@ -5,6 +5,7 @@
 
 
 function read_page(json) {
+    console.log(json);
     if (NETWORK.jsonvers != json.version) {
         console.error("Unable to load page: JSON Page version " + json.version + " incompatible with local version " + NETWORK.jsonvers + ".");
         return;
@@ -84,10 +85,13 @@ function vers_el(loc_left, loc_top, el_type, el_text, el_onclick, el_id) {
     ctx.appendChild(node);
 }
 
-function create_input(id) {
+function create_input(id, content) {
     var ctx = document.getElementById("content");
     var node = document.createElement("input");
     node.id = id;
+    if (content != undefined) {
+        node.value = content;
+    }
     ctx.appendChild(node);
 }
 

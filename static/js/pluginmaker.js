@@ -1,15 +1,24 @@
 PLUG_PRIVATE = false;
-PLUG = {};
+PLUG = {
+    name: "",
+    desc: "",
+    pages: {
 
-function plug_setup(n, d) {
+    },
+    JSONSS: {
+        
+    }
+};
+
+function plug_setup(n, d, n2, d2) {
     clear_page();
     create_text_massive("Your Scouting App");
     create_text_big("Scouting App's Name");
-    create_input("sa_name");
+    create_input("sa_name", n2);
     create_text_big("Description");
-    create_input("sa_desc");
+    create_input("sa_desc", d2);
     create_text("Private? (This only prevents your scouting app from showing up on the public list)");
-    create_checkbox("PLUG_PRIVATE=!PLUG_PRIVATE;plug_setup()", PLUG_PRIVATE);
+    create_checkbox("PLUG_PRIVATE=!PLUG_PRIVATE;plug_setup(true,true,document.getElementById(\"sa_name\").value,document.getElementById(\"sa_desc\").value)", PLUG_PRIVATE);
     create_break();
     create_break();
     if (n == false) {
@@ -25,11 +34,11 @@ function plug_check_params() {
     let name = document.getElementById("sa_name").value;
     let desc = document.getElementById("sa_desc").value;
     if (name == "") {
-        plug_setup(false);
+        plug_setup(false, true, name, desc);
         return;
     }
     if (desc == "") {
-        plug_setup(true, false);
+        plug_setup(true, false, name, desc);
         return;
     }
     PLUG.name = name;
@@ -42,5 +51,19 @@ function plug_home() {
     create_text_massive(PLUG.name);
     create_text(PLUG.desc);
     create_break();
-    create_button("stuff here");
+    create_button("Edit a page", "plug_page();");
+    create_break();
+    create_button("Change your look");
+    create_break(2);
+    create_button("Done!");
+}
+
+function plug_page() {
+    clear_page();
+    create_text_massive(PLUG.name);
+    create_text(PLUG.desc);
+    create_break();
+    create_button("Autonomous Page");
+    create_break();
+    create_button("Teleop Page");
 }

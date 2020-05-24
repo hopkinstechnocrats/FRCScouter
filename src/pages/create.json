@@ -1,11 +1,11 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "homepage",
+    "name": "create",
     "format": "objects-decending",
     "objects": [
         {
             "object_type": "text-massive",
-            "text": "FRC Scouter 🔍🏃‍♀️"
+            "text": "Creation Tools 👩‍💻✏️"
         },
         {
             "object_type": "break",
@@ -13,10 +13,10 @@
         },
         {
             "object_type": "button",
-            "text": "I want to scout 🔌🤖",
+            "text": "Make a scouting app! 🤖🔍✏️",
             "action": {
                 "type": "redirect",
-                "name": "games",
+                "name": "buildapp",
                 "sub_action": "none"
             }
         },
@@ -26,34 +26,29 @@
         },
         {
             "object_type": "button",
-            "text": "I want to see results 📊🔍",
+            "text": "Make a stylesheet",
             "action": {
                 "type": "redirect",
-                "name": "dataviewer",
+                "name": "unknown",
                 "sub_action": "none"
             }
         },
         {
             "object_type": "break",
-            "amount": 2
+            "amount": 3
         },
         {
             "object_type": "button",
-            "text": "I want to make a scouting lobby ",
-            "action": "none"
-        },
-        {
-            "object_type": "break",
-            "amount": 2
-        },
-        {
-            "object_type": "button",
-            "text": "I want to make something 👩‍💻✏️",
+            "text": "Back 🔙",
             "action": {
                 "type": "redirect",
-                "name": "create",
+                "name": "homepage",
                 "sub_action": "none"
             }
+        },
+        {
+            "object_type": "text",
+            "text": "Some of these tools may not work with mobile devices."
         }
     ]
 }

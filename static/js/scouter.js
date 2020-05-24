@@ -42,6 +42,17 @@ function get_env(env) {
 }
 
 function gotopage(page) {
+    console.log("Going to page: " + page);
+    if (page == "homepage") {
+        clear_page();
+        read_page(NETWORK.data.homepage);
+        return;
+    }
+    if (page == "create") {
+        clear_page();
+        read_page(NETWORK.data.create);
+        return;
+    }
     if (page == "games") {
         clear_page();
         for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
@@ -54,20 +65,6 @@ function gotopage(page) {
                 }
             }
         }
-        return;
-    }
-    if (page == "devtools") {
-        clear_page();
-        create_text_big("Advanced Tools");
-        create_button("Make a Scouting App!", "plug_setup();")
-        create_break();
-        // TODO: REPLACE WITH ABOVE
-        create_button("Page Builder", "gotopage(\"pagebuilder\");");
-        create_break();
-        // TODO: MAKE THIS
-        create_button("Pull Server Data", "gotopage(\"datadump\");");
-        create_break();
-        create_button("Versions", "gotopage(\"versions\");");
         return;
     }
     if (page == "pagebuilder") {
@@ -146,7 +143,7 @@ function gotopage(page) {
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
         for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
             let plug_component = NETWORK.data.loaded_plugins[i].map[j];
-            if (plug_component.name == page || (NETWORK.data.loaded_plugins[i].plugin + ":" + plug_component.name) == page) {
+            if (NETWORK.data.loaded_plugins[i].plugin + ":" + plug_component.name == page) {
                 if (plug_component.trigger == "oncall") {
                     clear_page();
                     read_page(JSON.parse(plug_component.content));
@@ -175,49 +172,16 @@ function load_site() {
     clear_page();
     create_text_massive("Transfering data from server...");
     if (NETWORK.data.page_loading_state == 0) {
-        create_text("- homepage");
-        server_request({"request": "get-page", "page": "homepage"});
-        NETWORK.data.page_loading_state += 1;
-    }
-    else if (NETWORK.data.page_loading_state == 1) {
-        create_text("- homepage");
-        if (NETWORK.data.homepage.version != undefined) {
-            NETWORK.data.page_loading_state += 1;
+        NETWORK.data.page_loading_state = 1;
+        for (let i = 0; i < NETWORK.data.pages_needed.length; i++) {
+            console.log("requesting page " + NETWORK.data.pages_needed[i]);
+            server_request({"request": "get-page", "page": NETWORK.data.pages_needed[i]});
         }
     }
-    else if (NETWORK.data.page_loading_state == 2) {
-        create_text("+ homepage");
-        create_text("X dataviewer");
-        create_text("- pagebuilder");
-        //server_request({"request": "get-page", "page": "pagebuilder"});
-        NETWORK.data.page_loading_state += 1;
+    else if (NETWORK.data.buildapp.version == undefined || NETWORK.data.create.version == undefined || NETWORK.data.homepage.version == undefined) {
+        console.log("Waiting for server to dump pages...");
     }
-    else if (NETWORK.data.page_loading_state == 3) {
-        create_text("+ homepage");
-        create_text("X dataviewer");
-        create_text("X pagebuilder");
-        //if (NETWORK.data.pagebuilder.version != undefined) {
-            NETWORK.data.page_loading_state += 1;
-        //}
-    }
-    else if (NETWORK.data.page_loading_state == 4) {
-        create_text("+ homepage");
-        create_text("X dataviewer");
-        create_text("X pagebuilder");
-        create_text("- plugins");
-        server_request({"request": "plugins"});
-        NETWORK.data.page_loading_state += 1;
-        
-    }
-    else if (NETWORK.data.page_loading_state == 5) {
-        create_text("+ homepage");
-        create_text("X dataviewer");
-        create_text("X pagebuilder");
-        create_text("- plugins");
-        if (NETWORK.data.plugin_list[0] != undefined) {
-            NETWORK.data.page_loading_state = 10;
-        }
-    }
+    // check that pages are avalable
     else if (NETWORK.data.plugin_list.length > NETWORK.data.loaded_plugins.length) {
         if (NETWORK.data.page_loading_state == 10) {
             NETWORK.data.page_loading_state = 11;

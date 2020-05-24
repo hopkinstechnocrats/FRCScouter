@@ -1,0 +1,11 @@
+{
+    "version": "JSONPage.1.0.0",
+    "name": "buildapp",
+    "format": "objects-decending",
+    "objects": [
+        {
+            "object_type": "text-massive",
+            "text": "test"
+        }
+    ]
+}

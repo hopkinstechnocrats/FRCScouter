@@ -17,7 +17,7 @@ let NETWORK = {
     // compatibility checking
     netcode: "rev.5.0.0",
     // represents the JSON Page version being used in a client.
-    jsonvers: "JSONPage.5.0.0",
+    jsonvers: "JSONPage.1.0.0",
     // represents data streamed from the network
     rx_queue: [],
     // represents data waiting to be outgoing onto the network
@@ -39,21 +39,38 @@ let NETWORK = {
     foriegn_netcode: "NEVER_CONNECTED",
     // represents all received data on the network that may be stored
     data: {
+        // tracks the progress getting page materials from network
         page_loading_state: 0,
         requests: 0,
+        pages_needed: ["homepage", "create", "buildapp"],
+        pages_received: [],
+        // JSONPages for the base app. I know this should be conrgegated into a plugin, fight me.
         homepage: {},
+        create: {},
+        buildapp: {},
+        // list of all plugins
         plugin_list: [],
+        // list of all plugins with data
         loaded_plugins: [],
+        // variables and enviroment for plugins/apps
         env_data: []
     }
 };
 
+/**
+ * Saves data to local machine.
+ */
 function save_data() {
     window.localStorage.clear();
     window.localStorage.setItem("data", JSON.stringify(NETWORK.data));
     console.log("Saved data to persistent storage.");
+    load_data();
 }
 
+/**
+ * Loads data from local machine.
+ * @returns {Boolean} - succeeded in loading data
+ */
 function load_data() {
     console.log("Attempting to load data from persisitent storage...");
     let data = window.localStorage.getItem("data");
@@ -62,7 +79,7 @@ function load_data() {
         return false;
     }
     else {
-        NETWORK.data = data;
+        NETWORK.data = JSON.parse(data);
         console.log("Loaded.");
         return true;
     }
@@ -96,20 +113,40 @@ server_request({"request": "version"});
  * @param {Object} request - Object of request to send
  */
 function server_request(request) {
-    NETWORK.waiting += 1;
+    if (NETWORK.waiting < 1) {
+        NETWORK.waiting = 1;
+    }
+    else {
+        NETWORK.waiting += 1;
+    }
     NETWORK.tx_queue.push(request);
+    if (NETWORK.waiting == 1) {
+        create_connection();
+    }
     NETWORK.network_busy = true;
+    network_busy();
+}
+
+function create_connection() {
     // create a new connection to IP:PORT
     CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
     // return response when recieved
     CONNECTION.onmessage = function(e) {
         NETWORK.rx_queue.push(JSON.parse(e.data));
+        CONNECTION.close(1000);
+        if (NETWORK.waiting > 1) {
+            create_connection();
+            NETWORK.waiting -= 1;
+        }
+        else {
+            NETWORK.network_busy = false;
+            NETWORK.waiting -= 1;
+        }
     }
     // send message as soon as we can
     CONNECTION.onopen = function(_) {
         CONNECTION.send(JSON.stringify(NETWORK.tx_queue.shift()));
     }
-    network_busy();
 }
 
 /**
@@ -132,6 +169,12 @@ function network_busy() {
                     else {
                         if (current.page_name == "homepage") {
                             NETWORK.data.homepage = current.page_material;
+                        }
+                        else if (current.page_name == "create") {
+                            NETWORK.data.create = current.page_material;
+                        }
+                        else if (current.page_name == "buildapp") {
+                            NETWORK.data.buildapp = current.page_material;
                         }
                         else {
                             console.error("Unkown page received: " + current.page_name);

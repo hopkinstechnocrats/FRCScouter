@@ -138,6 +138,7 @@ fn main() {
                 "get-page" => {
                     finaljson["result"] = "get-page".into();
                     match json["page"].as_str().unwrap_or("NOT STR") {
+                        // I know I should combine these with a match arm. Fight me.
                         "NOT STR" => {
                             println!("WARN: Request for non string page!");
                             finaljson["status"] = "fail".into();
@@ -152,6 +153,24 @@ fn main() {
                                 ).unwrap()
                             ).unwrap();
                         },
+                        "create" => {
+                            finaljson["status"] = "pass".into();
+                            finaljson["page_name"] = json["page"].clone();
+                            finaljson["page_material"] = json::parse(
+                                &String::from_utf8(
+                                    include_bytes!("pages/create.json").to_vec()
+                                ).unwrap()
+                            ).unwrap();
+                        },
+                        "buildapp" => {
+                            finaljson["status"] = "pass".into();
+                            finaljson["page_name"] = json["page"].clone();
+                            finaljson["page_material"] = json::parse(
+                                &String::from_utf8(
+                                    include_bytes!("pages/buildapp.json").to_vec()
+                                ).unwrap()
+                            ).unwrap();
+                        }
                         _ => {
                             println!("WARN: Request for unkown page! {:?}", json["page"]);
                             finaljson["status"] = "fail".into();
