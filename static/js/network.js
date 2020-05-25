@@ -42,12 +42,6 @@ let NETWORK = {
         // tracks the progress getting page materials from network
         page_loading_state: 0,
         requests: 0,
-        pages_needed: ["homepage", "create", "buildapp"],
-        pages_received: [],
-        // JSONPages for the base app. I know this should be conrgegated into a plugin, fight me.
-        homepage: {},
-        create: {},
-        buildapp: {},
         // list of all plugins
         plugin_list: [],
         // list of all plugins with data
@@ -135,12 +129,12 @@ function create_connection() {
         NETWORK.rx_queue.push(JSON.parse(e.data));
         CONNECTION.close(1000);
         if (NETWORK.waiting > 1) {
-            create_connection();
             NETWORK.waiting -= 1;
+            create_connection();
         }
         else {
             NETWORK.network_busy = false;
-            NETWORK.waiting -= 1;
+            NETWORK.waiting = 0;
         }
     }
     // send message as soon as we can
@@ -156,30 +150,10 @@ function network_busy() {
     if (NETWORK.rx_queue.length != 0) {
         NETWORK.server_found = true;
         while (NETWORK.rx_queue.length > 0) {
-            NETWORK.waiting -= 1;
             let current = NETWORK.rx_queue.pop();
             switch (current.result) {
                 case "version":
                     NETWORK.foriegn_netcode = current.version;
-                    break;
-                case "get-page":
-                    if (current.status == "fail") {
-                        console.error("Getting page failed: " + current.reason);
-                    }
-                    else {
-                        if (current.page_name == "homepage") {
-                            NETWORK.data.homepage = current.page_material;
-                        }
-                        else if (current.page_name == "create") {
-                            NETWORK.data.create = current.page_material;
-                        }
-                        else if (current.page_name == "buildapp") {
-                            NETWORK.data.buildapp = current.page_material;
-                        }
-                        else {
-                            console.error("Unkown page received: " + current.page_name);
-                        }
-                    }
                     break;
                 case "plugins":
                     NETWORK.data.plugin_list = current.plugins;

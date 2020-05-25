@@ -5,7 +5,6 @@
 
 
 function read_page(json) {
-    console.log(json);
     if (NETWORK.jsonvers != json.version) {
         console.error("Unable to load page: JSON Page version " + json.version + " incompatible with local version " + NETWORK.jsonvers + ".");
         return;
@@ -32,6 +31,9 @@ function read_page(json) {
                 case "button":
                     create_button(obj.text, evaluate_action(obj.action));
                     break;
+                case "input":
+                    create_input(obj.id, evaluate_action(obj.text_action));
+                    break;
                 case "variable":
                     create_text(get_env(obj.variable));
                     break;
@@ -48,6 +50,9 @@ function read_page(json) {
 }
 
 function evaluate_action(action) {
+    if (action == undefined) {
+        return;
+    }
     if (action == "none") {
         return "";
     }
@@ -59,6 +64,17 @@ function evaluate_action(action) {
     }
     if (action.type == "modify-var") {
         return "set_env(\"" + action.variable + "\",get_env(\"" + action.variable + "\")+" + action.value + ");" + evaluate_action(action.sub_action);
+    }
+    if (action.type == "set-var-imm") {
+        set_env(action.variable, action.value);
+        return;
+    }
+    if (action.type == "modify-var-imm") {
+        console.log("modify now");
+        return set_env(action.variable, get_env(action.variable) + action.value);
+    }
+    if (action.type == "get-var") {
+        return get_env(action.variable)
     }
 }
 

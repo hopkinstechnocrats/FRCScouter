@@ -5,7 +5,7 @@
     "objects": [
         {
             "object_type": "text-massive",
-            "text": "Creation Tools 👩‍💻✏️"
+            "text": "Plugin Builder 👩‍💻✏️"
         },
         {
             "object_type": "break",
@@ -13,12 +13,26 @@
         },
         {
             "object_type": "button",
-            "text": "Make a scouting app! 🤖🔍✏️",
-            "action": {
-                "type": "redirect",
-                "name": "buildapp",
-                "sub_action": "none"
-            }
+            "text": "Create a new page",
+            "action": "none"
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "button",
+            "text": "Edit a page",
+            "action": "none"
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "button",
+            "text": "Remove a page",
+            "action": "none"
         },
         {
             "object_type": "break",
@@ -26,25 +40,12 @@
         },
         {
             "object_type": "button",
-            "text": "Make a stylesheet",
-            "action": {
-                "type": "redirect",
-                "name": "unknown",
-                "sub_action": "none"
-            }
+            "text": "Finish and save!",
+            "action": "none"
         },
         {
             "object_type": "break",
-            "amount": 3
-        },
-        {
-            "object_type": "button",
-            "text": "Back 🔙",
-            "action": {
-                "type": "redirect",
-                "name": "homepage",
-                "sub_action": "none"
-            }
+            "amount": 1
         },
         {
             "object_type": "text",

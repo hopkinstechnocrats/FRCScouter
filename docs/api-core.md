@@ -28,12 +28,6 @@ function server_request(request) {
 }
 ```
 
-Why not POST/GET?
----
-2 reasons.  
-1) This is *kinda* built off of the base of netcode v4 which used websockets and
-2) using websockets gives more customization in the protocol with less overhead
-
 JSON Format
 ---
 When sending a request, some things are assumed about the Object that you send. Every request object has a `request` field which is a String. Every response object has a `result` field, also a String. Based on the kind of request field you have, it will be assumed that you do or don't have various other fields, specified below. The result field will give you a good indication of any other fields avalble, also specified below.
@@ -61,44 +55,6 @@ Response
 }
 ```
 
-**Get Page**  
-Queries a server for the material of a page. A valid list of page names and their uses can be found below. Note that this is subject to change.
-
-_Valid names_
- - homepage
- - game-lister
- - data-home
-
-Either an error for an invalid page name will be returned or the contents of a page as a [JSON Page](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/json-page.md)
-
-```json
-// Request
-{
-    "request": "get-page",
-    "page": "page_name_here"
-}
-```
-On success, `page_material` is a [JSON Page](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/json-page.md)
-```json
-// Response
-{
-    "result": "get-page",
-    "page_name": "page_name_here",
-    "status": "pass",
-    "page_material": {
-
-    }
-}
-```
-On faliure
-```json
-// Response
-{
-    "result": "get-page",
-    "status": "fail",
-    "reason": "error_message_here"
-}
-```
 
 **Get Plugins**  
 Queries a server for a list of plugins.
@@ -141,6 +97,8 @@ The `request` field of the header was not a known value.
 ```
 
 **Missing or broken key**
+
+Data received was missing a key part of the JSON, or a part of the JSON was in the wrong format.
 ```json
 // Response
 {

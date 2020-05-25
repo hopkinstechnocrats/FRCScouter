@@ -6,7 +6,6 @@ Setting up
 
 Advanced topics  
 [So you want to build from source](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/build-from-source.md)  
-[Contributing](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/contributing.md)  
 [Raw API Information](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/api-core.md)
 ---
 

@@ -1,22 +1,5 @@
-PLUG_PRIVATE = false;
-PLUG = {
-    name: "",
-    desc: "",
-    pages: {
-
-    },
-    JSONSS: {
-        
-    }
-};
-
 function plug_setup(n, d, n2, d2) {
-    clear_page();
-    create_text_massive("Your Scouting App");
-    create_text_big("Scouting App's Name");
-    create_input("sa_name", n2);
-    create_text_big("Description");
-    create_input("sa_desc", d2);
+    // left off here
     create_text("Private? (This only prevents your scouting app from showing up on the public list)");
     create_checkbox("PLUG_PRIVATE=!PLUG_PRIVATE;plug_setup(true,true,document.getElementById(\"sa_name\").value,document.getElementById(\"sa_desc\").value)", PLUG_PRIVATE);
     create_break();

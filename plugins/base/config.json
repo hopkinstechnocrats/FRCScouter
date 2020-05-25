@@ -1,0 +1,26 @@
+{
+    "name": "base",
+    "version": "1.0.0",
+    "hooks": [
+        {
+            "type": "base",
+            "name": "homepage"
+        },
+        {
+            "type": "onload",
+            "name": "load"
+        },
+        {
+            "type": "oncall",
+            "name": "create"
+        },
+        {
+            "type": "oncall",
+            "name": "buildapp"
+        },
+        {
+            "type": "oncall",
+            "name": "plug_basic"
+        }
+    ]
+}

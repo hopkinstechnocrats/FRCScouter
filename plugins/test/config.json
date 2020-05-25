@@ -3,12 +3,12 @@
     "version": "0.0.1",
     "hooks": [
         {
-            "type": "onload",
-            "name": "load"
+            "type": "base",
+            "name": "entry"
         },
         {
-            "type": "gameselect",
-            "name": "entry"
+            "type": "onload",
+            "name": "load"
         },
         {
             "type": "oncall",

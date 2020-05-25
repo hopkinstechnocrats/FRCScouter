@@ -1,0 +1,71 @@
+{
+    "version": "JSONPage.1.0.0",
+    "name": "create",
+    "format": "objects-decending",
+    "objects": [
+        {
+            "object_type": "text-massive",
+            "text": "Creation Tools 👩‍💻✏️"
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "button",
+            "text": "Make a scouting app! 🤖🔍✏️",
+            "action": {
+                "type": "redirect",
+                "name": "base:buildapp",
+                "sub_action": "none"
+            }
+        },
+        {
+            "object_type": "break",
+            "amount": 2
+        },
+        {
+            "object_type": "button",
+            "text": "Make a stylesheet",
+            "action": {
+                "type": "redirect",
+                "name": "unknown",
+                "sub_action": "none"
+            }
+        },
+        {
+            "object_type": "break",
+            "amount": 2
+        },
+        {
+            "object_type": "button",
+            "text": "Make a plugin",
+            "action": {
+                "type": "redirect",
+                "name": "base:plug_basic",
+                "sub_action": "none"
+            }
+        },
+        {
+            "object_type": "break",
+            "amount": 3
+        },
+        {
+            "object_type": "button",
+            "text": "Back 🔙",
+            "action": {
+                "type": "redirect",
+                "name": "base:homepage",
+                "sub_action": "none"
+            }
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "text",
+            "text": "Some of these tools may not work with mobile devices."
+        }
+    ]
+}

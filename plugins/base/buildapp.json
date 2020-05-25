@@ -1,0 +1,35 @@
+{
+    "version": "JSONPage.1.0.0",
+    "name": "buildapp",
+    "format": "objects-decending",
+    "objects": [
+        {
+            "object_type": "text-massive",
+            "text": "Your Scouting App"
+        },
+        {
+            "object_type": "text-big",
+            "text": "Scouting App's Name"
+        },
+        {
+            "object_type": "input",
+            "id": "sa_name",
+            "text_action": {
+                "type": "get-var",
+                "variable": "sa_name"
+            }
+        },
+        {
+            "object_type": "text-big",
+            "text": "Description"
+        },
+        {
+            "object_type": "input",
+            "id": "sa_desc",
+            "text_action": {
+                "type": "get-var",
+                "variable": "sa_desc"
+            }
+        }
+    ]
+}

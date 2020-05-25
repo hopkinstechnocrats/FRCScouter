@@ -12,7 +12,41 @@ BUTTON_ACTION = {};
 
 function load_network_site() {
     clear_page();
-    read_page(NETWORK.data.homepage);
+    read_page(find_page_by_use("base", "base"));
+}
+
+function find_page_by_name(plugin, name) {
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
+            console.log("plugin located!");
+            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
+                if (NETWORK.data.loaded_plugins[i].map[j].name == use) {
+                    console.log("page located!");
+                    return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
+                }
+            }
+            console.error("unable to find file [" + plugin + ":" + name + "]");
+            return;
+        }
+    }
+    console.error("unable to find plugin " + plugin);
+}
+
+function find_page_by_use(plugin, use) {
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
+            console.log("plugin located!");
+            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
+                if (NETWORK.data.loaded_plugins[i].map[j].trigger == use) {
+                    console.log("page located!");
+                    return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
+                }
+            }
+            console.error("unable to find use [" + plugin + ":* where * has " + use + "]");
+            return;
+        }
+    }
+    console.error("unable to find plugin " + plugin);
 }
 
 function set_env(env, val) {
@@ -37,36 +71,12 @@ function get_env(env) {
             return NETWORK.data.env_data[i].value;
         }
     }
-    console.error("Unable to locate env param.");
+    //console.error("Unable to locate env param " + env);
     return null;
 }
 
 function gotopage(page) {
     console.log("Going to page: " + page);
-    if (page == "homepage") {
-        clear_page();
-        read_page(NETWORK.data.homepage);
-        return;
-    }
-    if (page == "create") {
-        clear_page();
-        read_page(NETWORK.data.create);
-        return;
-    }
-    if (page == "games") {
-        clear_page();
-        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
-            console.log(NETWORK.data.loaded_plugins[i]);
-            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
-                let plug_component = NETWORK.data.loaded_plugins[i].map[j];
-                if (plug_component.trigger == "gameselect") {
-                    read_page(JSON.parse(plug_component.content));
-                    create_break();
-                }
-            }
-        }
-        return;
-    }
     if (page == "pagebuilder") {
         clear_page();
         read_page(PAGEBUILDER);
@@ -150,7 +160,10 @@ function gotopage(page) {
                     return;
                 }
                 else {
-                    console.error("Call to non oncall page!");
+                    clear_page();
+                    console.warn("Call to non oncall page!");
+                    read_page(JSON.parse(plug_component.content));
+                    return;
                 }
             }
         }
@@ -171,17 +184,10 @@ LOADING = true;
 function load_site() {
     clear_page();
     create_text_massive("Transfering data from server...");
-    if (NETWORK.data.page_loading_state == 0) {
-        NETWORK.data.page_loading_state = 1;
-        for (let i = 0; i < NETWORK.data.pages_needed.length; i++) {
-            console.log("requesting page " + NETWORK.data.pages_needed[i]);
-            server_request({"request": "get-page", "page": NETWORK.data.pages_needed[i]});
-        }
+    if (NETWORK.data.plugin_list.length < 1) {
+        server_request({"request": "plugins"});
+        NETWORK.data.page_loading_state = 10;
     }
-    else if (NETWORK.data.buildapp.version == undefined || NETWORK.data.create.version == undefined || NETWORK.data.homepage.version == undefined) {
-        console.log("Waiting for server to dump pages...");
-    }
-    // check that pages are avalable
     else if (NETWORK.data.plugin_list.length > NETWORK.data.loaded_plugins.length) {
         if (NETWORK.data.page_loading_state == 10) {
             NETWORK.data.page_loading_state = 11;
@@ -193,9 +199,6 @@ function load_site() {
                 NETWORK.data.page_loading_state = 10;
             }
         }
-        create_text("+ homepage");
-        create_text("X dataviewer");
-        create_text("X pagebuilder");
         create_text("/ plugins");
         for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
             create_text(" + " + NETWORK.data.plugin_list[i].name);
@@ -203,6 +206,14 @@ function load_site() {
         create_text("-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
     }
     else {
+        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+            let actions = find_page_by_use(NETWORK.data.loaded_plugins[i].plugin, "onload").actions;
+            if (actions != undefined) {
+                for (let j = 0; j < actions.length; j++) {
+                    evaluate_action(actions[j]);
+                }
+            }
+        }
         create_text("All objects loaded. Waiting for main page...");
         LOADING = false;
         save_data();

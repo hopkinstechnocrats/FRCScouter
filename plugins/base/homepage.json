@@ -51,7 +51,7 @@
             "text": "I want to make something 👩‍💻✏️",
             "action": {
                 "type": "redirect",
-                "name": "create",
+                "name": "base:create",
                 "sub_action": "none"
             }
         }
