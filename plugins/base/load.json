@@ -12,6 +12,16 @@
             "type": "set-var-imm",
             "variable": "sa_desc",
             "value": ""
+        },
+        {
+            "type": "set-var-imm",
+            "variable": "missing_name",
+            "value": false
+        },
+        {
+            "type": "set-var-imm",
+            "variable": "missing_desc",
+            "value": false
         }
     ]
 }

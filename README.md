@@ -9,14 +9,15 @@ A robust and easy to use robot scouting tool with built in data analysis. Use th
 Features
 ---
  - **No active connection needed**, data is backed up to your device and uploaded when you get wifi or data automagically
- - **Low size** (size here), can be loaded over poor cell connection easily
+ - **Low size** (<500kB), can be loaded over a poor cell connection easily
  - **Designed mobile first**, everything else later
  - Made to be **easy to use**
- - Built in **[data anyalsis](put an image here)**
- - Optional **[cloud backup to AWS](link to docs advanced backing up)**
+ - Built in **data anyalsis**
  - Server is extremely performant and takes minimal resources
- - Did I mention **easy customizability**?
+ - **Easy customizability**!
  - Seriously, you can change nothing or everything if you'd like
 
-[See the Docs](https://github.com/hopkinstechnocrats/FRCScouter/blob/netcode-5/docs/index.md)
----
+[Use the site](http://scouting.technocrats2239.org/)  
+[Setup your own](https://github.com/hopkinstechnocrats/FRCScouter/blob/netcode-5/docs/run-local.md)  
+[See the docs](https://github.com/hopkinstechnocrats/FRCScouter/blob/netcode-5/docs/index.md)
+-
