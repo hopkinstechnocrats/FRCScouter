@@ -2,9 +2,9 @@ FRCScouter
 ![Rust](https://github.com/hopkinstechnocrats/FRCScouter/workflows/Rust/badge.svg)
 ![Version](https://img.shields.io/github/v/tag/hopkinstechnocrats/FRCScouter?color=yellow&label=Version)
 ===
-A robust and easy to use robot scouting tool with built in data analasys. Use the built in templates for each year's game or customize it to exactly how you need it with no Javascript or Rust knowledge needed.
+A robust and easy to use robot scouting tool with built in data analysis. Use the built in templates for each year's game or customize it to exactly how you need it with no programming or technical knowledge needed.
 
-![Include an image here of the app's homepage]()
+![Homepage](https://github.com/hopkinstechnocrats/FRCScouter/blob/netcode-5/docs/img.png)
 
 Features
 ---
@@ -18,5 +18,5 @@ Features
  - Did I mention **easy customizability**?
  - Seriously, you can change nothing or everything if you'd like
 
-[See the Docs](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/index.md)
+[See the Docs](https://github.com/hopkinstechnocrats/FRCScouter/blob/netcode-5/docs/index.md)
 ---
