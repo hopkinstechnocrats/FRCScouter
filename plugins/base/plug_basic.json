@@ -1,6 +1,6 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "create",
+    "name": "plug_basic",
     "format": "objects-decending",
     "objects": [
         {
@@ -13,7 +13,20 @@
         },
         {
             "object_type": "button",
-            "text": "Create a new page",
+            "text": "Create a new page 🆕",
+            "action": {
+                "type": "redirect",
+                "name": "base:plug_basic_new_page",
+                "sub_action": "none"
+            }
+        },
+        {
+            "object_type": "break",
+            "amount": 1
+        },
+        {
+            "object_type": "button",
+            "text": "Edit a page ✏️",
             "action": "none"
         },
         {
@@ -22,16 +35,7 @@
         },
         {
             "object_type": "button",
-            "text": "Edit a page",
-            "action": "none"
-        },
-        {
-            "object_type": "break",
-            "amount": 1
-        },
-        {
-            "object_type": "button",
-            "text": "Remove a page",
+            "text": "Remove a page ❌",
             "action": "none"
         },
         {
@@ -40,7 +44,7 @@
         },
         {
             "object_type": "button",
-            "text": "Finish and save!",
+            "text": "Finish and save! 💾",
             "action": "none"
         },
         {

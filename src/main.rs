@@ -15,6 +15,8 @@ use std::io::prelude::*;
 // plugin loading
 pub mod plugins;
 
+use include_dir::{include_dir, Dir};
+
 fn main() {
     // If a Rocket.toml is not present, create one.
     let rockettoml = include_bytes!("Rocket.toml");
@@ -25,6 +27,12 @@ fn main() {
         tmp_file.write_all(rockettoml).unwrap();
     }
     drop(rockettoml);
+
+    // If the static folder is not present, create it.
+    //let staticfolder = include_dir!("./static");
+    //let mut tmp_dir = std::env::current_dir().unwrap();
+    //for i in staticfolder.
+    //std::fs::File::create(staticfolder);
 
     // Create and launch rocket website (see /static), on localhost::[rocket.toml]
     // This is done in a new thread
