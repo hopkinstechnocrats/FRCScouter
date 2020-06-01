@@ -6,27 +6,42 @@
         {
             "type": "set-var-imm",
             "variable": "sa_name",
-            "value": ""
+            "value": {
+                "type": "data-imm",
+                "data": ""
+            }
         },
         {
             "type": "set-var-imm",
             "variable": "sa_desc",
-            "value": ""
+            "value": {
+                "type": "data-imm",
+                "data": ""
+            }
         },
         {
             "type": "set-var-imm",
             "variable": "missing_name",
-            "value": false
+            "value": {
+                "type": "data-imm",
+                "data": false
+            }
         },
         {
             "type": "set-var-imm",
             "variable": "missing_desc",
-            "value": false
+            "value": {
+                "type": "data-imm",
+                "data": false
+            }
         },
         {
             "type": "set-var-imm",
             "variable": "page_name",
-            "value": ""
+            "value": {
+                "type": "data-imm",
+                "data": ""
+            }
         }
     ]
 }

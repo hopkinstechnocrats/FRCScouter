@@ -25,6 +25,10 @@
         {
             "type": "oncall",
             "name": "plug_basic_new_page"
+        },
+        {
+            "type": "oncall",
+            "name": "plug_basic_page"
         }
     ]
 }

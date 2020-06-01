@@ -31,6 +31,7 @@ impl Plugin {
     }
 }
 
+#[derive(Clone)]
 pub struct PluginConstructor {
     plug: Plugin
 }

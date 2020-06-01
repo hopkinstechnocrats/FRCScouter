@@ -15,8 +15,6 @@ use std::io::prelude::*;
 // plugin loading
 pub mod plugins;
 
-use include_dir::{include_dir, Dir};
-
 fn main() {
     // If a Rocket.toml is not present, create one.
     let rockettoml = include_bytes!("Rocket.toml");
@@ -27,12 +25,6 @@ fn main() {
         tmp_file.write_all(rockettoml).unwrap();
     }
     drop(rockettoml);
-
-    // If the static folder is not present, create it.
-    //let staticfolder = include_dir!("./static");
-    //let mut tmp_dir = std::env::current_dir().unwrap();
-    //for i in staticfolder.
-    //std::fs::File::create(staticfolder);
 
     // Create and launch rocket website (see /static), on localhost::[rocket.toml]
     // This is done in a new thread
@@ -70,7 +62,7 @@ fn main() {
                     // do nothing, no hooks.
                 }
                 else if !hooks.is_array() {
-                    println!("WARNING: A plugin has a hooks field that is NOT an Array");
+                    println!("WARNING: plugin {} has a hooks field that is NOT an Array", thisplugin.clone().build().get_name());
                 }
                 else {
                     loop {
@@ -79,17 +71,17 @@ fn main() {
                             break;
                         }
                         else if !element.is_object() {
-                            println!("WARNING: A plugin has a hook that is NOT an Object");
+                            println!("WARNING: plugin {} has a hook that is NOT an Object", thisplugin.clone().build().get_name());
                             break;
                         }
                         else { 
                             let hooktype = element["type"].as_str();
                             let hookname = element["name"].as_str();
                             if hooktype.is_none() {
-                                panic!("PLUGIN ERROR: A plugin has a hook that does not have a proper type field");
+                                panic!("PLUGIN ERROR: plugin {} has a hook that does not have a proper type field", thisplugin.clone().build().get_name());
                             }
                             if hookname.is_none() {
-                                panic!("PLUGIN ERROR: A plugin has a hook that does not have a proper name field");
+                                panic!("PLUGIN ERROR: plugin {} has a hook that does not have a proper name field", thisplugin.clone().build().get_name());
                             }
                             let hooktype = hooktype.unwrap();
                             let hookname = hookname.unwrap();

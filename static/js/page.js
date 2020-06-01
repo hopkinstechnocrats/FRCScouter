@@ -14,16 +14,16 @@ function read_page(json) {
             let obj = json.objects[i];
             switch (obj.object_type) {
                 case "text":
-                    create_text(obj.text);
+                    create_vers("p", obj.text);
                     break;
                 case "text-big":
-                    create_text_big(obj.text);
+                    create_vers("h3", obj.text);
                     break;
                 case "text-massive":
-                    create_text_massive(obj.text);
+                    create_vers("h1", obj.text)
                     break;
                 case "text-clock":
-                    create_text_clock(obj.text);
+                    create_vers("clock", obj.text)
                     break;
                 case "break":
                     create_break(obj.amount);
@@ -43,38 +43,59 @@ function read_page(json) {
             }
         }
     }
+    else if (json.format == "spawn") {
+        let page_name = evaluate_action(json.page_loc);
+        if (page_name != "") {
+            read_page(get_env(page_name))
+        }
+        for (let i = 0; i < json.vers_objs.length; i++) {
+            let obj = json.objects[i];
+            vers_el(obj.loc_left, obj.loc_top, obj.el_type, obj.el_text, obj.el_onclick, obj.el_id);
+        }
+    }
     else {
         console.error("Unable to load page: JSON Page format unkown: " + json.format);
         return;
     }
 }
 
+// deals with jsonpage actions by running or generating js code
 function evaluate_action(action) {
     if (action == undefined) {
-        return;
-    }
-    if (action == "none") {
         return "";
     }
-    if (action.type == "redirect") {
-        return "gotopage(\"" + action.name + "\");" + evaluate_action(action.sub_action);
-    }
-    if (action.type == "set-var") {
-        return "set_env(\"" + action.variable + "\"," + action.value + ");" + evaluate_action(action.sub_action);
-    }
-    if (action.type == "modify-var") {
-        return "set_env(\"" + action.variable + "\",get_env(\"" + action.variable + "\")+" + action.value + ");" + evaluate_action(action.sub_action);
-    }
-    if (action.type == "set-var-imm") {
-        set_env(action.variable, action.value);
-        return;
-    }
-    if (action.type == "modify-var-imm") {
-        console.log("modify now");
-        return set_env(action.variable, get_env(action.variable) + action.value);
-    }
-    if (action.type == "get-var") {
-        return get_env(action.variable)
+    switch (action.type) {
+        case undefined:
+            return "";
+        case "redirect":
+            return "gotopage(\"" + action.name + "\");" + evaluate_action(action.sub_action);
+        case "set-var":
+            return "set_env(\"" + action.variable + "\"," + evaluate_action(action.value) + ");" + evaluate_action(action.sub_action);
+        case "modify-var":
+            return "set_env(\"" + action.variable + "\",get_env(\"" + action.variable + "\")+" + action.value + ");" + evaluate_action(action.sub_action);
+        case "set-var-imm":
+            set_env(action.variable, evaluate_action(action.value));
+            return evaluate_action(action.sub_action);
+        case "modify-var-imm":
+            console.log("modify now");
+            set_env(action.variable, get_env(action.variable) + action.value);
+            return evaluate_action(action.sub_action);
+        case "get-var":
+            get_env(action.variable);
+            return evaluate_action(action.sub_action);
+        case "get-page":
+            return "document.getElementById(\"" + action.el_id + "\").value";
+        case "get-page-imm":
+            evaluate_action(action.sub_action);
+            document.getElementById(action.el_id).value;
+            return evaluate_action(action.sub_action);
+        case "data-imm":
+            evaluate_action(action.sub_action);
+            return action.data;
+        default:
+            console.error("evaluate action could not find " + action + "!");
+            console.error(action);
+            break;
     }
 }
 
@@ -250,54 +271,6 @@ function create_button_spacer(text) {
 }
 
 /**
- * Creates a generic text node.
- * @param {String} text - Text to be used
- */
-function create_text(text) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("p");
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    ctx.appendChild(node);
-}
-
-/**
- * Creates a generic text node, in a larger size
- * @param {String} text - Text to be used
- */
-function create_text_big(text) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("h3");
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    ctx.appendChild(node);
-}
-
-/**
- * Creates a generic text node, in a massive size
- * @param {String} text - Text to be used
- */
-function create_text_massive(text) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("h1");
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    ctx.appendChild(node);
-}
-
-/**
- * Creates a generic text node, in a supermassive size
- * @param {String} text - Text to be used
- */
-function create_text_clock(text) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("clock");
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    ctx.appendChild(node);
-}
-
-/**
  * Creates a meter with a value of amnt/100.
  * @param {Number} amnt - Amount out of 100 to fill the meter
  */ 
@@ -320,4 +293,12 @@ function create_break(amount) {
     if (amount > 1) {
         create_break(amount - 1);
     }
+}
+
+function create_vers(eltype, text) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement(eltype);
+    var textnode = document.createTextNode(text);
+    node.appendChild(textnode);
+    ctx.appendChild(node);
 }

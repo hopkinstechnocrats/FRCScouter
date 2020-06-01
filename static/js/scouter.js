@@ -183,7 +183,7 @@ LOADING = true;
 
 function load_site() {
     clear_page();
-    create_text_massive("Transfering data from server...");
+    create_vers("h1", "Transfering data from server...");
     if (NETWORK.data.plugin_list.length < 1) {
         server_request({"request": "plugins"});
         NETWORK.data.page_loading_state = 10;
@@ -199,11 +199,11 @@ function load_site() {
                 NETWORK.data.page_loading_state = 10;
             }
         }
-        create_text("/ plugins");
+        create_vers("p", "/ plugins");
         for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
-            create_text(" + " + NETWORK.data.plugin_list[i].name);
+            create_vers("p", " + " + NETWORK.data.plugin_list[i].name);
         }
-        create_text("-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
+        create_vers("p", "-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
     }
     else {
         for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
@@ -214,7 +214,7 @@ function load_site() {
                 }
             }
         }
-        create_text("All objects loaded. Waiting for main page...");
+        create_vers("p", "All objects loaded. Waiting for main page...");
         LOADING = false;
         save_data();
         setTimeout(load_network_site, 20);
