@@ -31,8 +31,7 @@
                 },
                 "sub_action": {
                     "type": "redirect",
-                    "name": "base:plug_basic_page",
-                    "sub_action": "none"
+                    "name": "base:plug_basic_page"
                 }
             }
         },
@@ -45,8 +44,7 @@
             "text": "Back 🔙",
             "action": {
                 "type": "redirect",
-                "name": "base:plug_basic",
-                "sub_action": "none"
+                "name": "base:plug_basic"
             }
         }
     ]

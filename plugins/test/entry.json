@@ -8,8 +8,7 @@
             "text": "FRC game 2020",
             "action": {
                 "type": "redirect",
-                "name": "test:game_2020",
-                "sub_action": "none"
+                "name": "test:game_2020"
             }
         }
     ]

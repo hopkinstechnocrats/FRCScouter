@@ -16,8 +16,7 @@
             "text": "Make a scouting app! 🤖🔍✏️",
             "action": {
                 "type": "redirect",
-                "name": "base:buildapp",
-                "sub_action": "none"
+                "name": "base:buildapp"
             }
         },
         {
@@ -29,8 +28,7 @@
             "text": "Make a stylesheet",
             "action": {
                 "type": "redirect",
-                "name": "unknown",
-                "sub_action": "none"
+                "name": "unknown"
             }
         },
         {
@@ -42,8 +40,7 @@
             "text": "Make a plugin",
             "action": {
                 "type": "redirect",
-                "name": "base:plug_basic",
-                "sub_action": "none"
+                "name": "base:plug_basic"
             }
         },
         {
@@ -55,8 +52,7 @@
             "text": "Back 🔙",
             "action": {
                 "type": "redirect",
-                "name": "base:homepage",
-                "sub_action": "none"
+                "name": "base:homepage"
             }
         },
         {

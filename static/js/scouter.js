@@ -1,54 +1,55 @@
-PAGEBUILDER = {
-    "version": "JSONPage.1.0.0",
-    "name": "entry",
-    "format": "objects-decending",
-    "objects": []
-};
-
-DISPLAYMODE = 0;
-TEXT_SIZE = "text";
-STORED_OBJECT = {};
-BUTTON_ACTION = {};
-
 function load_network_site() {
     clear_page();
     read_page(find_page_by_use("base", "base"));
 }
 
+/**
+ * Locates a JSON page by plugin and name. Returns the JSON Page in Object format.
+ * @param {String} plugin - Name of the plugin to look for
+ * @param {String} name - Name of the page to look for
+ * @returns {Object} - JSON Page Object
+ */
 function find_page_by_name(plugin, name) {
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
         if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
-            console.log("plugin located!");
             for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
                 if (NETWORK.data.loaded_plugins[i].map[j].name == use) {
-                    console.log("page located!");
                     return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
                 }
             }
-            console.error("unable to find file [" + plugin + ":" + name + "]");
+            console.error("Unable to find file [" + plugin + ":" + name + "]");
             return;
         }
     }
-    console.error("unable to find plugin " + plugin);
+    console.error("Unable to find plugin " + plugin);
 }
 
+/**
+ * Locates a JSON page by plugin and use. Returns the JSON Page in Object format.
+ * @param {String} plugin - Name of the plugin to look for
+ * @param {String} use - Use of the page to look for
+ * @returns {Object} - JSON Page Object
+ */
 function find_page_by_use(plugin, use) {
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
         if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
-            console.log("plugin located!");
             for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
                 if (NETWORK.data.loaded_plugins[i].map[j].trigger == use) {
-                    console.log("page located!");
                     return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
                 }
             }
-            console.error("unable to find use [" + plugin + ":* where * has " + use + "]");
+            console.error("Unable to find use [" + plugin + ":* where * has " + use + "]");
             return;
         }
     }
-    console.error("unable to find plugin " + plugin);
+    console.error("Unable to find plugin " + plugin);
 }
 
+/**
+ * Sets a variable for a plugin.
+ * @param {String} env - Name of variable
+ * @param {*} val - Value to set
+ */
 function set_env(env, val) {
     if (get_env(env) == null) {
         NETWORK.data.env_data.push({key: env, value: val});
@@ -65,91 +66,22 @@ function set_env(env, val) {
     }
 }
 
+/**
+ * Gets a variable for a plugin
+ * @param {String} env - Name of variable
+ * @returns {*} - The variable's value 
+ */
 function get_env(env) {
     for (let i = 0; i < NETWORK.data.env_data.length; i++) {
         if (NETWORK.data.env_data[i].key == env) {
             return NETWORK.data.env_data[i].value;
         }
     }
-    //console.error("Unable to locate env param " + env);
     return null;
 }
 
 function gotopage(page) {
-    console.log("Going to page: " + page);
-    if (page == "pagebuilder") {
-        clear_page();
-        read_page(PAGEBUILDER);
-        if (DISPLAYMODE == 0) { // root
-            vers_el("50%", "0", "p", "What do you want to do?");
-            vers_el("50%", "20px", "button", "Create an Element", "DISPLAYMODE=1;gotopage(\"pagebuilder\");");
-            vers_el("50%", "65px", "button", "Move an Element", "DISPLAYMODE=2;gotopage(\"pagebuilder\");");
-            vers_el("50%", "110px", "button", "Import Page", "DISPLAYMODE=4;gotopage(\"pagebuilder\");");
-            vers_el("50%", "155px", "button", "Export Page", "DISPLAYMODE=5;gotopage(\"pagebuilder\");");
-        }
-        else if (DISPLAYMODE == 1) { // create element
-            vers_el("50%", "0", "p", "Select an element to create");
-            vers_el("50%", "20px", "button", "Text", "TEXT_SIZE=\"text\";DISPLAYMODE=3;gotopage(\"pagebuilder\");");
-            vers_el("50%", "65px", "button", "Button", "DISPLAYMODE=6;gotopage(\"pagebuilder\");");
-            vers_el("50%", "110px", "button", "Cancel", "DISPLAYMODE=0;gotopage(\"pagebuilder\");");
-        }
-        else if (DISPLAYMODE == 2) { // move element
-            let button_index = 20;
-            vers_el("50%", "0", "p", "Move which element?");
-            for (let i = 0; i < PAGEBUILDER.objects.length; i++) {
-                vers_el("50%", button_index + "px", "button", PAGEBUILDER.objects[i].text, "DISPLAYMODE=7;STORED_OBJECT=PAGEBUILDER.objects.splice(" + i + ",1)[0];gotopage(\"pagebuilder\");");
-                button_index += 45;
-            }
-        }
-        else if (DISPLAYMODE == 3) { // create text
-            vers_el("50%", "0", "button", "Create Text!", "PAGEBUILDER.objects.push({text:document.getElementById(\"textinput\").value,object_type:TEXT_SIZE});DISPLAYMODE=0;gotopage(\"pagebuilder\");");
-            vers_el("50%", "45px", "p", "Text:");
-            vers_el("50%", "70px", "input", "", "", "textinput");
-            vers_el("50%", "97px", "p", "Text Size:");
-            vers_el("50%", "120px", "button", "Small", "TEXT_SIZE=\"text\";");
-            vers_el("50%", "165px", "button", "Medium", "TEXT_SIZE=\"text-big\";");
-            vers_el("50%", "210px", "button", "Big", "TEXT_SIZE=\"text-massive\";");
-        }
-        else if (DISPLAYMODE == 4) { // import
-            
-        }
-        else if (DISPLAYMODE == 5) { // export
-            vers_el("50%", "0", "p", "{\"version\": \"JSONPage.5.0.0\",\"name\": \"NAME_HERE\",\"format\": \"objects-decending\",\"objects\":" + JSON.stringify(PAGEBUILDER.objects) + "}");
-        }
-        else if (DISPLAYMODE == 6) { // create button
-            vers_el("50%", "0", "button", "Create Button!", "PAGEBUILDER.objects.push({text:document.getElementById(\"textinput\").value,object_type:\"button\"});DISPLAYMODE=0;gotopage(\"pagebuilder\");");
-            vers_el("50%", "45px", "p", "Text:");
-            vers_el("50%", "70px", "input", "", "", "textinput");
-            vers_el("50%", "97px", "p", "On Click:");
-            vers_el("50%", "120px", "button", "Load Page", "BUTTON_ACTION={};"); // select page?
-            vers_el("50%", "165px", "button", "Finish Scouting", "TEXT_SIZE=\"text-big\";");
-            vers_el("50%", "210px", "button", "Change/Set Data", "TEXT_SIZE=\"text-massive\";");
-        }
-        else if (DISPLAYMODE == 7) { // move element part 2
-            let button_index = 20;
-            vers_el("50%", "0", "p", "Move to where?");
-            vers_el("40%", "0", "button", "->", "PAGEBUILDER.objects.splice(" + 0 + ", 0, STORED_OBJECT);DISPLAYMODE=0;gotopage(\"pagebuilder\");");
-            for (let i = 0; i < PAGEBUILDER.objects.length - 1; i++) {
-                vers_el("50%", button_index + "px", "h3", PAGEBUILDER.objects[i].text);
-                vers_el("40%", (button_index + 20) + "px", "button", "->", "PAGEBUILDER.objects.splice(" + (i + 1) + ", 0, STORED_OBJECT);DISPLAYMODE=0;gotopage(\"pagebuilder\");");
-                button_index += 45;
-            }
-            vers_el("50%", button_index + "px", "h3", PAGEBUILDER.objects[PAGEBUILDER.objects.length - 1].text);
-            vers_el("40%", (button_index + 20) + "px", "button", "->", "PAGEBUILDER.objects.push(STORED_OBJECT);DISPLAYMODE=0;gotopage(\"pagebuilder\");");
-        }
-        else {
-            vers_el("50%", "0", "p", "Unkown display mode!");
-        }
-        return;
-    }
-    if (page == "versions") {
-        clear_page();
-        create_text_big("Versions");
-        create_text("Netcode: " + NETWORK.netcode);
-        create_text("JSON Page: " + NETWORK.jsonvers);
-        create_button("Return", "gotopage(\"devtools\");");
-        return;
-    }
+    console.log("Loading page " + page);
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
         for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
             let plug_component = NETWORK.data.loaded_plugins[i].map[j];
@@ -168,7 +100,7 @@ function gotopage(page) {
             }
         }
     }
-    console.error("Page not found with name trigger " + page + "!");
+    console.error("Unable to find the page " + page);
 }
 
 function reset_and_load_site() {
@@ -232,5 +164,7 @@ function load_cookie_site() {
     else {
         // since we've apparently loaded the site's contents from local storage, just start running!
         load_network_site();
+        create_break(2);
+        create_vers("p", "This page is loaded from backed up material. (net " + NETWORK.netcode + ")");
     }
 }

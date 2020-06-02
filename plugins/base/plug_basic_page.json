@@ -2,8 +2,40 @@
     "version": "JSONPage.1.0.0",
     "name": "plug_basic_page",
     "format": "spawn",
-    "page_loc": "none",
-    "vers_objs": {
-        
-    }
+    "vers_objs": [
+        {
+            "left": "50%",
+            "top": "0",
+            "element": "p",
+            "text": "What do you want to do?"
+        },
+        {
+            "left": "50%",
+            "top": "20px",
+            "element": "button",
+            "text": "Create",
+            "onclick": "gotopage(\"base:plug_basic_new_element\");"
+        },
+        {
+            "left": "50%",
+            "top": "65px",
+            "element": "button",
+            "text": "Move",
+            "onclick": "gotopage(\"base:plug_basic_move_element\");"
+        },
+        {
+            "left": "50%",
+            "top": "110px",
+            "element": "button",
+            "text": "Edit",
+            "onclick": "gotopage(\"base:plug_basic_edit_element\");"
+        },
+        {
+            "left": "50%",
+            "top": "155px",
+            "element": "button",
+            "text": "Remove",
+            "onclick": "gotopage(\"base:plug_basic_remove_element\");"
+        }
+    ]
 }

@@ -16,8 +16,7 @@
             "text": "I want to scout 🔌🤖",
             "action": {
                 "type": "redirect",
-                "name": "games",
-                "sub_action": "none"
+                "name": "games"
             }
         },
         {
@@ -29,8 +28,7 @@
             "text": "I want to see results 📊🔍",
             "action": {
                 "type": "redirect",
-                "name": "dataviewer",
-                "sub_action": "none"
+                "name": "dataviewer"
             }
         },
         {
@@ -39,8 +37,7 @@
         },
         {
             "object_type": "button",
-            "text": "I want to make a scouting lobby ",
-            "action": "none"
+            "text": "I want to make a scouting lobby"
         },
         {
             "object_type": "break",
@@ -51,8 +48,7 @@
             "text": "I want to make something 👩‍💻✏️",
             "action": {
                 "type": "redirect",
-                "name": "base:create",
-                "sub_action": "none"
+                "name": "base:create"
             }
         }
     ]

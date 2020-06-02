@@ -16,8 +16,7 @@
             "text": "Create a new page 🆕",
             "action": {
                 "type": "redirect",
-                "name": "base:plug_basic_new_page",
-                "sub_action": "none"
+                "name": "base:plug_basic_new_page"
             }
         },
         {
@@ -26,8 +25,7 @@
         },
         {
             "object_type": "button",
-            "text": "Edit a page ✏️",
-            "action": "none"
+            "text": "Edit a page ✏️"
         },
         {
             "object_type": "break",
@@ -35,8 +33,7 @@
         },
         {
             "object_type": "button",
-            "text": "Remove a page ❌",
-            "action": "none"
+            "text": "Remove a page ❌"
         },
         {
             "object_type": "break",
@@ -44,8 +41,7 @@
         },
         {
             "object_type": "button",
-            "text": "Finish and save! 💾",
-            "action": "none"
+            "text": "Finish and save! 💾"
         },
         {
             "object_type": "break",

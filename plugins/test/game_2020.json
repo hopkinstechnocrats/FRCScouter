@@ -20,8 +20,7 @@
                 "value": 1,
                 "sub_action": {
                     "type": "redirect",
-                    "name": "test:game_2020",
-                    "sub_action": "none"
+                    "name": "test:game_2020"
                 }
             }
         }
