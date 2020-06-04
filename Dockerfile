@@ -1,5 +1,5 @@
 # rust nightly
-FROM rustlang/rust:nightly-slim
+FROM rust:1.43.1
 
 # get project source
 WORKDIR /usr/src/FRCScouter

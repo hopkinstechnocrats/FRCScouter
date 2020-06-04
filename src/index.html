@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FRC Scouter</title>
+        <!-- JS -->
+        <script>
+// This is the IP and port of the remote server's websocket address.
+let IP = window.location.hostname;
+// The port to go along with the IP for the server
+let PORT = "81";
+
+// Represents all globals, this should probably get renamed sometime...
+let NETWORK = {
+    // represents the netcode version being used in a client. Used for user facing debugging and API
+    // compatibility checking
+    netcode: "rev.5.0.0",
+    // represents the JSON Page version being used in a client.
+    jsonvers: "JSONPage.1.0.0",
+    // represents data streamed from the network
+    rx_queue: [],
+    // represents data waiting to be outgoing onto the network
+    tx_queue: [],
+    // represents events on network
+    waiting: 0,
+    // `true` if client is waiting for response. `false` if nothing is queued for network
+    network_busy: false,
+    // how often in ms to check the network
+    network_refresh: 100,
+    // if the server could be sucessfully connected to
+    server_found: false,
+    // version of netcode used by server
+    foriegn_netcode: "NEVER_CONNECTED",
+    // represents all received data on the network that may be stored
+    data: {
+        // tracks the progress getting page materials from network
+        page_loading_state: 0,
+        requests: 0,
+        // list of all plugins
+        plugin_list: [],
+        // list of all plugins with data
+        loaded_plugins: [],
+        // variables and enviroment for plugins/apps
+        env_data: []
+    }
+};
+
+/**
+ * Loads data from local machine.
+ * @returns {Boolean} - succeeded in loading data
+ */
+function load_data() {
+    console.log("Attempting to load data from persisitent storage...");
+    let data = window.localStorage.getItem("data");
+    if (data == null) {
+        console.warn("Failed!");
+        return false;
+    }
+    else {
+        NETWORK.data = JSON.parse(data);
+        console.log("Loaded.");
+        return true;
+    }
+}
+
+// after page loads, request the foriegn server's netcode version. This also does a sanity check on
+// if we have a stable connection.
+server_request({"request": "version"});
+
+// after page loads, wait 250 ms. If we can find a connection in that time, download site.
+// Otherwize, attempt to load from local storage.
+setTimeout(() => {
+    if (NETWORK.server_found) {
+        if (NETWORK.netcode != NETWORK.foriegn_netcode) {
+            // show netcode error
+            clear_page();
+            create_text_massive("You may be using an outdated client. Please check that your server provider has everything up to date.");
+            create_text("Local: `" + NETWORK.netcode + "`");
+            create_text("Server: `" + NETWORK.foriegn_netcode + "`");
+        }
+        else {
+            // show main page after loading in fresh material
+            reset_and_load_site();
+        }
+    }
+    else {
+        // show backed up page
+        if (load_data() == false) {
+            clear_page();
+            create_text_massive("No backed up version of the site could be found. The server may be down or your connection may be poor. Refresh the page when you would like to try again.");
+        }
+        else {
+            // since we've apparently loaded the site's contents from local storage, just start running!
+            load_network_site();
+            create_break(2);
+            create_vers("p", "This page is loaded from backed up material. (net " + NETWORK.netcode + ")");
+        }
+    }
+}, 250);
+
+/**
+ * Requests something from the server.
+ * @param {Object} request - Object of request to send
+ */
+function server_request(request) {
+    if (NETWORK.waiting < 1) {
+        NETWORK.waiting = 1;
+    }
+    else {
+        NETWORK.waiting += 1;
+    }
+    NETWORK.tx_queue.push(request);
+    if (NETWORK.waiting == 1) {
+        create_connection();
+    }
+    NETWORK.network_busy = true;
+    network_busy();
+}
+
+/**
+ * Creates a connection to the foriegn server with appropriate callbacks
+ */
+function create_connection() {
+    // create a new connection to IP:PORT
+    CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
+
+    CONNECTION.onmessage = function(e) {
+        // when we receive a response, buffer it
+        NETWORK.rx_queue.push(JSON.parse(e.data));
+        // close this now not needed connection
+        CONNECTION.close(1000);
+        if (NETWORK.waiting > 1) {
+            // decrease the tracker for number of things on the network and do the next thing
+            NETWORK.waiting -= 1;
+            create_connection();
+        }
+        else {
+            // we have no more network activity
+            NETWORK.network_busy = false;
+            NETWORK.waiting = 0;
+        }
+    }
+
+    // send our message as soon as we are connected
+    CONNECTION.onopen = function(_) {
+        CONNECTION.send(JSON.stringify(NETWORK.tx_queue.shift()));
+    }
+}
+
+/**
+ * This function occasionally loops itself via callback if we have network activity to think about
+ */
+function network_busy() {
+    if (NETWORK.rx_queue.length != 0) {
+        // if we have incoming data, we know there's a server
+        NETWORK.server_found = true;
+        while (NETWORK.rx_queue.length > 0) {
+            // let's interpret all the data we have waiting
+            let current = NETWORK.rx_queue.pop();
+            switch (current.result) {
+                case "version":
+                    NETWORK.foriegn_netcode = current.version;
+                    break;
+                case "plugins":
+                    NETWORK.data.plugin_list = current.plugins;
+                    break;
+                case "plugin-data":
+                    NETWORK.data.loaded_plugins.push(current);
+                    break;
+                default:
+                    console.error("Unkown switch during network_busy(): " + current.result);
+                    break;
+            }
+        }
+    }
+    if (NETWORK.waiting == 0) {
+        // if nothing is waiting, we're not busy
+        NETWORK.network_busy = false;
+    }
+    if (NETWORK.network_busy) {
+        // if we're busy check back in a little while later
+        setTimeout(network_busy, NETWORK.network_refresh);
+    }
+}
+/**
+ * page.js contains functions used by content.js to quickly
+ * create and distribute basic elements around the screen.
+ */
+
+/**
+ * Reads a JSON Page from a raw JSON object.
+ * @param {Object} json - The JSON Page object
+ */
+ function read_page(json) {
+    // sanity check versions
+    if (NETWORK.jsonvers != json.version) {
+        // Uh oh, somebody has the wrong version...
+        // This probably needs a more user visible error sometime too.
+        console.error("Unable to load page: JSON Page version " + json.version + " incompatible with local version " + NETWORK.jsonvers + ".");
+        return;
+    }
+    if (json.format == "objects-decending") {
+        // The classic way to load objects onto the page, objects-decending takes a list of basic
+        // objects and adds them to the page in order.
+        for (let i = 0; i < json.objects.length; i++) {
+            // for every object...
+            let obj = json.objects[i];
+            switch (obj.object_type) {
+                case "text":
+                    create_vers("p", obj.text);
+                    break;
+                case "text-big":
+                    create_vers("h3", obj.text);
+                    break;
+                case "text-massive":
+                    create_vers("h1", obj.text)
+                    break;
+                case "text-clock":
+                    create_vers("clock", obj.text)
+                    break;
+                case "break":
+                    create_break(obj.amount);
+                    break;
+                case "button":
+                    create_button(obj.text, evaluate_action(obj.action));
+                    break;
+                case "input":
+                    create_input(obj.id, evaluate_action(obj.text_action));
+                    break;
+                case "variable":
+                    create_text(get_env(obj.variable));
+                    break;
+                default:
+                    console.error("Unkown object type parsing JSON Page: " + obj.object_type);
+                    break;
+            }
+        }
+    }
+    else if (json.format == "spawn") {
+        // The funky way to load objects onto the page, spawn creates elements at fixed positions on
+        // the page. This is **very** not friendly to people using all but the device the page is
+        // made for so this should be avoided. It's here because it's highly useful for
+        // desktop-oriented pages that need to make full use of the screen capital in a way you
+        // can't using objects-decending. This format is still in early development phases.
+        let page_name = evaluate_action(json.page_loc);
+        if (page_name != "") {
+            read_page(get_env(page_name))
+        }
+        for (let i = 0; i < json.vers_objs.length; i++) {
+            let obj = json.vers_objs[i];
+            var ctx = document.getElementById("content");
+            var node = document.createElement(obj.element);
+            var textnode = document.createTextNode(obj.text);
+            node.appendChild(textnode);
+            node.setAttribute("onclick", obj.onclick);
+            node.classList.add("vers_el");
+            node.style.left = obj.left;
+            node.style.top = obj.top;
+            node.id = obj.el_id;
+            ctx.appendChild(node);
+        }
+    }
+    else {
+        console.error("Unable to load page: JSON Page format unkown: " + json.format);
+        return;
+    }
+}
+
+/**
+ * Deals with JSON Page actions by running or generating JS code.
+ * @param {Object} action - a JSON Page action object
+ */
+function evaluate_action(action) {
+    if (action == undefined) {
+        // If someone forgot an action, it's no big deal, we'll just ignore them.
+        return "";
+    }
+    switch (action.type) {
+        case "redirect":
+            return "gotopage(\"" + action.name + "\");" + evaluate_action(action.sub_action);
+        case "set-var":
+            return "set_env(\"" + action.variable + "\"," + evaluate_action(action.value) + ");" + evaluate_action(action.sub_action);
+        case "modify-var":
+            return "set_env(\"" + action.variable + "\",get_env(\"" + action.variable + "\")+" + action.value + ");" + evaluate_action(action.sub_action);
+        case "set-var-imm":
+            set_env(action.variable, evaluate_action(action.value));
+            return evaluate_action(action.sub_action);
+        case "modify-var-imm":
+            console.log("modify now");
+            set_env(action.variable, get_env(action.variable) + action.value);
+            return evaluate_action(action.sub_action);
+        case "get-var":
+            get_env(action.variable);
+            return evaluate_action(action.sub_action);
+        case "get-page":
+            return "document.getElementById(\"" + action.el_id + "\").value";
+        case "get-page-imm":
+            evaluate_action(action.sub_action);
+            document.getElementById(action.el_id).value;
+            return evaluate_action(action.sub_action);
+        case "data-imm":
+            evaluate_action(action.sub_action);
+            return action.data;
+        default:
+            console.error("evaluate action could not find " + action + "!");
+            console.error(action);
+            break;
+    }
+}
+
+/**
+ * Removes everything inside of the body tags of the page.
+ */
+function clear_page() {
+    let doc = document.getElementById("content");
+    while (doc.firstChild) {
+        doc.removeChild(doc.firstChild);
+    }
+}
+
+function create_input(id, content) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("input");
+    node.id = id;
+    if (content != undefined) {
+        node.value = content;
+    }
+    ctx.appendChild(node);
+}
+
+/**
+ * Creates a button that calls a function when pressed.
+ * @param {String} text - Text inside of the button
+ * @param {Function} callback - Function called on a click
+ */
+function create_button(text, callback) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("button");
+    var textnode = document.createTextNode(text);
+    node.appendChild(textnode);
+    node.setAttribute("onclick", callback);
+    ctx.appendChild(node);
+}
+
+/**
+ * Creates a checkbox that calls a callback when it is clicked
+ * @param {Function} callback - Function called on a click
+ * @param {Boolean} state - Wether the box is checked or not
+ */
+function create_checkbox(callback, state) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("input");
+    node.setAttribute("type", "checkbox");
+    node.setAttribute("onclick", callback);
+    node.checked = state;
+    ctx.appendChild(node);
+}
+
+/**
+ * Creates a slider that calls a callback when it is changed
+ * @param {Function} callback 
+ * @param {String} value
+ */
+function create_slider(callback, value) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("input");
+    node.setAttribute("oninput", callback);
+    node.setAttribute("type", "range");
+    node.setAttribute("min", "1");
+    node.setAttribute("max", "10");
+    node.value = value;
+    ctx.appendChild(node);
+}
+
+/**
+ * Creates a newlines.
+ * @param {Number} amount - Optional number of lines to create
+ */
+function create_break(amount) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement("br");
+    ctx.appendChild(node);
+    if (amount > 1) {
+        create_break(amount - 1);
+    }
+}
+
+function create_vers(eltype, text, classtype) {
+    var ctx = document.getElementById("content");
+    var node = document.createElement(eltype);
+    var textnode = document.createTextNode(text);
+    node.appendChild(textnode);
+    if (classtype != undefined && classtype != null) {
+        node.classList.add(classtype);
+    }
+    ctx.appendChild(node);
+}
+function load_network_site() {
+    clear_page();
+    read_page(find_page_by_use("base", "base"));
+}
+
+/**
+ * Locates a JSON page by plugin and name. Returns the JSON Page in Object format.
+ * @param {String} plugin - Name of the plugin to look for
+ * @param {String} name - Name of the page to look for
+ * @returns {Object} - JSON Page Object
+ */
+function find_page_by_name(plugin, name) {
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
+            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
+                if (NETWORK.data.loaded_plugins[i].map[j].name == use) {
+                    return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
+                }
+            }
+            console.error("Unable to find file [" + plugin + ":" + name + "]");
+            return;
+        }
+    }
+    console.error("Unable to find plugin " + plugin);
+}
+
+/**
+ * Locates a JSON page by plugin and use. Returns the JSON Page in Object format.
+ * @param {String} plugin - Name of the plugin to look for
+ * @param {String} use - Use of the page to look for
+ * @returns {Object} - JSON Page Object
+ */
+function find_page_by_use(plugin, use) {
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
+            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
+                if (NETWORK.data.loaded_plugins[i].map[j].trigger == use) {
+                    return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
+                }
+            }
+            console.error("Unable to find use [" + plugin + ":* where * has " + use + "]");
+            return;
+        }
+    }
+    console.error("Unable to find plugin " + plugin);
+}
+
+/**
+ * Sets a variable for a plugin.
+ * @param {String} env - Name of variable
+ * @param {*} val - Value to set
+ */
+function set_env(env, val) {
+    if (get_env(env) == null) {
+        NETWORK.data.env_data.push({key: env, value: val});
+        return;
+    }
+    else {
+        for (let i = 0; i < NETWORK.data.env_data.length; i++) {
+            if (NETWORK.data.env_data[i].key == env) {
+                NETWORK.data.env_data[i].value = val;
+                return;
+            }
+        }
+        console.error("Critical and unexpected error during set_env!");
+    }
+}
+
+/**
+ * Gets a variable for a plugin
+ * @param {String} env - Name of variable
+ * @returns {*} - The variable's value 
+ */
+function get_env(env) {
+    for (let i = 0; i < NETWORK.data.env_data.length; i++) {
+        if (NETWORK.data.env_data[i].key == env) {
+            return NETWORK.data.env_data[i].value;
+        }
+    }
+    return null;
+}
+
+function gotopage(page) {
+    console.log("Loading page " + page);
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
+            let plug_component = NETWORK.data.loaded_plugins[i].map[j];
+            if (NETWORK.data.loaded_plugins[i].plugin + ":" + plug_component.name == page) {
+                if (plug_component.trigger == "oncall") {
+                    clear_page();
+                    read_page(JSON.parse(plug_component.content));
+                    return;
+                }
+                else {
+                    clear_page();
+                    console.warn("Call to non oncall page!");
+                    read_page(JSON.parse(plug_component.content));
+                    return;
+                }
+            }
+        }
+    }
+    console.error("Unable to find the page " + page);
+}
+
+function reset_and_load_site() {
+    NETWORK.data.page_loading_state = 0;
+    NETWORK.data.homepage = {};
+    NETWORK.data.plugin_list = [];
+    load_site();
+}
+
+
+LOADING = true;
+
+function load_site() {
+    clear_page();
+    create_vers("h1", "Transfering data from server...");
+    if (NETWORK.data.plugin_list.length < 1 && NETWORK.tx_queue.length == 0) {
+        server_request({"request": "plugins"});
+        NETWORK.data.page_loading_state = 10;
+    }
+    else if (NETWORK.data.plugin_list.length < 1) {
+        // wait
+    }
+    else if (NETWORK.data.plugin_list.length > NETWORK.data.loaded_plugins.length) {
+        if (NETWORK.data.page_loading_state == 10) {
+            NETWORK.data.page_loading_state = 11;
+            server_request({"request": "plugin-data", "plugin": NETWORK.data.plugin_list[NETWORK.data.requests].name});
+            NETWORK.data.requests += 1;
+        }
+        else {
+            if (NETWORK.data.requests == NETWORK.data.loaded_plugins.length) {
+                NETWORK.data.page_loading_state = 10;
+            }
+        }
+        create_vers("p", "/ plugins");
+        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+            create_vers("p", " + " + NETWORK.data.plugin_list[i].name);
+        }
+        create_vers("p", "-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
+    }
+    else {
+        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+            let actions = find_page_by_use(NETWORK.data.loaded_plugins[i].plugin, "onload").actions;
+            if (actions != undefined) {
+                for (let j = 0; j < actions.length; j++) {
+                    evaluate_action(actions[j]);
+                }
+            }
+        }
+        create_vers("p", "All objects loaded. Waiting for main page...");
+        LOADING = false;
+
+        // Save data to the local machine
+        window.localStorage.clear();
+        window.localStorage.setItem("data", JSON.stringify(NETWORK.data));
+        console.log("Saved data to persistent storage.");
+
+        setTimeout(load_network_site, 20);
+    }
+    if (LOADING) {
+        setTimeout(load_site, 10);
+    }
+}
+        </script>
+        <!-- CSS -->
+        <style>
+html, body {
+    font-family: Arial Rounded MT Bold,Helvetica Rounded,Arial,sans-serif;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: slateblue;
+    touch-action: manipulation;
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+button {
+    font-size: 150%;
+    font-family: Arial, Helvetica;
+    color: rgb(0, 0, 0);
+    background-color: rgb(200, 200, 200);
+    touch-action: manipulation;
+    border-color: rgb(230, 230, 230);
+    border-radius: 6px;
+    padding: 5px 17px;
+}
+
+button:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.1), 0 6px 20px 0 rgba(0,0,0,0.1);
+    background-color: rgb(221, 221, 221);
+}
+
+.invalid-btn:hover {
+    background-color: rgb(75, 56, 197);
+}
+
+.invalid-btn {
+    color: rgb(199, 199, 199);
+    padding: 5px 17px;
+    text-align: center;
+    border: none;
+    background-color: rgb(75, 56, 197);
+}
+
+.invis-btn {
+    background-color: slateblue;
+    color: slateblue;
+    border-style: solid;
+    border-color: slateblue;
+}
+
+.invis-btn:hover {
+    box-shadow: none;
+    background-color: slateblue;
+}
+
+p, h3 {
+    margin: 0;
+}
+
+clock {
+    font-size: 128px;
+}
+
+.smallline {
+    margin: 0;
+    left: 0;
+    right: 0;
+    border: 1px solid black;
+}
+
+input[type='checkbox'] {
+    /* Double-sized Checkboxes */
+    -ms-transform: scale(2); /* IE */
+    -moz-transform: scale(2); /* FF */
+    -webkit-transform: scale(2); /* Safari and Chrome */
+    -o-transform: scale(2); /* Opera */
+    transform: scale(2);
+    margin: 10px;
+}
+
+input[type='range'] {
+    width: 200px;
+    height: 20px;
+}
+
+.vers_el {
+    position: fixed;
+}
+
+.selected_el {
+    background-color: blue;
+    color: gray;
+}
+        </style>
+    </head>
+    <body id="content">
+        <h5 id="serv">Attempting to connect to server... ❓</h5>
+        <h5>
+            This can take up to 3 seconds.
+        </h5>
+    </body>
+</html>

@@ -1,37 +1,39 @@
 // FRCScouter is not snake case, but we want it that way
 #![allow(non_snake_case)]
 
-// Import the static hosting tool
-use rocket_contrib::serve::StaticFiles;
-
 use std::thread;
-use ws::listen;
 
 static NETCODE: &str = "rev.5.0.0";
-
-// Helps file writing/reading
-use std::io::prelude::*;
 
 // plugin loading
 pub mod plugins;
 
-fn main() {
-    // If a Rocket.toml is not present, create one.
-    let rockettoml = include_bytes!("Rocket.toml");
-    let mut tmp_dir = std::env::current_dir().unwrap();
-    tmp_dir.push("Rocket.toml");
-    if !tmp_dir.exists() {
-        let mut tmp_file = std::fs::File::create(tmp_dir).unwrap();
-        tmp_file.write_all(rockettoml).unwrap();
-    }
-    drop(rockettoml);
+static INDEX: &str = include_str!("index.html");
 
-    // Create and launch rocket website (see /static), on localhost::[rocket.toml]
-    // This is done in a new thread
+fn main() {
+    // Create and launch website thread on localhost::80. Single threaded is fine because this is
+    // just to show the index.html and not heavily used
     let _ = thread::spawn(move || {
-        rocket::ignite()
-            .mount("/", StaticFiles::from("static"))
-            .launch();
+        use std::net::TcpListener;
+        use std::io::prelude::*;
+        let listener = TcpListener::bind("0.0.0.0:80").unwrap();
+        for stream in listener.incoming() {
+            let mut stream = stream.unwrap();
+
+            let mut buffer = [0; 512];
+            stream.read(&mut buffer).unwrap();
+
+            let buffer = String::from_utf8(buffer.to_vec()).unwrap();
+
+            if !buffer.contains("favicon") {
+                stream.write(&format!("HTTP/1.1 200 OK\r\n\r\n{}", INDEX).as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+            else {
+                stream.write("HTTP/1.1 404 NOT FOUND\r\n\r\n".as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+        }
     });
 
     // load plugins
@@ -101,6 +103,8 @@ fn main() {
 
     println!("FRCScouter v{} READY", env!("CARGO_PKG_VERSION"));
     println!("{} plugins loaded", pluginlist.len());
+
+    use ws::listen;
     // Listen on an address and call the closure for each connection
     if let Err(error) = listen("0.0.0.0:81", |out| {
         

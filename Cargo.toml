@@ -6,10 +6,4 @@ edition = "2018"
 
 [dependencies]
 ws = "0.9.1"
-rocket = "0.4.4"
 json = "0.12.4"
-
-[dependencies.rocket_contrib]
-version = "0.4.4"
-default-features = false
-features = ["json", "serve"]
