@@ -1,54 +1,78 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "plug_basic",
-    "format": "objects-decending",
     "objects": [
         {
-            "object_type": "text-massive",
+            "type": "create-el",
+            "element_type": "h1",
             "text": "Plugin Builder 👩‍💻✏️"
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "button",
             "text": "Create a new page 🆕",
-            "action": {
+            "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic_new_page"
+                "name": "base:plug_basic_new_page",
+                "immediate": false
             }
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
-            "text": "Edit a page ✏️"
+            "type": "create-el",
+            "element_type": "button",
+            "text": "Edit a page ✏️",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_edit_page",
+                "immediate": false
+            }
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
-            "text": "Remove a page ❌"
+            "type": "create-el",
+            "element_type": "button",
+            "text": "Remove a page ❌",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_remove_page",
+                "immediate": false
+            }
         },
         {
-            "object_type": "break",
-            "amount": 2
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
-            "text": "Finish and save! 💾"
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "button",
+            "text": "Finish and save! 💾",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_save_and_exit",
+                "immediate": false
+            }
         },
         {
-            "object_type": "text",
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "p",
             "text": "Some of these tools may not work with mobile devices."
         }
     ]

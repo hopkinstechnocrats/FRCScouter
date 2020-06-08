@@ -1,41 +1,60 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "plug_basic_page",
-    "format": "spawn",
-    "vers_objs": [
+    "objects": [
         {
-            "left": "50%",
+            "type": "floating-obj",
+            "element_type": "p",
+            "text": "What do you want to do?",
             "top": "0",
-            "element": "p",
-            "text": "What do you want to do?"
+            "left": "50%"
         },
         {
-            "left": "50%",
-            "top": "20px",
-            "element": "button",
+            "type": "floating-obj",
+            "element_type": "button",
             "text": "Create",
-            "onclick": "gotopage(\"base:plug_basic_new_element\");"
+            "top": "20px",
+            "left": "50%",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_new_element",
+                "immediate": false
+            }
         },
         {
-            "left": "50%",
-            "top": "65px",
-            "element": "button",
+            "type": "floating-obj",
+            "element_type": "button",
             "text": "Move",
-            "onclick": "gotopage(\"base:plug_basic_move_element\");"
+            "top": "65px",
+            "left": "50%",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_move_element",
+                "immediate": false
+            }
         },
         {
-            "left": "50%",
-            "top": "110px",
-            "element": "button",
+            "type": "floating-obj",
+            "element_type": "button",
             "text": "Edit",
-            "onclick": "gotopage(\"base:plug_basic_edit_element\");"
+            "top": "110px",
+            "left": "50%",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_edit_element",
+                "immediate": false
+            }
         },
         {
-            "left": "50%",
-            "top": "155px",
-            "element": "button",
+            "type": "floating-obj",
+            "element_type": "button",
             "text": "Remove",
-            "onclick": "gotopage(\"base:plug_basic_remove_element\");"
+            "top": "155px",
+            "left": "50%",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_remove_element",
+                "immediate": false
+            }
         }
     ]
 }

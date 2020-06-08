@@ -9,7 +9,7 @@ A robust and easy to use robot scouting tool with built in data analysis. Use th
 Features
 ---
  - **No active connection needed**, data is backed up to your device and uploaded when you get wifi or data automagically
- - **Low size** (<500kB), can be loaded over a poor cell connection easily
+ - **Low size** (<25kB), can be loaded over a poor cell connection easily
  - **Designed mobile first**, everything else later
  - Made to be **easy to use**
  - Built in **data anyalsis**

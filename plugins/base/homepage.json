@@ -1,54 +1,77 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "homepage",
-    "format": "objects-decending",
     "objects": [
         {
-            "object_type": "text-massive",
+            "type": "create-el",
+            "element_type": "h1",
             "text": "FRC Scouter 🔍🏃‍♀️"
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "button",
             "text": "I want to scout 🔌🤖",
-            "action": {
+            "onclick": {
                 "type": "redirect",
-                "name": "games"
+                "name": "base:games",
+                "immediate": false
             }
         },
         {
-            "object_type": "break",
-            "amount": 2
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
             "text": "I want to see results 📊🔍",
-            "action": {
+            "onclick": {
                 "type": "redirect",
-                "name": "dataviewer"
+                "name": "base:dataviewer",
+                "immediate": false
             }
         },
         {
-            "object_type": "break",
-            "amount": 2
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
-            "text": "I want to make a scouting lobby"
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "break",
-            "amount": 2
-        },
-        {
-            "object_type": "button",
-            "text": "I want to make something 👩‍💻✏️",
-            "action": {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "I want to make a scouting lobby",
+            "onclick": {
                 "type": "redirect",
-                "name": "base:create"
+                "name": "base:lobby",
+                "immediate": false
+            }
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "I want to make something 👩‍💻✏️",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:create",
+                "immediate": false
             }
         }
     ]

@@ -5,9 +5,6 @@ use std::thread;
 
 static NETCODE: &str = "rev.5.0.0";
 
-// plugin loading
-pub mod plugins;
-
 static INDEX: &str = include_str!("index.html");
 
 fn main() {
@@ -36,73 +33,10 @@ fn main() {
         }
     });
 
-    // load plugins
-    let mut tmp_dir = std::env::current_dir().unwrap();
-    tmp_dir.push("plugins");
-    if !tmp_dir.exists() {
-        std::fs::create_dir(tmp_dir.clone()).unwrap();
-    }
-    let files = std::fs::read_dir(tmp_dir).unwrap();
-    let mut pluginlist: Vec<plugins::Plugin> = vec![];
-    for file in files {
-        let realfile = file.unwrap().path();
-        if !realfile.is_dir() {
-            panic!("PLUGIN ERROR: {:?} is not a directory!", realfile.display());
-        }
-        // represents the plugin being read
-        let mut thisplugin = plugins::PluginConstructor::construct();
-        let plugin = std::fs::read_dir(realfile.clone()).unwrap();
-        for component_maybe in plugin {
-            let component = component_maybe.unwrap();
-            if component.path().file_name().unwrap().to_str().unwrap() == "config.json" {
-                let data = std::fs::read_to_string(component.path()).unwrap();
-                let json = json::parse(&data).unwrap();
-                thisplugin.with_name(json["name"].as_str().unwrap_or("NONAME").to_string());
-                thisplugin.with_version(json["version"].as_str().unwrap_or("NOVERSION").to_string());
-                let mut hooks = json["hooks"].clone();
-                if hooks.is_empty() || hooks.is_null() {
-                    // do nothing, no hooks.
-                }
-                else if !hooks.is_array() {
-                    println!("WARNING: plugin {} has a hooks field that is NOT an Array", thisplugin.clone().build().get_name());
-                }
-                else {
-                    loop {
-                        let element = hooks.pop();
-                        if element.is_null() {
-                            break;
-                        }
-                        else if !element.is_object() {
-                            println!("WARNING: plugin {} has a hook that is NOT an Object", thisplugin.clone().build().get_name());
-                            break;
-                        }
-                        else { 
-                            let hooktype = element["type"].as_str();
-                            let hookname = element["name"].as_str();
-                            if hooktype.is_none() {
-                                panic!("PLUGIN ERROR: plugin {} has a hook that does not have a proper type field", thisplugin.clone().build().get_name());
-                            }
-                            if hookname.is_none() {
-                                panic!("PLUGIN ERROR: plugin {} has a hook that does not have a proper name field", thisplugin.clone().build().get_name());
-                            }
-                            let hooktype = hooktype.unwrap();
-                            let hookname = hookname.unwrap();
-                            thisplugin.with_hook(String::from(hooktype), String::from(hookname));
-                        }
-                    }
-                }
-            }
-            else {
-                let data = std::fs::read_to_string(component.path()).unwrap();
-                thisplugin.with_file(String::from(component.path().file_name().unwrap().to_str().unwrap()), data);
-            }
-        }
-        // add the plugin to the list
-        pluginlist.push(thisplugin.build());
-    }
+    let plugins = load_plugins();
 
     println!("FRCScouter v{} READY", env!("CARGO_PKG_VERSION"));
-    println!("{} plugins loaded", pluginlist.len());
+    println!("{} plugins loaded", plugins.len());
 
     use ws::listen;
     // Listen on an address and call the closure for each connection
@@ -112,7 +46,7 @@ fn main() {
         {
             //println!("Connecting new client to server.");
         }
-        let tmomm = pluginlist.clone();
+        let tmomm = plugins.clone();
         move |msg: ws::Message| {
             let pluginlisttmp = tmomm.clone();
             let input = &msg.clone().into_text().unwrap_or_else(|_| {
@@ -143,7 +77,8 @@ fn main() {
                     finaljson["result"] = "plugins".into();
                     finaljson["plugins"] = json::JsonValue::new_array();
                     for i in pluginlisttmp {
-                        finaljson["plugins"].push(json::parse(&format!("{{\"name\":\"{}\",\"version\":\"{}\"}}", i.clone().get_name(), i.get_version())).unwrap()).unwrap();
+                        let strom = json::parse(&format!("\"{}\"", i.clone().0.clone())).unwrap();
+                        finaljson["plugins"].push(strom).unwrap();
                     }
                 },
                 "plugin-data" => {
@@ -154,28 +89,16 @@ fn main() {
                         return out.send(json::stringify(finaljson));
                     }
                     for i in pluginlisttmp {
-                        if tostr == i.clone().get_name() {
+                        if tostr == i.clone().0 {
                             // send out the data
                             finaljson["result"] = "plugin-data".into();
                             finaljson["plugin"] = json["plugin"].clone();
-                            finaljson["map"] = json::JsonValue::new_array();
-                            for (triggertype, filename) in i.clone().get_hooks() {
+                            finaljson["pages"] = json::JsonValue::new_array();
+                            for material in i.1 {
                                 let mut tmp_obj = json::JsonValue::new_object();
-                                tmp_obj["trigger"] = triggertype.to_string().into();
-                                tmp_obj["name"] = filename.clone().into();
-                                let files = i.clone().get_files();
-                                let mut foundfile = false;
-                                for (filetitle, filecontents) in files {
-                                    if filetitle == format!("{}.json", filename) {
-                                        foundfile = true;
-                                        tmp_obj["content"] = filecontents.into();
-                                        finaljson["map"].push(tmp_obj).unwrap();
-                                        break;
-                                    }
-                                }
-                                if !foundfile {
-                                    panic!("A plugin had a refrence to a file that does not exist.");
-                                }
+                                tmp_obj["data"] = material.1.clone().into();
+                                tmp_obj["name"] = material.0.clone().into();
+                                finaljson["pages"].push(tmp_obj).unwrap();
                             }
                             return out.send(json::stringify(finaljson));
                         }
@@ -196,4 +119,31 @@ fn main() {
         // Inform the user of failure
         println!("Failed to create WebSocket due to {:?}", error);
     }
+}
+
+fn load_plugins() -> Vec<(String, Vec<(String, String)>)> {
+    let mut plugs = vec![];
+    let mut tmp_dir = std::env::current_dir().unwrap();
+    tmp_dir.push("plugins");
+    if !tmp_dir.exists() {
+        std::fs::create_dir(tmp_dir.clone()).unwrap();
+    }
+    let files = std::fs::read_dir(tmp_dir).unwrap();
+    for file in files {
+        let realfile = file.unwrap().path();
+        if !realfile.is_dir() {
+            panic!("PLUGIN ERROR: {:?} is not a directory!", realfile.display());
+        }
+        plugs.push((String::from(realfile.clone().file_name().unwrap().to_str().unwrap()), vec![]));
+        // represents the plugin being read
+        let plugin = std::fs::read_dir(realfile.clone()).unwrap();
+        for component_maybe in plugin {
+            let component = component_maybe.unwrap();
+            let filename = String::from(component.path().clone().file_name().unwrap().to_str().unwrap());
+            let data = std::fs::read_to_string(component.path()).unwrap();
+            let tmp_len = plugs.len();
+            plugs[tmp_len - 1].1.push((filename, data));
+        }
+    }
+    return plugs;
 }

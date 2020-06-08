@@ -1,66 +1,72 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "create",
-    "format": "objects-decending",
     "objects": [
         {
-            "object_type": "text-massive",
+            "type": "create-el",
+            "element_type": "h1",
             "text": "Creation Tools 👩‍💻✏️"
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
-            "text": "Make a scouting app! 🤖🔍✏️",
-            "action": {
-                "type": "redirect",
-                "name": "base:buildapp"
-            }
-        },
-        {
-            "object_type": "break",
-            "amount": 2
-        },
-        {
-            "object_type": "button",
-            "text": "Make a stylesheet",
-            "action": {
-                "type": "redirect",
-                "name": "unknown"
-            }
-        },
-        {
-            "object_type": "break",
-            "amount": 2
-        },
-        {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "button",
             "text": "Make a plugin",
-            "action": {
+            "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic"
+                "name": "base:plug_basic",
+                "immediate": false
             }
         },
         {
-            "object_type": "break",
-            "amount": 3
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "Make a stylesheet",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:stylesheet_basic",
+                "immediate": false
+            }
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
             "text": "Back 🔙",
-            "action": {
+            "onclick": {
                 "type": "redirect",
-                "name": "base:homepage"
+                "name": "base:homepage",
+                "immediate": false
             }
         },
         {
-            "object_type": "break",
-            "amount": 1
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "text",
+            "type": "create-el",
+            "element_type": "p",
             "text": "Some of these tools may not work with mobile devices."
         }
     ]

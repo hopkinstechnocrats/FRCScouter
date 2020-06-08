@@ -66,16 +66,13 @@ Queries a server for a list of plugins.
 }
 ```
 
-The response is a list of objects containing a plugin name and version.
+The response is a list of Strings containing a plugin names.
 ```json
 // Response
 {
     "result": "plugins",
     "plugins": [
-        {
-            "name": "exampleplugin",
-            "version": "exampleversion"
-        }
+        "exampleplugin"
     ]
 }
 ```

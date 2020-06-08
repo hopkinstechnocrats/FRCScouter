@@ -1,50 +1,54 @@
 {
     "version": "JSONPage.1.0.0",
-    "name": "plug_basic_new_page",
-    "format": "objects-decending",
     "objects": [
         {
-            "object_type": "text-massive",
+            "type": "create-el",
+            "element_type": "h1",
             "text": "Page name"
         },
         {
-            "object_type": "input",
-            "id": "page_name",
-            "text_action": {
-                "type": "get-var",
-                "variable": "page_name"
-            }
+            "type": "create-el",
+            "element_type": "input",
+            "id": "page_name"
         },
         {
-            "object_type": "break",
-            "amount": 2
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
             "text": "Create! 🆕",
-            "action": {
-                "type": "set-var",
-                "variable": "page_name",
-                "value": {
-                    "type": "get-page",
-                    "el_id": "page_name"
-                },
-                "sub_action": {
-                    "type": "redirect",
-                    "name": "base:plug_basic_page"
-                }
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_page",
+                "immediate": false
             }
         },
         {
-            "object_type": "break",
-            "amount": 3
+            "type": "create-el",
+            "element_type": "br"
         },
         {
-            "object_type": "button",
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
             "text": "Back 🔙",
-            "action": {
+            "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic"
+                "name": "base:plug_basic",
+                "immediate": false
             }
         }
     ]

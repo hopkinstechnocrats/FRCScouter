@@ -34,14 +34,11 @@ let NETWORK = {
     foriegn_netcode: "NEVER_CONNECTED",
     // represents all received data on the network that may be stored
     data: {
-        // tracks the progress getting page materials from network
-        page_loading_state: 0,
-        requests: 0,
-        // list of all plugins
+        // list of all plugin's names
         plugin_list: [],
         // list of all plugins with data
         loaded_plugins: [],
-        // variables and enviroment for plugins/apps
+        // variables and enviroment for plugins
         env_data: []
     }
 };
@@ -68,32 +65,33 @@ function load_data() {
 // if we have a stable connection.
 server_request({"request": "version"});
 
+function er(t) {clear_page();evaluate_action({"type": "create-el", "text": t, "element_type": "h1", "immediate": true});}
 // after page loads, wait 250 ms. If we can find a connection in that time, download site.
 // Otherwize, attempt to load from local storage.
 setTimeout(() => {
     if (NETWORK.server_found) {
         if (NETWORK.netcode != NETWORK.foriegn_netcode) {
             // show netcode error
-            clear_page();
-            create_text_massive("You may be using an outdated client. Please check that your server provider has everything up to date.");
-            create_text("Local: `" + NETWORK.netcode + "`");
-            create_text("Server: `" + NETWORK.foriegn_netcode + "`");
+            er("You may be using an outdated client. Please check that your server provider has everything up to date.");
+            console.error("Local: `" + NETWORK.netcode + "`");
+            console.error("Server: `" + NETWORK.foriegn_netcode + "`");
         }
         else {
             // show main page after loading in fresh material
-            reset_and_load_site();
+            NETWORK.data.plugin_list = [];
+            server_request({"request": "plugins"});
+            load_site();
         }
     }
     else {
         // show backed up page
         if (load_data() == false) {
             clear_page();
-            create_text_massive("No backed up version of the site could be found. The server may be down or your connection may be poor. Refresh the page when you would like to try again.");
+            er("No backed up version of the site could be found. The server may be down or your connection may be poor. Refresh the page when you would like to try again.");
         }
         else {
             // since we've apparently loaded the site's contents from local storage, just start running!
             load_network_site();
-            create_break(2);
             create_vers("p", "This page is loaded from backed up material. (net " + NETWORK.netcode + ")");
         }
     }
@@ -183,10 +181,6 @@ function network_busy() {
         setTimeout(network_busy, NETWORK.network_refresh);
     }
 }
-/**
- * page.js contains functions used by content.js to quickly
- * create and distribute basic elements around the screen.
- */
 
 /**
  * Reads a JSON Page from a raw JSON object.
@@ -200,112 +194,88 @@ function network_busy() {
         console.error("Unable to load page: JSON Page version " + json.version + " incompatible with local version " + NETWORK.jsonvers + ".");
         return;
     }
-    if (json.format == "objects-decending") {
-        // The classic way to load objects onto the page, objects-decending takes a list of basic
-        // objects and adds them to the page in order.
-        for (let i = 0; i < json.objects.length; i++) {
-            // for every object...
-            let obj = json.objects[i];
-            switch (obj.object_type) {
-                case "text":
-                    create_vers("p", obj.text);
-                    break;
-                case "text-big":
-                    create_vers("h3", obj.text);
-                    break;
-                case "text-massive":
-                    create_vers("h1", obj.text)
-                    break;
-                case "text-clock":
-                    create_vers("clock", obj.text)
-                    break;
-                case "break":
-                    create_break(obj.amount);
-                    break;
-                case "button":
-                    create_button(obj.text, evaluate_action(obj.action));
-                    break;
-                case "input":
-                    create_input(obj.id, evaluate_action(obj.text_action));
-                    break;
-                case "variable":
-                    create_text(get_env(obj.variable));
-                    break;
-                default:
-                    console.error("Unkown object type parsing JSON Page: " + obj.object_type);
-                    break;
-            }
-        }
-    }
-    else if (json.format == "spawn") {
-        // The funky way to load objects onto the page, spawn creates elements at fixed positions on
-        // the page. This is **very** not friendly to people using all but the device the page is
-        // made for so this should be avoided. It's here because it's highly useful for
-        // desktop-oriented pages that need to make full use of the screen capital in a way you
-        // can't using objects-decending. This format is still in early development phases.
-        let page_name = evaluate_action(json.page_loc);
-        if (page_name != "") {
-            read_page(get_env(page_name))
-        }
-        for (let i = 0; i < json.vers_objs.length; i++) {
-            let obj = json.vers_objs[i];
-            var ctx = document.getElementById("content");
-            var node = document.createElement(obj.element);
-            var textnode = document.createTextNode(obj.text);
-            node.appendChild(textnode);
-            node.setAttribute("onclick", obj.onclick);
-            node.classList.add("vers_el");
-            node.style.left = obj.left;
-            node.style.top = obj.top;
-            node.id = obj.el_id;
-            ctx.appendChild(node);
-        }
-    }
-    else {
-        console.error("Unable to load page: JSON Page format unkown: " + json.format);
-        return;
+    for (let i = 0; i < json.objects.length; i++) {
+        // for every object...
+        evaluate_action(json.objects[i]);
     }
 }
 
 /**
- * Deals with JSON Page actions by running or generating JS code.
- * @param {Object} action - a JSON Page action object
+ * Deals with JSON Page elements by running or generating JS code. Actions return valid JS code,
+ * which is sometimes just an empty string. Sub actions run AFTER primary actions, and if a sub
+ * action runs immediate code and a header action runs later code the sub action will seemingly
+ * execute "first" even though it goes last.
+ * @param {Object} action - A JSON Page action object
+ * @returns {String} - A String containing valid JS code
  */
 function evaluate_action(action) {
     if (action == undefined) {
         // If someone forgot an action, it's no big deal, we'll just ignore them.
         return "";
     }
+    let eval_norm;
     switch (action.type) {
         case "redirect":
-            return "gotopage(\"" + action.name + "\");" + evaluate_action(action.sub_action);
+            eval_norm = "gotopage(\"" + action.name + "\");";
+            break;
+        case "create-el":
+            eval_norm =
+                "t=d.createTextNode(\"" +
+                action.text +
+                "\");u=d.createElement(\"" +
+                action.element_type +
+                "\");u.setAttribute(\"onclick\", \'" +
+                evaluate_action(action.onclick) +
+                "\');u.id=\"" +
+                action.id +
+                "\";u.appendChild(t);r().appendChild(u);";
+            break;
+        case "floating-obj":
+            eval_norm =
+                "t=d.createTextNode(\"" +
+                action.text +
+                "\");u=d.createElement(\"" +
+                action.element_type +
+                "\");u.setAttribute(\"onclick\", \'" +
+                evaluate_action(action.onclick) +
+                "\');u.id=\"" +
+                action.id +
+                "\";u.appendChild(t);u.classList.add(\"vers_el\");u.style.left=\"" +
+                action.left +
+                "\";u.style.top=\"" +
+                action.top +
+                "\";r().appendChild(u);";
+            break;
         case "set-var":
-            return "set_env(\"" + action.variable + "\"," + evaluate_action(action.value) + ");" + evaluate_action(action.sub_action);
-        case "modify-var":
-            return "set_env(\"" + action.variable + "\",get_env(\"" + action.variable + "\")+" + action.value + ");" + evaluate_action(action.sub_action);
-        case "set-var-imm":
-            set_env(action.variable, evaluate_action(action.value));
-            return evaluate_action(action.sub_action);
-        case "modify-var-imm":
-            console.log("modify now");
-            set_env(action.variable, get_env(action.variable) + action.value);
-            return evaluate_action(action.sub_action);
+            eval_norm = "set_env(\"" + action.variable + "\"," + action.value + ");";
+            break;
         case "get-var":
-            get_env(action.variable);
-            return evaluate_action(action.sub_action);
-        case "get-page":
-            return "document.getElementById(\"" + action.el_id + "\").value";
-        case "get-page-imm":
-            evaluate_action(action.sub_action);
-            document.getElementById(action.el_id).value;
-            return evaluate_action(action.sub_action);
-        case "data-imm":
-            evaluate_action(action.sub_action);
-            return action.data;
+            eval_norm = "get_env(\"" + action.variable + "\")";
+            break;
+        case "modify-var":
+            eval_norm =
+                "set_env(\"" +
+                action.variable +
+                "\",get_env(\"" +
+                action.variable +
+                "\")+" +
+                action.value +
+                ");";
+            break;
+        case "ace":
+            eval_norm = action.ace_exe;
+            break;
         default:
-            console.error("evaluate action could not find " + action + "!");
+            console.error("evaluate action could not find action type " + action + "!");
             console.error(action);
             break;
+    }
+    if (action.immediate || action.immediate != false) {
+        eval(eval_norm);
+        return evaluate_action(action.sub_action)
+    }
+    else {
+        return eval_norm + evaluate_action(action.sub_action);
     }
 }
 
@@ -319,86 +289,12 @@ function clear_page() {
     }
 }
 
-function create_input(id, content) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("input");
-    node.id = id;
-    if (content != undefined) {
-        node.value = content;
-    }
-    ctx.appendChild(node);
-}
+function r() {return document.getElementById("content")}
+let d = document;
 
-/**
- * Creates a button that calls a function when pressed.
- * @param {String} text - Text inside of the button
- * @param {Function} callback - Function called on a click
- */
-function create_button(text, callback) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("button");
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    node.setAttribute("onclick", callback);
-    ctx.appendChild(node);
-}
-
-/**
- * Creates a checkbox that calls a callback when it is clicked
- * @param {Function} callback - Function called on a click
- * @param {Boolean} state - Wether the box is checked or not
- */
-function create_checkbox(callback, state) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("input");
-    node.setAttribute("type", "checkbox");
-    node.setAttribute("onclick", callback);
-    node.checked = state;
-    ctx.appendChild(node);
-}
-
-/**
- * Creates a slider that calls a callback when it is changed
- * @param {Function} callback 
- * @param {String} value
- */
-function create_slider(callback, value) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("input");
-    node.setAttribute("oninput", callback);
-    node.setAttribute("type", "range");
-    node.setAttribute("min", "1");
-    node.setAttribute("max", "10");
-    node.value = value;
-    ctx.appendChild(node);
-}
-
-/**
- * Creates a newlines.
- * @param {Number} amount - Optional number of lines to create
- */
-function create_break(amount) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement("br");
-    ctx.appendChild(node);
-    if (amount > 1) {
-        create_break(amount - 1);
-    }
-}
-
-function create_vers(eltype, text, classtype) {
-    var ctx = document.getElementById("content");
-    var node = document.createElement(eltype);
-    var textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    if (classtype != undefined && classtype != null) {
-        node.classList.add(classtype);
-    }
-    ctx.appendChild(node);
-}
 function load_network_site() {
     clear_page();
-    read_page(find_page_by_use("base", "base"));
+    read_page(find_page_by_name("base", "homepage"));
 }
 
 /**
@@ -410,33 +306,12 @@ function load_network_site() {
 function find_page_by_name(plugin, name) {
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
         if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
-            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
-                if (NETWORK.data.loaded_plugins[i].map[j].name == use) {
-                    return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
+            for (let j = 0; j < NETWORK.data.loaded_plugins[i].pages.length; j++) {
+                if (NETWORK.data.loaded_plugins[i].pages[j].name == name + ".json") {
+                    return JSON.parse((NETWORK.data.loaded_plugins[i].pages[j].data));
                 }
             }
             console.error("Unable to find file [" + plugin + ":" + name + "]");
-            return;
-        }
-    }
-    console.error("Unable to find plugin " + plugin);
-}
-
-/**
- * Locates a JSON page by plugin and use. Returns the JSON Page in Object format.
- * @param {String} plugin - Name of the plugin to look for
- * @param {String} use - Use of the page to look for
- * @returns {Object} - JSON Page Object
- */
-function find_page_by_use(plugin, use) {
-    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
-        if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
-            for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
-                if (NETWORK.data.loaded_plugins[i].map[j].trigger == use) {
-                    return JSON.parse((NETWORK.data.loaded_plugins[i].map[j].content));
-                }
-            }
-            console.error("Unable to find use [" + plugin + ":* where * has " + use + "]");
             return;
         }
     }
@@ -481,84 +356,38 @@ function get_env(env) {
 function gotopage(page) {
     console.log("Loading page " + page);
     for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
-        for (let j = 0; j < NETWORK.data.loaded_plugins[i].map.length; j++) {
-            let plug_component = NETWORK.data.loaded_plugins[i].map[j];
-            if (NETWORK.data.loaded_plugins[i].plugin + ":" + plug_component.name == page) {
-                if (plug_component.trigger == "oncall") {
-                    clear_page();
-                    read_page(JSON.parse(plug_component.content));
-                    return;
-                }
-                else {
-                    clear_page();
-                    console.warn("Call to non oncall page!");
-                    read_page(JSON.parse(plug_component.content));
-                    return;
-                }
+        for (let j = 0; j < NETWORK.data.loaded_plugins[i].pages.length; j++) {
+            let plug_component = NETWORK.data.loaded_plugins[i].pages[j];
+            if (NETWORK.data.loaded_plugins[i].plugin + ":" + plug_component.name == page + ".json") {
+                clear_page();
+                read_page(JSON.parse(plug_component.data));
+                return;
             }
         }
     }
     console.error("Unable to find the page " + page);
 }
 
-function reset_and_load_site() {
-    NETWORK.data.page_loading_state = 0;
-    NETWORK.data.homepage = {};
-    NETWORK.data.plugin_list = [];
-    load_site();
-}
-
-
-LOADING = true;
-
 function load_site() {
-    clear_page();
-    create_vers("h1", "Transfering data from server...");
-    if (NETWORK.data.plugin_list.length < 1 && NETWORK.tx_queue.length == 0) {
-        server_request({"request": "plugins"});
-        NETWORK.data.page_loading_state = 10;
-    }
-    else if (NETWORK.data.plugin_list.length < 1) {
-        // wait
+    if (NETWORK.data.plugin_list.length < 1) {
+        // wait for 10 ms if we haven't gotten plugins yet
+        setTimeout(load_site, 10);
     }
     else if (NETWORK.data.plugin_list.length > NETWORK.data.loaded_plugins.length) {
-        if (NETWORK.data.page_loading_state == 10) {
-            NETWORK.data.page_loading_state = 11;
-            server_request({"request": "plugin-data", "plugin": NETWORK.data.plugin_list[NETWORK.data.requests].name});
-            NETWORK.data.requests += 1;
+        if (!NETWORK.network_busy) {
+            // request the next plugin
+            server_request({"request": "plugin-data", "plugin": NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length]});
         }
-        else {
-            if (NETWORK.data.requests == NETWORK.data.loaded_plugins.length) {
-                NETWORK.data.page_loading_state = 10;
-            }
-        }
-        create_vers("p", "/ plugins");
-        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
-            create_vers("p", " + " + NETWORK.data.plugin_list[i].name);
-        }
-        create_vers("p", "-- " + NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length].name);
+        // wait for 10ms to check how data is coming along
+        setTimeout(load_site, 10);
     }
     else {
-        for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
-            let actions = find_page_by_use(NETWORK.data.loaded_plugins[i].plugin, "onload").actions;
-            if (actions != undefined) {
-                for (let j = 0; j < actions.length; j++) {
-                    evaluate_action(actions[j]);
-                }
-            }
-        }
-        create_vers("p", "All objects loaded. Waiting for main page...");
-        LOADING = false;
-
         // Save data to the local machine
         window.localStorage.clear();
         window.localStorage.setItem("data", JSON.stringify(NETWORK.data));
         console.log("Saved data to persistent storage.");
-
-        setTimeout(load_network_site, 20);
-    }
-    if (LOADING) {
-        setTimeout(load_site, 10);
+        // load the site
+        load_network_site();
     }
 }
         </script>
@@ -573,11 +402,6 @@ html, body {
     background-color: slateblue;
     touch-action: manipulation;
     color: white;
-}
-
-a {
-    color: white;
-    text-decoration: none;
 }
 
 button {
@@ -596,18 +420,6 @@ button:hover {
     background-color: rgb(221, 221, 221);
 }
 
-.invalid-btn:hover {
-    background-color: rgb(75, 56, 197);
-}
-
-.invalid-btn {
-    color: rgb(199, 199, 199);
-    padding: 5px 17px;
-    text-align: center;
-    border: none;
-    background-color: rgb(75, 56, 197);
-}
-
 .invis-btn {
     background-color: slateblue;
     color: slateblue;
@@ -622,17 +434,6 @@ button:hover {
 
 p, h3 {
     margin: 0;
-}
-
-clock {
-    font-size: 128px;
-}
-
-.smallline {
-    margin: 0;
-    left: 0;
-    right: 0;
-    border: 1px solid black;
 }
 
 input[type='checkbox'] {
@@ -653,17 +454,8 @@ input[type='range'] {
 .vers_el {
     position: fixed;
 }
-
-.selected_el {
-    background-color: blue;
-    color: gray;
-}
         </style>
     </head>
     <body id="content">
-        <h5 id="serv">Attempting to connect to server... ❓</h5>
-        <h5>
-            This can take up to 3 seconds.
-        </h5>
     </body>
 </html>

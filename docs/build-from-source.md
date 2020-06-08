@@ -5,5 +5,5 @@ Building from Source
 - run `cargo build --release` in the repo's folder
 - Enjoy!
 
-[Back to API Homepage](https://github.com/hopkinstechnocrats/FRCScouter/blob/master/docs/index.md)
+[Back to API Homepage](https://github.com/hopkinstechnocrats/FRCScouter/blob/netcode-5/docs/index.md)
 ---
