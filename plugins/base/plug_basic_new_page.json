@@ -2,6 +2,11 @@
     "version": "JSONPage.1.0.0",
     "objects": [
         {
+            "type": "set-var",
+            "variable": "pagename",
+            "value": ""
+        },
+        {
             "type": "create-el",
             "element_type": "h1",
             "text": "Page name"
@@ -24,8 +29,8 @@
             "element_type": "button",
             "text": "Create! 🆕",
             "onclick": {
-                "type": "redirect",
-                "name": "base:plug_basic_page",
+                "type": "ace",
+                "ace_exe": "if (document.getElementById(\"page_name\").value != \"\") {PB.pages.push({\"name\":document.getElementById(\"page_name\").value,\"version\":\"JSONPage.1.0.0\",\"objects\":[]});PB.working_page=document.getElementById(\"page_name\").value;gotopage(\"base:plug_basic_page\");} else {evaluate_action({\"type\":\"create-el\",\"element_type\":\"p\",\"text\":\"You must enter a name!\"});}",
                 "immediate": false
             }
         },

@@ -20,7 +20,7 @@ fn main() {
             let mut buffer = [0; 512];
             stream.read(&mut buffer).unwrap();
 
-            let buffer = String::from_utf8(buffer.to_vec()).unwrap();
+            let buffer = String::from_utf8(buffer.to_vec()).unwrap(); // needs fix on err
 
             if !buffer.contains("favicon") {
                 stream.write(&format!("HTTP/1.1 200 OK\r\n\r\n{}", INDEX).as_bytes()).unwrap();

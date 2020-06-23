@@ -15,9 +15,14 @@
             "element_type": "button",
             "text": "Make a plugin",
             "onclick": {
-                "type": "redirect",
-                "name": "base:plug_basic",
-                "immediate": false
+                "type": "ace",
+                "ace_exe": "PB={pages:[],name:\"\",working_page:\"\"};document.gwp=function(a){for (i=0;i<PB.pages.length;++i) {if (PB.pages[i].name == a) {return i;}}};",
+                "immediate": false,
+                "sub_action": {
+                    "type": "redirect",
+                    "name": "base:plug_basic",
+                    "immediate": false
+                }
             }
         },
         {

@@ -8,55 +8,55 @@
         {
             "type": "floating-obj",
             "element_type": "p",
-            "text": "What do you want to do?",
+            "text": "Select an element type:",
             "top": "0",
             "left": "50%"
         },
         {
             "type": "floating-obj",
             "element_type": "button",
-            "text": "Create",
+            "text": "Text",
             "top": "20px",
             "left": "50%",
             "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic_new_element",
+                "name": "base:plug_basic_new_element_text",
                 "immediate": false
             }
         },
         {
             "type": "floating-obj",
             "element_type": "button",
-            "text": "Move",
+            "text": "Button",
             "top": "65px",
             "left": "50%",
             "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic_move_element",
+                "name": "base:plug_basic_new_element_button",
                 "immediate": false
             }
         },
         {
             "type": "floating-obj",
             "element_type": "button",
-            "text": "Edit",
+            "text": "Input Field",
             "top": "110px",
             "left": "50%",
             "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic_edit_element",
+                "name": "base:plug_basic_new_element_field",
                 "immediate": false
             }
         },
         {
             "type": "floating-obj",
             "element_type": "button",
-            "text": "Remove",
+            "text": "Cancel",
             "top": "155px",
             "left": "50%",
             "onclick": {
                 "type": "redirect",
-                "name": "base:plug_basic_remove_element",
+                "name": "base:plug_basic_page",
                 "immediate": false
             }
         }

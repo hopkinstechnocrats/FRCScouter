@@ -1,0 +1,118 @@
+{
+    "version": "JSONPage.1.0.0",
+    "objects": [
+        {
+            "type": "ace",
+            "ace_exe": "read_page(PB.pages[document.gwp(PB.working_page)])"
+        },
+        {
+            "type": "ace",
+            "ace_exe": "set_env(\"page_condition\", \"undeclared\");"
+        },
+        {
+            "type": "ace",
+            "ace_exe": "pc = get_env(\"page_condition\"); if (pc == \"undeclared\") {} else if (pc == \"sw-page\") {evaluate_action({\"type\": \"floating-obj\", \"element_type\":\"p\",\"text\":\"plugin\",\"left\":\"50%\",\"top\":\"230px\"});}"
+        },
+        {
+            "type": "set-var",
+            "variable": "waiting_button",
+            "value": {
+                "type": "create-el",
+                "element_type": "button",
+                "text": ""
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "h2",
+            "text": "Button options",
+            "top": "-15px",
+            "left": "50%"
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "p",
+            "top": "35px",
+            "left": "50%",
+            "text": "Text"
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "input",
+            "id": "text_input",
+            "top": "55px",
+            "left": "50%",
+            "sub_action": {
+                "type": "ace",
+                "ace_exe": "d.getElementById(\"text_input\").addEventListener(\"input\",function(e){a=get_env(\"waiting_button\");a.text=d.getElementById(\"text_input\").value;set_env(\"waiting_button\",a);});"
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "p",
+            "top": "75px",
+            "left": "50%",
+            "text": "OnClick"
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "top": "95px",
+            "left": "50%",
+            "text": "Switch Page",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "set_env(\"page_condition\", \"sw-page\");gotopage(\"base:plug_basic_new_element_button\");",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "top": "140px",
+            "left": "50%",
+            "text": "Change Variable",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "set_env(\"page_condition\", \"mod-var\");gotopage(\"base:plug_basic_new_element_button\");",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "top": "185px",
+            "left": "50%",
+            "text": "Arbitrary Code Execution",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "set_env(\"page_condition\", \"ace\");gotopage(\"base:plug_basic_new_element_button\");",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Create!",
+            "top": "355px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "tmp_env = get_env(\"waiting_button\");PB.pages[document.gwp(PB.working_page)].objects.push(tmp_env);gotopage(\"base:plug_basic_page\");",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Back",
+            "top": "400px",
+            "left": "50%",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_new_element",
+                "immediate": false
+            }
+        }
+    ]
+}

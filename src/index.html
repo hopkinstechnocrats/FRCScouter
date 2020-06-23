@@ -92,7 +92,6 @@ setTimeout(() => {
         else {
             // since we've apparently loaded the site's contents from local storage, just start running!
             load_network_site();
-            create_vers("p", "This page is loaded from backed up material. (net " + NETWORK.netcode + ")");
         }
     }
 }, 250);
@@ -247,7 +246,12 @@ function evaluate_action(action) {
                 "\";r().appendChild(u);";
             break;
         case "set-var":
-            eval_norm = "set_env(\"" + action.variable + "\"," + action.value + ");";
+            if (typeof action.value == "object") {
+                eval_norm = "set_env(\"" + action.variable + "\"," + JSON.stringify(action.value) + ");";
+            }
+            else {
+                eval_norm = "set_env(\"" + action.variable + "\"," + action.value + ");";
+            }
             break;
         case "get-var":
             eval_norm = "get_env(\"" + action.variable + "\")";
@@ -324,7 +328,7 @@ function find_page_by_name(plugin, name) {
  * @param {*} val - Value to set
  */
 function set_env(env, val) {
-    if (get_env(env) == null) {
+    if (get_env(env) === null) {
         NETWORK.data.env_data.push({key: env, value: val});
         return;
     }

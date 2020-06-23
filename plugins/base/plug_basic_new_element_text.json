@@ -1,0 +1,129 @@
+{
+    "version": "JSONPage.1.0.0",
+    "objects": [
+        {
+            "type": "ace",
+            "ace_exe": "read_page(PB.pages[document.gwp(PB.working_page)])"
+        },
+        {
+            "type": "set-var",
+            "variable": "sample_text_json",
+            "value": {
+                "type": "floating-obj",
+                "element_type": "p",
+                "top": "300px",
+                "left": "50%",
+                "text": "No text entered!",
+                "id": "sample_text_json"
+            },
+            "sub_action": {
+                "type": "ace",
+                "ace_exe": "document.dst = function(){var de = document.getElementById(\"sample_text_json\");if (de != null) {de.parentNode.removeChild(de);}evaluate_action(get_env(\"sample_text_json\"));};"
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "h2",
+            "text": "Text options",
+            "top": "-15px",
+            "left": "50%"
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "p",
+            "top": "35px",
+            "left": "50%",
+            "text": "Text"
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "input",
+            "id": "text_input",
+            "top": "55px",
+            "left": "50%",
+            "sub_action": {
+                "type": "ace",
+                "ace_exe": "d.getElementById(\"text_input\").addEventListener(\"input\",function(e){a=get_env(\"sample_text_json\");a.text=d.getElementById(\"text_input\").value;set_env(\"sample_text_json\",a);document.dst();});"
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "p",
+            "top": "75px",
+            "left": "50%",
+            "text": "Size"
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Small",
+            "top": "95px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "a=get_env(\"sample_text_json\");a.element_type=\"p\";set_env(\"sample_text_json\",a);document.dst();",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Medium",
+            "top": "140px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "a=get_env(\"sample_text_json\");a.element_type=\"h4\";set_env(\"sample_text_json\",a);document.dst();",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Large",
+            "top": "185px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "a=get_env(\"sample_text_json\");a.element_type=\"h2\";set_env(\"sample_text_json\",a);document.dst();",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Huge",
+            "top": "230px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "a=get_env(\"sample_text_json\");a.element_type=\"h1\";set_env(\"sample_text_json\",a);document.dst();",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Create!",
+            "top": "355px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "tmp_env = get_env(\"sample_text_json\"); tmp_env.type = \"create-el\"; tmp_env.id = null; PB.pages[document.gwp(PB.working_page)].objects.push(tmp_env);gotopage(\"base:plug_basic_page\");",
+                "immediate": false
+            }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Back",
+            "top": "400px",
+            "left": "50%",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:plug_basic_new_element",
+                "immediate": false
+            }
+        }
+    ]
+}
