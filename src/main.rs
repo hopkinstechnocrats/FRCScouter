@@ -13,23 +13,40 @@ fn main() {
     let _ = thread::spawn(move || {
         use std::net::TcpListener;
         use std::io::prelude::*;
-        let listener = TcpListener::bind("0.0.0.0:80").unwrap();
+        let listener = TcpListener::bind("0.0.0.0:80").unwrap_or_else(|_| {
+            println!("A critical error occured at startup: unable to bind to local TCP socket *:80");
+            println!("Please check that no other process is running on that port and that your firewall is allowing this program.");
+            std::process::exit(0);
+        });
         for stream in listener.incoming() {
-            let mut stream = stream.unwrap();
-
-            let mut buffer = [0; 512];
-            stream.read(&mut buffer).unwrap();
-
-            let buffer = String::from_utf8(buffer.to_vec()).unwrap(); // needs fix on err
-
-            if !buffer.contains("favicon") {
-                stream.write(&format!("HTTP/1.1 200 OK\r\n\r\n{}", INDEX).as_bytes()).unwrap();
-                stream.flush().unwrap();
+            match stream {
+                Ok(mut stream) => {
+                    let mut buffer = [0; 512];
+                    stream.read(&mut buffer).unwrap_or_else(|_| {
+                        println!("Unable to read a client's datastream. This can probably be ignored.");
+                        return 0;
+                    });
+        
+                    let buffer = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| {
+                        println!("Unable to decode a client's data to utf8. This can probably be ignored.");
+                        return String::new();
+                    });
+        
+                    if !buffer.contains("favicon") {
+                        stream.write(&format!("HTTP/1.1 200 OK\r\n\r\n{}", INDEX).as_bytes()).unwrap();
+                        stream.flush().unwrap();
+                    }
+                    else {
+                        stream.write("HTTP/1.1 404 NOT FOUND\r\n\r\n".as_bytes()).unwrap();
+                        stream.flush().unwrap();
+                    }
+                }
+                Err(_) => {
+                    println!("An error occured getting a stream to a client. This can probably be ignored.");
+                }
             }
-            else {
-                stream.write("HTTP/1.1 404 NOT FOUND\r\n\r\n".as_bytes()).unwrap();
-                stream.flush().unwrap();
-            }
+
+            
         }
     });
 
