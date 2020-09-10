@@ -7,11 +7,15 @@
         },
         {
             "type": "ace",
-            "ace_exe": "set_env(\"page_condition\", \"undeclared\");"
+            "ace_exe": "pc = get_env(\"page_condition\"); if (pc == \"sw-page\") {evaluate_action({\"type\": \"floating-obj\", \"element_type\":\"p\",\"text\":\"plugin\",\"left\":\"50%\",\"top\":\"230px\"});}"
         },
         {
             "type": "ace",
-            "ace_exe": "pc = get_env(\"page_condition\"); if (pc == \"undeclared\") {} else if (pc == \"sw-page\") {evaluate_action({\"type\": \"floating-obj\", \"element_type\":\"p\",\"text\":\"plugin\",\"left\":\"50%\",\"top\":\"230px\"});}"
+            "ace_exe": "pc = get_env(\"page_condition\"); if (pc == \"mod-var\") {evaluate_action({\"type\": \"floating-obj\", \"element_type\":\"p\",\"text\":\"variable\",\"left\":\"50%\",\"top\":\"230px\"});}"
+        },
+        {
+            "type": "ace",
+            "ace_exe": "pc = get_env(\"page_condition\"); if (pc == \"ace\") {evaluate_action({\"type\": \"floating-obj\", \"element_type\":\"p\",\"text\":\"code\",\"left\":\"50%\",\"top\":\"230px\"});evaluate_action({\"type\": \"floating-obj\", \"element_type\": \"input\", \"id\": \"code_exe\", \"left\": \"50%\", \"top\": \"247px\"});}"
         },
         {
             "type": "set-var",
@@ -98,7 +102,7 @@
             "left": "50%",
             "onclick": {
                 "type": "ace",
-                "ace_exe": "tmp_env = get_env(\"waiting_button\");PB.pages[document.gwp(PB.working_page)].objects.push(tmp_env);gotopage(\"base:plug_basic_page\");",
+                "ace_exe": "tmp_env = get_env(\"waiting_button\");pc = get_env(\"page_condition\");if (pc == \"ace\") {tmp_env.onclick={\"type\":\"ace\",\"immediate\":false,\"ace_exe\":document.getElementById(\"code_exe\").value};}PB.pages[document.gwp(PB.working_page)].objects.push(tmp_env);gotopage(\"base:plug_basic_page\");",
                 "immediate": false
             }
         },

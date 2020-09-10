@@ -59,6 +59,23 @@
                 "name": "base:plug_basic_remove_element",
                 "immediate": false
             }
+        },
+        {
+            "type": "floating-obj",
+            "element_type": "button",
+            "text": "Go to pages",
+            "top": "200px",
+            "left": "50%",
+            "onclick": {
+                "type": "ace",
+                "ace_exe": "",
+                "immediate": false,
+                "sub_action": {
+                    "type": "redirect",
+                    "name": "base:plug_basic",
+                    "immediate": false
+                }
+            }
         }
     ]
 }

@@ -1,0 +1,80 @@
+{
+    "version": "JSONPage.1.0.0",
+    "objects": [
+        {
+            "type": "ace",
+            "ace_exe": "document.mi = 0;"
+        },
+        {
+            "type": "create-el",
+            "element_type": "h2",
+            "text": "Enter match number!"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "-",
+            "onclick": {
+                "type": "ace",
+                "immediate": false,
+                "ace_exe": "if (document.mi > 0) {document.mi -= 1;}document.getElementById(\"change_button\").innerHTML = document.mi;"
+            }
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "0",
+            "id": "change_button",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:confirm_match",
+                "immediate": false
+            }
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "+",
+            "onclick": {
+                "type": "ace",
+                "immediate": false,
+                "ace_exe": "document.mi += 1;document.getElementById(\"change_button\").innerHTML = document.mi;"
+            }
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "p",
+            "text": "existing match nums, admin info"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "br"
+        },
+        {
+            "type": "create-el",
+            "element_type": "button",
+            "text": "Cancel 🔙",
+            "onclick": {
+                "type": "redirect",
+                "name": "base:homepage",
+                "immediate": false
+            }
+        }
+    ]
+}

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FRC Scouter</title>
+        <!-- JS -->
+        <script>
+// This is the IP and port of the remote server's websocket address.
+let IP = window.location.hostname;
+// The port to go along with the IP for the server
+let PORT = "81";
+
+// Represents all globals, this should probably get renamed sometime...
+let NETWORK = {
+    // represents the netcode version being used in a client. Used for user facing debugging and API
+    // compatibility checking
+    netcode: "rev.5.0.0",
+    // represents the JSON Page version being used in a client.
+    jsonvers: "JSONPage.1.0.0",
+    // represents data streamed from the network
+    rx_queue: [],
+    // represents data waiting to be outgoing onto the network
+    tx_queue: [],
+    // represents events on network
+    waiting: 0,
+    // `true` if client is waiting for response. `false` if nothing is queued for network
+    network_busy: false,
+    // how often in ms to check the network
+    network_refresh: 100,
+    // if the server could be sucessfully connected to
+    server_found: false,
+    // version of netcode used by server
+    foriegn_netcode: "NEVER_CONNECTED",
+    // represents all received data on the network that may be stored
+    data: {
+        // list of all plugin's names
+        plugin_list: [],
+        // list of all plugins with data
+        loaded_plugins: [],
+        // variables and enviroment for plugins
+        env_data: []
+    }
+};
+
+// after page loads, request the foriegn server's netcode version. This also does a sanity check on
+// if we have a stable connection.
+server_request({"request": "version"});
+
+function er(t) {clear_page();evaluate_action({"type": "create-el", "text": t, "element_type": "h1", "immediate": true});}
+// after page loads, wait 250 ms. If we can find a connection in that time, download site.
+// Otherwize, attempt to load from local storage.
+setTimeout(() => {
+    if (NETWORK.server_found) {
+        if (NETWORK.netcode != NETWORK.foriegn_netcode) {
+            // show netcode error
+            er("You may be using an outdated client. Please check that your server provider has everything up to date.");
+            console.error("Local: `" + NETWORK.netcode + "`");
+            console.error("Server: `" + NETWORK.foriegn_netcode + "`");
+        }
+        else {
+            load_site();
+        }
+    }
+    else {
+        er("The admin site cannot be used on a poor connection. If you beleive that this is in error, please refresh the page.");
+    }
+}, 250);
+
+/**
+ * Requests something from the server.
+ * @param {Object} request - Object of request to send
+ */
+function server_request(request) {
+    if (NETWORK.waiting < 1) {
+        NETWORK.waiting = 1;
+    }
+    else {
+        NETWORK.waiting += 1;
+    }
+    NETWORK.tx_queue.push(request);
+    if (NETWORK.waiting == 1) {
+        create_connection();
+    }
+    NETWORK.network_busy = true;
+    network_busy();
+}
+
+/**
+ * Creates a connection to the foriegn server with appropriate callbacks
+ */
+function create_connection() {
+    // create a new connection to IP:PORT
+    CONNECTION = new WebSocket("ws://" + IP + ":" + PORT);
+
+    CONNECTION.onmessage = function(e) {
+        // when we receive a response, buffer it
+        NETWORK.rx_queue.push(JSON.parse(e.data));
+        // close this now not needed connection
+        CONNECTION.close(1000);
+        if (NETWORK.waiting > 1) {
+            // decrease the tracker for number of things on the network and do the next thing
+            NETWORK.waiting -= 1;
+            create_connection();
+        }
+        else {
+            // we have no more network activity
+            NETWORK.network_busy = false;
+            NETWORK.waiting = 0;
+        }
+    }
+
+    // send our message as soon as we are connected
+    CONNECTION.onopen = function(_) {
+        CONNECTION.send(JSON.stringify(NETWORK.tx_queue.shift()));
+    }
+}
+
+/**
+ * This function occasionally loops itself via callback if we have network activity to think about
+ */
+function network_busy() {
+    if (NETWORK.rx_queue.length != 0) {
+        // if we have incoming data, we know there's a server
+        NETWORK.server_found = true;
+        while (NETWORK.rx_queue.length > 0) {
+            // let's interpret all the data we have waiting
+            let current = NETWORK.rx_queue.pop();
+            switch (current.result) {
+                case "version":
+                    NETWORK.foriegn_netcode = current.version;
+                    break;
+                case "plugins":
+                    NETWORK.data.plugin_list = current.plugins;
+                    break;
+                case "plugin-data":
+                    NETWORK.data.loaded_plugins.push(current);
+                    break;
+                default:
+                    console.error("Unkown switch during network_busy(): " + current.result);
+                    break;
+            }
+        }
+    }
+    if (NETWORK.waiting == 0) {
+        // if nothing is waiting, we're not busy
+        NETWORK.network_busy = false;
+    }
+    if (NETWORK.network_busy) {
+        // if we're busy check back in a little while later
+        setTimeout(network_busy, NETWORK.network_refresh);
+    }
+}
+
+/**
+ * Reads a JSON Page from a raw JSON object.
+ * @param {Object} json - The JSON Page object
+ */
+ function read_page(json) {
+    // sanity check versions
+    if (NETWORK.jsonvers != json.version) {
+        // Uh oh, somebody has the wrong version...
+        // This probably needs a more user visible error sometime too.
+        console.error("Unable to load page: JSON Page version " + json.version + " incompatible with local version " + NETWORK.jsonvers + ".");
+        return;
+    }
+    for (let i = 0; i < json.objects.length; i++) {
+        // for every object...
+        evaluate_action(json.objects[i]);
+    }
+}
+
+/**
+ * Deals with JSON Page elements by running or generating JS code. Actions return valid JS code,
+ * which is sometimes just an empty string. Sub actions run AFTER primary actions, and if a sub
+ * action runs immediate code and a header action runs later code the sub action will seemingly
+ * execute "first" even though it goes last.
+ * @param {Object} action - A JSON Page action object
+ * @returns {String} - A String containing valid JS code
+ */
+function evaluate_action(action) {
+    if (action == undefined) {
+        // If someone forgot an action, it's no big deal, we'll just ignore them.
+        return "";
+    }
+    let eval_norm;
+    switch (action.type) {
+        case "redirect":
+            eval_norm = "gotopage(\"" + action.name + "\");";
+            break;
+        case "create-el":
+            eval_norm =
+                "t=d.createTextNode(\"" +
+                action.text +
+                "\");u=d.createElement(\"" +
+                action.element_type +
+                "\");u.setAttribute(\"onclick\", \'" +
+                evaluate_action(action.onclick) +
+                "\');u.id=\"" +
+                action.id +
+                "\";u.appendChild(t);r().appendChild(u);";
+            break;
+        case "floating-obj":
+            eval_norm =
+                "t=d.createTextNode(\"" +
+                action.text +
+                "\");u=d.createElement(\"" +
+                action.element_type +
+                "\");u.setAttribute(\"onclick\", \'" +
+                evaluate_action(action.onclick) +
+                "\');u.id=\"" +
+                action.id +
+                "\";u.appendChild(t);u.classList.add(\"vers_el\");u.style.left=\"" +
+                action.left +
+                "\";u.style.top=\"" +
+                action.top +
+                "\";r().appendChild(u);";
+            break;
+        case "set-var":
+            if (typeof action.value == "object") {
+                eval_norm = "set_env(\"" + action.variable + "\"," + JSON.stringify(action.value) + ");";
+            }
+            else {
+                eval_norm = "set_env(\"" + action.variable + "\"," + action.value + ");";
+            }
+            break;
+        case "get-var":
+            eval_norm = "get_env(\"" + action.variable + "\")";
+            break;
+        case "modify-var":
+            eval_norm =
+                "set_env(\"" +
+                action.variable +
+                "\",get_env(\"" +
+                action.variable +
+                "\")+" +
+                action.value +
+                ");";
+            break;
+        case "ace":
+            eval_norm = action.ace_exe;
+            break;
+        default:
+            console.error("evaluate action could not find action type " + action + "!");
+            console.error(action);
+            break;
+    }
+    if (action.immediate || action.immediate != false) {
+        eval(eval_norm);
+        return evaluate_action(action.sub_action)
+    }
+    else {
+        return eval_norm + evaluate_action(action.sub_action);
+    }
+}
+
+/**
+ * Removes everything inside of the body tags of the page.
+ */
+function clear_page() {
+    let doc = document.getElementById("content");
+    while (doc.firstChild) {
+        doc.removeChild(doc.firstChild);
+    }
+}
+
+function r() {return document.getElementById("content")}
+let d = document;
+
+function load_network_site() {
+    clear_page();
+    read_page(find_page_by_name("base", "homepage"));
+}
+
+/**
+ * Locates a JSON page by plugin and name. Returns the JSON Page in Object format.
+ * @param {String} plugin - Name of the plugin to look for
+ * @param {String} name - Name of the page to look for
+ * @returns {Object} - JSON Page Object
+ */
+function find_page_by_name(plugin, name) {
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        if (NETWORK.data.loaded_plugins[i].plugin == plugin) {
+            for (let j = 0; j < NETWORK.data.loaded_plugins[i].pages.length; j++) {
+                if (NETWORK.data.loaded_plugins[i].pages[j].name == name + ".json") {
+                    return JSON.parse((NETWORK.data.loaded_plugins[i].pages[j].data));
+                }
+            }
+            console.error("Unable to find file [" + plugin + ":" + name + "]");
+            return;
+        }
+    }
+    console.error("Unable to find plugin " + plugin);
+}
+
+/**
+ * Sets a variable for a plugin.
+ * @param {String} env - Name of variable
+ * @param {*} val - Value to set
+ */
+function set_env(env, val) {
+    if (get_env(env) === null) {
+        NETWORK.data.env_data.push({key: env, value: val});
+        return;
+    }
+    else {
+        for (let i = 0; i < NETWORK.data.env_data.length; i++) {
+            if (NETWORK.data.env_data[i].key == env) {
+                NETWORK.data.env_data[i].value = val;
+                return;
+            }
+        }
+        console.error("Critical and unexpected error during set_env!");
+    }
+}
+
+/**
+ * Gets a variable for a plugin
+ * @param {String} env - Name of variable
+ * @returns {*} - The variable's value 
+ */
+function get_env(env) {
+    for (let i = 0; i < NETWORK.data.env_data.length; i++) {
+        if (NETWORK.data.env_data[i].key == env) {
+            return NETWORK.data.env_data[i].value;
+        }
+    }
+    return null;
+}
+
+function gotopage(page) {
+    console.log("Loading page " + page);
+    for (let i = 0; i < NETWORK.data.loaded_plugins.length; i++) {
+        for (let j = 0; j < NETWORK.data.loaded_plugins[i].pages.length; j++) {
+            let plug_component = NETWORK.data.loaded_plugins[i].pages[j];
+            if (NETWORK.data.loaded_plugins[i].plugin + ":" + plug_component.name == page + ".json") {
+                clear_page();
+                read_page(JSON.parse(plug_component.data));
+                return;
+            }
+        }
+    }
+    console.error("Unable to find the page " + page);
+}
+
+function load_site() {
+    if (NETWORK.data.plugin_list.length < 1) {
+        // wait for 10 ms if we haven't gotten plugins yet
+        setTimeout(load_site, 10);
+    }
+    else if (NETWORK.data.plugin_list.length > NETWORK.data.loaded_plugins.length) {
+        if (!NETWORK.network_busy) {
+            // request the next plugin
+            server_request({"request": "plugin-data", "plugin": NETWORK.data.plugin_list[NETWORK.data.loaded_plugins.length]});
+        }
+        // wait for 10ms to check how data is coming along
+        setTimeout(load_site, 10);
+    }
+    else {
+        // load the site
+        load_network_site();
+    }
+}
+        </script>
+        <!-- CSS -->
+        <style>
+html, body {
+    font-family: Arial Rounded MT Bold,Helvetica Rounded,Arial,sans-serif;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    touch-action: manipulation;
+}
+
+button {
+    font-size: 150%;
+    font-family: Arial, Helvetica;
+    touch-action: manipulation;
+    border-radius: 6px;
+    padding: 5px 17px;
+}
+
+p, h3 {
+    margin: 0;
+}
+
+input[type='checkbox'] {
+    /* Double-sized Checkboxes */
+    -ms-transform: scale(2); /* IE */
+    -moz-transform: scale(2); /* FF */
+    -webkit-transform: scale(2); /* Safari and Chrome */
+    -o-transform: scale(2); /* Opera */
+    transform: scale(2);
+    margin: 10px;
+}
+
+input[type='range'] {
+    width: 200px;
+    height: 20px;
+}
+
+.vers_el {
+    position: fixed;
+}
+        </style>
+    </head>
+    <body id="content">
+    </body>
+</html>

@@ -3,8 +3,8 @@
     "objects": [
         {
             "type": "create-el",
-            "element_type": "h1",
-            "text": "FRC Scouter 🔍🏃‍♀️"
+            "element_type": "h2",
+            "text": "Are you sure you want to scout for match number [*&f]?"
         },
         {
             "type": "create-el",
@@ -13,11 +13,11 @@
         {
             "type": "create-el",
             "element_type": "button",
-            "text": "I want to scout 🔌🤖",
+            "text": "Yes!",
             "onclick": {
                 "type": "redirect",
-                "name": "base:games",
-                "immediate": false
+                "immediate": false,
+                "name": "base:grab_game"
             }
         },
         {
@@ -26,15 +26,11 @@
         },
         {
             "type": "create-el",
-            "element_type": "br"
-        },
-        {
-            "type": "create-el",
             "element_type": "button",
-            "text": "I want to see results 📊🔍",
+            "text": "No... 🔙",
             "onclick": {
                 "type": "redirect",
-                "name": "base:dataviewer",
+                "name": "base:games",
                 "immediate": false
             }
         }

@@ -6,6 +6,7 @@ use std::thread;
 static NETCODE: &str = "rev.5.0.0";
 
 static INDEX: &str = include_str!("index.html");
+static INDEXADMIN: &str = include_str!("admin.html");
 
 fn main() {
     // Create and launch website thread on localhost::80. Single threaded is fine because this is
@@ -32,8 +33,12 @@ fn main() {
                         return String::new();
                     });
         
-                    if !buffer.contains("favicon") {
+                    if !buffer.contains("favicon") && !buffer.contains("admin") {
                         stream.write(&format!("HTTP/1.1 200 OK\r\n\r\n{}", INDEX).as_bytes()).unwrap();
+                        stream.flush().unwrap();
+                    }
+                    else if buffer.contains("admin") {
+                        stream.write(&format!("HTTP/1.1 200 OK\r\n\r\n{}", INDEXADMIN).as_bytes()).unwrap();
                         stream.flush().unwrap();
                     }
                     else {
