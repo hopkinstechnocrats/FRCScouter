@@ -12,6 +12,5 @@ function view_network_debug() {
     create_text_massive("Network info [emoji]");
     create_text("UUID: " + SCOUTER.network.usid);
     create_text("Netcode version: " + SCOUTER.network.netcode);
-    create_text("Connection consistency: " + NETCON);
     create_button("Go back [emoji]", "load_page();");
 }

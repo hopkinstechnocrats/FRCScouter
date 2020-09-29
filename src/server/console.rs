@@ -18,7 +18,6 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
                 println!("help - this list");
                 println!("connected - lists the number of clients connected");
                 println!("dump - displays the server's state");
-                println!("password - shows the current admin password");
                 println!("stop - shuts down the server");
             },
             "connected" => {
@@ -31,11 +30,6 @@ pub fn main(handle: Arc<Mutex<ServerData>>) -> ! {
             },
             "dump" => {
                 println!("FULL SERVER STATE:\n{:?}", handle.lock().unwrap());
-            },
-            "password" => {
-                let server = handle.lock().unwrap();
-                println!("Current admin password | token:\n{}|{}", server.admin_pass, server.token);
-                drop(server);
             },
             "stop" => {
                 println!("Shutting down...");

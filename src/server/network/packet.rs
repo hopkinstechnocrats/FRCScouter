@@ -1,5 +1,4 @@
 use crate::server::network::{
-    decode::*,
     stream::*
 };
 
@@ -59,26 +58,10 @@ pub enum Packet {
     /// type = 2: all (id irrelevant)
     G2020RequestData(usize, usize),
     /// Server sends back data | packet id `m`/22 | (len, json)
-    G2020ReturnData(usize, String),
-    /// Client reuqests admin access | packet id `n`/23 | (password)
-    ARequestAccess(usize),
-    /// Server denies access | packet id `o`/24 | ()
-    ADenyAccess(),
-    /// Server allows access | packet id `p`/25 | (token)
-    AGrantAccess(String),
-    /// Client sends admin command | packet id `q`/26 | (token, command, data)
-    /// command = 1: clear data full (no data)
-    /// command = 2: set password (password)
-    /// command = 3: clear team (team number)
-    /// command = 4: clear match (match number)
-    ACommand(String, usize, usize)
+    G2020ReturnData(usize, String)
 }
 
 impl Packet {
-    /// Translates raw text into a stream and then into packets
-    pub fn get_packets_from_raw(raw: &str) -> Vec<Packet> {
-        return Packet::get_packets_from_stream(stream_from_raw(raw));
-    }
     /// Translates a stream into packets.
     pub fn get_packets_from_stream(stream: Stream) -> Vec<Packet> {
         return stream.packets.clone();

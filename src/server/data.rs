@@ -11,34 +11,17 @@ pub struct ServerData {
     /// represents all the received data and packets to the server.
     pub packets: PacketList,
     /// represents all the client connections
-    connected_ips: Vec<ws::Sender>,
-    /// reperesents the current login password for the admin portal
-    pub admin_pass: usize,
-    /// represents a long token to confirm admin identitiy
-    pub token: String,
+    connected_ips: Vec<ws::Sender>
 }
 
 impl ServerData {
     /// Creates a new ServerData
     pub fn new() -> ServerData {
-        let mut a = ServerData {
+        ServerData {
             usid: 0,
             packets: PacketList::new(),
             connected_ips: vec![],
-            admin_pass: 2239,
-            token: String::from("NOTOKEN"),
-        };
-        a.gen_token();
-        return a;
-    }
-    pub fn gen_token(&mut self) -> String {
-        let mut rng = rand::thread_rng();
-        use rand::Rng;
-        let a: u128 = rng.gen();
-        let b: u128 = rng.gen();
-        let c: u128 = rng.gen();
-        self.token = format!("{:X}{:X}{:X}", a, b, c);
-        return self.token.clone();
+        }
     }
     /// Gets a unique USID (User Session IDentification) and increments the interal USID counter
     pub fn get_next_usid(&mut self) -> usize {
