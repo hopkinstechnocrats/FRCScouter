@@ -4,7 +4,8 @@ function load_page() {
     create_break();
     create_button("Connect as Scouter 🔌", "ON_GAMES=true;load_scouter_base();");
     create_break(2);
-    create_button("View Collected Data 📊", "load_data_base();");
+    // TODO: reenable when dataviewer is remade
+    // create_button("View Collected Data 📊", "load_data_base();");
     create_break(10);
     create_homepage_button()
     create_links();
