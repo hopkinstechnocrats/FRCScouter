@@ -1,5 +1,4 @@
 function load_page() {
-    FIRST_PAGE = false;
     clear_page();
     create_text_massive("FRC Scouter 🔍🏃‍♀️");
     create_break();

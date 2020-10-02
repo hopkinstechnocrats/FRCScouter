@@ -1,7 +1,6 @@
 use ws::listen;
 
 use std::sync::{Arc, Mutex};
-use std::thread;
 
 use crate::data::*;
 
@@ -16,7 +15,7 @@ pub fn launch() {
     );
 
     // Listen on an address and call the closure for each connection
-    if let Err(error) = listen("0.0.0.0:81", |out| {
+    if let Err(_) = listen("0.0.0.0:81", |out| {
         // prepare the server to be moved into thread if needed
         let server = Arc::clone(&server);
 
@@ -96,9 +95,6 @@ pub fn launch() {
                     }
                 }
             }
-            
-            // We weren't able to process your request, sorry!
-            out.send("{\"result\": \"no-response\"}")
         }
     }) {
         // A websocket connection failed, ignore completely.

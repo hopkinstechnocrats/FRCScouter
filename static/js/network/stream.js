@@ -13,63 +13,37 @@ SCOUTER = {
         netcode: "rev.4.1",
         ip: "68.46.79.147",
         port: "81",
-        connected: false,
-        waiting_to_connect: false,
-        usid: -1,
-
-    },
-    done_with_init: false
+        ever_connected: false
+    }
 };
 
-setInterval(() => {
-    if (SCOUTER.done_with_init) {
-        return;
+/**
+ * Sends a request to the foriegn WebSocket server
+ * @param {String} data - A JSON String to be sent over the network
+ */
+function send_request(data) {
+    // Create a new connection
+    worker = new WebSocket(
+        "ws://" + SCOUTER.network.ip + ":" + SCOUTER.network.port
+    );
+
+    // Send the data when the connection is ready
+    worker.onopen = function(_) {
+        SCOUTER.network.ever_connected = true;
+        worker.send(data);
     }
-    if (SCOUTER.network.connected) {
-        if (SCOUTER.network.usid == -1) {
-            // we're still waiting for usid, idle
-            console.log("waiting for usid...");
-            return;
-        }
-        else {
-            console.log("done!");
-            SCOUTER.done_with_init = true;
-            load_page();
-        }
+
+    // Handle all messages received back
+    worker.onmessage = function(event) {
+        let incoming_data = JSON.parse(event.data);
+        handle_incoming_data(incoming_data);
     }
-    else {
-        if (!SCOUTER.network.waiting_to_connect) {
-            SCOUTER.network.waiting_to_connect = true;
-            SCOUTER.network.ws_connecter = new WebSocket(
-                "ws://" + SCOUTER.network.ip + ":" + SCOUTER.network.port
-            );
-            SCOUTER.network.ws_connecter.onopen = function(_) {
-                // mark that the connection is valid
-                SCOUTER.network.waiting_to_connect = false;
-                SCOUTER.network.connected = true;
-                // request a usid
-                SCOUTER.network.ws_connecter.send(
-                    raw_from_packets(
-                        [
-                            {
-                                packet_type: 0
-                            }
-                        ]
-                    )
-                );
-            }
-            SCOUTER.network.ws_connecter.onclose = function(_) {
-                SCOUTER.network.connected = false;
-                console.error("Error: the WebSocket connection closed.");
-            }
-            SCOUTER.network.ws_connecter.onmessage = function(event) {
-                let packet = JSON.parse(event.data);
-                switch (packet.type) {
-                    default:
-                        console.warn("Unrecognized packet type '" + packet.type + "'!")
-                        break;
-                }
-            }
-        }
-    }
-}, 20);
+}
+
+/**
+ * Manages all data received back from the foriegn WebSocket server
+ * @param {Object} data - A valid JSON Object to be handled
+ */
+function handle_incoming_data(data) {
+
+}
