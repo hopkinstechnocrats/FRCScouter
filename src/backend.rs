@@ -38,11 +38,18 @@ pub fn launch() {
                         }
                         Ok(data) => {
                             if let Some(response) = data["type"].as_str() {
+                                // If there's a valid request in this packet, we need to respond
                                 match response {
                                     "attempted-shot" => {
+                                        // Things a packet needs to be valid enough for recording
                                         let shot_location: ShotLocation;
                                         let bin_location: BinLocation;
                                         let shot_succeded: Succeeded;
+                                        let game_stage: GameStage;
+                                        let team_number: TeamNumber;
+                                        let match_number: MatchNumber;
+
+                                        // Get shot location from packet, fail gracefully otherwise
                                         if let Some(sl) = data["shot-location"].as_str() {
                                             if let Some(slc) = ShotLocation::from_str(sl) {
                                                 shot_location = slc;
@@ -54,6 +61,8 @@ pub fn launch() {
                                         else {
                                             return out.send("{\"result\": \"malformed\"}");
                                         }
+
+                                        // Get bin location from packet, fail gracefully otherwise
                                         if let Some(bl) = data["bin-location"].as_str() {
                                             if let Some(blc) = BinLocation::from_str(bl) {
                                                 bin_location = blc
@@ -65,6 +74,8 @@ pub fn launch() {
                                         else {
                                             return out.send("{\"result\": \"malformed\"}");
                                         }
+
+                                        // Get shot succeeded from packet, fail gracefully otherwise
                                         if let Some(ss) = data["shot-succeeded"].as_str() {
                                             if let Some(ssc) = Succeeded::from_str(ss) {
                                                 shot_succeded = ssc;
@@ -76,10 +87,56 @@ pub fn launch() {
                                         else {
                                             return out.send("{\"result\": \"malformed\"}");
                                         }
+
+                                        // Get game stage from packet, fail gracefully otherwise
+                                        if let Some(gs) = data["game-stage"].as_str() {
+                                            if let Some(gsc) = GameStage::from_str(gs) {
+                                                game_stage = gsc;
+                                            }
+                                            else {
+                                                return out.send("{\"result\": \"malformed\"}");
+                                            }
+                                        }
+                                        else {
+                                            return out.send("{\"result\": \"malformed\"}");
+                                        }
+
+                                        // Get team number from packet, fail gracefully otherwise
+                                        if let Some(tn) = data["team-number"].as_u32() {
+                                            team_number = TeamNumber::new(tn);
+                                        }
+                                        else {
+                                            return out.send("{\"result\": \"malformed\"}");
+                                        }
+
+                                        // Get match number from packet, fail gracefully otherwise
+                                        if let Some(mn) = data["match-number"].as_u32() {
+                                            match_number = MatchNumber::new(mn);
+                                        }
+                                        else {
+                                            return out.send("{\"result\": \"malformed\"}");
+                                        }
+
+                                        // Grab a server handle to save data we've received to
+                                        // the local server. This is a blocking lock.
                                         let mut server = server.lock().unwrap();
-                                        server.attempted_shot(shot_location, bin_location, shot_succeded);
+                                        server.attempted_shot(
+                                            shot_location,
+                                            bin_location,
+                                            shot_succeded,
+                                            game_stage,
+                                            team_number,
+                                            match_number
+                                        );
+                                        // Drop server so other tasks can use it
                                         drop(server);
+
+                                        // Confirm to client that valid data was sent and recorded
                                         return out.send("{\"result\": \"ok\"}");
+                                    },
+                                    "preloaded-cells" => {
+                                        // TODO
+                                        return out.send("");
                                     },
                                     _ => {
                                         println!("Warning: A message was sent to the WebSocket server with an unknown type label.");
