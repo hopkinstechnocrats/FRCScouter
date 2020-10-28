@@ -13,7 +13,6 @@ pub fn launch() {
             Data::new()
         )
     );
-
     // Listen on an address and call the closure for each connection
     if let Err(_) = listen("0.0.0.0:81", |out| {
         // prepare the server to be moved into thread if needed
@@ -135,8 +134,53 @@ pub fn launch() {
                                         return out.send("{\"result\": \"ok\"}");
                                     },
                                     "preloaded-cells" => {
-                                        // TODO
-                                        return out.send("");
+                                        // Things a packet needs to be valid enough for recording
+                                        let cell_amount: CellAmount;
+                                        let team_number: TeamNumber;
+                                        let match_number: MatchNumber;
+
+                                        // Get cell amount from packet, fail gracefully otherwise
+                                        if let Some(ca) = data["cell-amount"].as_str() {
+                                            if let Some(cac) = CellAmount::from_str(ca) {
+                                                cell_amount = cac;
+                                            }
+                                            else {
+                                                return out.send("{\"result\": \"malformed\"}");
+                                            }
+                                        }
+                                        else {
+                                            return out.send("{\"result\": \"malformed\"}");
+                                        }
+
+                                        // Get team number from packet, fail gracefully otherwise
+                                        if let Some(tn) = data["team-number"].as_u32() {
+                                            team_number = TeamNumber::new(tn);
+                                        }
+                                        else {
+                                            return out.send("{\"result\": \"malformed\"}");
+                                        }
+
+                                        // Get match number from packet, fail gracefully otherwise
+                                        if let Some(mn) = data["match-number"].as_u32() {
+                                            match_number = MatchNumber::new(mn);
+                                        }
+                                        else {
+                                            return out.send("{\"result\": \"malformed\"}");
+                                        }
+
+                                        // Grab a server handle to save data we've received to
+                                        // the local server. This is a blocking lock.
+                                        let mut server = server.lock().unwrap();
+                                        server.preloaded_cells(
+                                            cell_amount,
+                                            team_number,
+                                            match_number
+                                        );
+                                        // Drop server so other tasks can use it
+                                        drop(server);
+                                        
+                                        // Confirm to client that valid data was sent and recorded
+                                        return out.send("{\"result\": \"ok\"}");
                                     },
                                     _ => {
                                         println!("Warning: A message was sent to the WebSocket server with an unknown type label.");

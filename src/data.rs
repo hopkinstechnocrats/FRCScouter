@@ -4,6 +4,7 @@
 #[derive(Clone, Eq, PartialEq, Debug)]
 /// The WebSocket server's state and storage
 pub struct Data {
+    preloaded_cells: Vec<(CellAmount, TeamNumber, MatchNumber)>,
     attempted_shots: Vec<(ShotLocation, BinLocation, Succeeded, GameStage, TeamNumber, MatchNumber, Timestamp)>
 }
 
@@ -11,8 +12,12 @@ impl Data {
     /// Creates a new Data instance
     pub fn new() -> Data {
         Data {
+            preloaded_cells: vec![],
             attempted_shots: vec![]
         }
+    }
+    pub fn preloaded_cells(&mut self, cells: CellAmount, tn: TeamNumber, mn: MatchNumber) {
+        self.preloaded_cells.push((cells, tn, mn));
     }
     pub fn attempted_shot(&mut self, sl: ShotLocation, bl: BinLocation, su: Succeeded, gs: GameStage, tn: TeamNumber, mn: MatchNumber) {
         self.attempted_shots.push((sl, bl, su, gs, tn, mn, Timestamp::now()));
@@ -87,6 +92,26 @@ impl Succeeded {
 pub enum GameStage {
     Autonomous,
     Teleoperated
+}
+
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+pub enum CellAmount {
+    Zero,
+    One,
+    Two,
+    Three
+}
+
+impl CellAmount {
+    pub fn from_str(from: &str) -> Option<CellAmount> {
+        match from.to_lowercase().as_str() {
+            "zero" | "0" => return Some(CellAmount::Zero),
+            "One" | "1" => return Some(CellAmount::One),
+            "Two" | "2" => return Some(CellAmount::Two),
+            "Three" | "3" => return Some(CellAmount::Three),
+            _ => return None
+        }
+    }
 }
 
 impl GameStage {
